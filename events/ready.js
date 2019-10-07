@@ -1,6 +1,6 @@
 module.exports = (client) => {
   // Setting activity
-  const guild = client.guilds.get('guildID');
+  const guild = client.guilds.first();
   setInterval(() => client.user.setActivity(`ACNH with ${guild.memberCount} users!`), 3600000);
 
   // Logging a ready message on first boot
