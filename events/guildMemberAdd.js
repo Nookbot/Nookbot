@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 module.exports = async (client, member) => {
     //const mem = await client.fetchMember(member.id);
     
-    const totalSeconds = (Date.now() - member.createdTimestamp) / 1000;
+    const totalSeconds = (Date.now() - member.user.createdTimestamp) / 1000;
     
     // Math for days, hours, and minutes
     const days = Math.floor(totalSeconds / 86400);
@@ -25,8 +25,8 @@ module.exports = async (client, member) => {
     .setFooter(`ID: ${member.id}`)
     .setThumbnail(member.user.displayAvatarURL)
     .addField("**Member Joined**", `<@${member.id}>`, true)
-    .addField("**Join Position**", `${member.guild.memberCount}`, true)
-    .addField("**Account Age**", `${accountAge}`);
+    .addField("**Join Position**", member.guild.memberCount, true)
+    .addField("**Account Age**", accountAge);
 
     client.channels.get(client.getSettings(member.guild).actionLog).send(embed);
 };
