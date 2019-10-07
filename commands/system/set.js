@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 // eslint-disable-next-line no-unused-vars
-module.exports.run = async (client, message, [key, value], level) => {
+module.exports.run = async (client, message, [key, ...value], level) => {
   const settings = client.getSettings(message.guild);
   const defaults = client.settings.get('default');
   const overrides = client.settings.get(message.guild.id);
