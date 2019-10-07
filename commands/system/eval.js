@@ -32,7 +32,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 module.exports.conf = {
   guildOnly: false,
   aliases: [],
-  permLevel: 'Bot Owner',
+  permLevel: 'Bot Admin',
 };
 
 module.exports.help = {
