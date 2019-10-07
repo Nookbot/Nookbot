@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 module.exports = async (client, member) => {
     //const mem = await client.fetchMember(member.id);
     
-    const totalSeconds = (member.joinedTimestamp - Date.now()) / 1000;
+    const totalSeconds = (Date.now() - member.joinedTimestamp) / 1000;
     
     // Math for days, hours, and minutes
     const days = Math.floor(totalSeconds / 86400);
