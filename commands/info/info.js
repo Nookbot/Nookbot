@@ -83,7 +83,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'server':
       embed.setTitle('Server Information')
         .setTimestamp()
-        .setThumbnail(message.guild.iconURL)
+        .setThumbnail(message.guild.iconURL.replace('.jpg','.gif'))
         .addField('Server Name', message.guild.name, true)
         .addField('Server ID', message.guild.id, true)
         .addField('Server Owner', `${message.guild.owner.user.tag} (${message.guild.owner.user.id})`, true)
