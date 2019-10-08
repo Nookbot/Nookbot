@@ -51,6 +51,35 @@ module.exports = (client) => {
     return owner;
   };
 
+  client.humanTimeBetween = (time1, time2) => {
+    const timeDif = Math.floor(Math.abs(time1 - time2) / 1000);
+
+    const times = [
+      Math.floor(timeDif / 31536000),     // 31,536,000 seconds in a year (365 days)
+      Math.floor(timeDif / 2592000) % 12, //  2,592,000 seconds in a month (30 days)
+      Math.floor(timeDif / 86400)   % 30, //     86,400 seconds in a day (24 hours)
+      Math.floor(timeDif / 3600)    % 24, //      3,600 seconds in an hour (60 mintues)
+      Math.floor(timeDif / 60)      % 60, //         60 seconds in a mintues
+      timeDif % 60];
+
+    const units = ["year", "month", "day", "hour", "minute", "second"];
+    
+    // Grab the top 3 units of time that aren't 0
+    let outTimes = ["","",""];
+    let c = 0;
+    for(let t = 0; t < 6; t++) {
+      if (times[t] > 0) {
+        outTimes[c] = `${times[t]} ${units[t]}${times[t] == 1 ? "" : "s"}`;
+        c++;
+        if (c == 3) break;
+      }
+    }
+    if (c == 0) return "0 seconds";
+    else if (c == 1) return outTimes[0];
+    else if (c == 2) return `${outTimes[0]} and ${outTimes[1]}`;
+    else if (c == 3) return `${outTimes[0]}, ${outTimes[1]}, and ${outTimes[2]}`;
+  };
+
   // eslint-disable-next-line no-extend-native
   Object.defineProperty(String.prototype, 'toProperCase', {
     value() {
