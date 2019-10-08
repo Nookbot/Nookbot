@@ -2,13 +2,13 @@ const Discord = require('discord.js');
 
 module.exports = async (client, member) => {
     const time = Date.now();
-    const accountAge = client.humanTimeBetween(time, member.user.createdTimestamp);
+    let accountAge = client.humanTimeBetween(time, member.user.createdTimestamp);
     
     // 172,800,000 ms is 48 hours.
     if (time - member.user.createdTimestamp < 172800000) {
         accountAge = `:warning: **NEW ACCOUNT** ${accountAge} :warning:`;
     }
-    
+
     const embed = new Discord.RichEmbed()
     .setAuthor(member.user.tag, member.user.displayAvatarURL)
     .setColor('#1de9b6')
