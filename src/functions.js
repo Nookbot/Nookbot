@@ -52,18 +52,23 @@ module.exports = (client) => {
   };
 
   client.humanTimeBetween = (time1, time2) => {
-    const timeDif = Math.floor(Math.abs(time1 - time2) / 1000);
+    if (time1 < time2) {
+      const temp = time1;
+      time1 = time2;
+      time2 = temp;
+    }
+    const timeDif = moment.duration(moment(time1).diff(moment(time2)));
 
     const times = [
-      Math.floor(timeDif / 31536000),     // 31,536,000 seconds in a year (365 days)
-      Math.floor(timeDif / 2592000) % 12, //  2,592,000 seconds in a month (30 days)
-      Math.floor(timeDif / 86400)   % 30, //     86,400 seconds in a day (24 hours)
-      Math.floor(timeDif / 3600)    % 24, //      3,600 seconds in an hour (60 mintues)
-      Math.floor(timeDif / 60)      % 60, //         60 seconds in a mintues
-      timeDif % 60];
+      timeDif.years(),
+      timeDif.months(),
+      timeDif.days(),
+      timeDif.hours(),
+      timeDif.minutes(),
+      timeDif.seconds()];
 
     const units = ["year", "month", "day", "hour", "minute", "second"];
-    
+  
     // Grab the top 3 units of time that aren't 0
     let outTimes = ["","",""];
     let c = 0;
