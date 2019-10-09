@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Phoenix1128/Nookbot#readme",
   "dependencies": {
+    "better-sqlite3": "^5.4.3",
     "cheerio": "^1.0.0-rc.3",
     "discord.js": "^11.5.1",
     "enmap": "^5.1.2",
