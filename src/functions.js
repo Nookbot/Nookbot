@@ -77,12 +77,16 @@ module.exports = (client) => {
     let c = 0;
     for (let t = 0; t < units.length; t++) {
       if (times[t] > 0) {
-        outTimes += `${times[t]} ${units[t]}${times[t] === 1 ? '' : 's'}, ${c === 2 ? 'and' : ''}`;
+        outTimes += `${times[t]} ${units[t]}${times[t] === 1 ? '' : 's'}${c === 1 || c === 2 ? ',' : ''} ${c === 2 ? 'and ' : ''}`;
         c += 1;
         if (c === 3) {
           break;
         }
       }
+    }
+
+    if (c === 2) {
+      outTimes = outTimes.replace(/,/, '');
     }
 
     return outTimes;
