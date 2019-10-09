@@ -77,7 +77,7 @@ module.exports = (client) => {
     let c = 0;
     for (let t = 0; t < units.length; t++) {
       if (times[t] > 0) {
-        outTimes += `${times[t]} ${units[t]}${times[t] === 1 ? '' : 's'}${c === 1 || c === 2 ? ',' : ''} ${c === 2 ? 'and ' : ''}`;
+        outTimes += `${times[t]} ${units[t]}${times[t] === 1 ? '' : 's'}${c === 0 || c === 1 ? ',' : ''} ${c === 1 ? 'and ' : ''}`;
         c += 1;
         if (c === 3) {
           break;
@@ -85,7 +85,7 @@ module.exports = (client) => {
       }
     }
 
-    if (c === 2) {
+    if (c === 1) {
       outTimes = outTimes.replace(/,/, '');
     }
 
