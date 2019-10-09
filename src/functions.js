@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+const moment = require('moment');
+
 module.exports = (client) => {
   client.getSettings = (guild) => {
     client.settings.ensure('default', client.config.defaultSettings);
@@ -65,24 +67,25 @@ module.exports = (client) => {
       timeDif.days(),
       timeDif.hours(),
       timeDif.minutes(),
-      timeDif.seconds()];
+      timeDif.seconds(),
+    ];
 
-    const units = ["year", "month", "day", "hour", "minute", "second"];
-  
+    const units = ['year', 'month', 'day', 'hour', 'minute', 'second'];
+
     // Grab the top 3 units of time that aren't 0
-    let outTimes = ["","",""];
+    let outTimes = '';
     let c = 0;
-    for(let t = 0; t < 6; t++) {
+    for (let t = 0; t < units.length; t++) {
       if (times[t] > 0) {
-        outTimes[c] = `${times[t]} ${units[t]}${times[t] == 1 ? "" : "s"}`;
-        c++;
-        if (c == 3) break;
+        outTimes += `${times[t]} ${units[t]}${times[t] === 1 ? '' : 's'}, ${c === 2 ? 'and' : ''}`;
+        c += 1;
+        if (c === 3) {
+          break;
+        }
       }
     }
-    if (c == 0) return "0 seconds";
-    else if (c == 1) return outTimes[0];
-    else if (c == 2) return `${outTimes[0]} and ${outTimes[1]}`;
-    else if (c == 3) return `${outTimes[0]}, ${outTimes[1]}, and ${outTimes[2]}`;
+
+    return outTimes;
   };
 
   // eslint-disable-next-line no-extend-native

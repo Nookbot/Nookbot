@@ -43,4 +43,5 @@ module.exports = {
   '8ball': '🎱',
   checkMark: '✅',
   redX: '❌',
+  warning: '⚠',
 };

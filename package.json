@@ -20,6 +20,7 @@
   "dependencies": {
     "discord.js": "^11.5.1",
     "enmap": "^5.1.2",
+    "moment": "^2.24.0",
     "moment-timezone": "^0.5.26"
   },
   "devDependencies": {
