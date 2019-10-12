@@ -10,7 +10,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     .setTimestamp()
     .setFooter(`Created and Maintained by ${owner.tag} | ${client.version}`, client.user.displayAvatarURL);
 
-  const fc = client.friendCodes.ensure(message.author.id, {});
+  const fc = client.friendCodes.ensure(message.author.id, '');
 
   if (member === message.mentions.members.first()) {
     const memberFC = client.friendCodes.get(member.user.id);
@@ -37,12 +37,13 @@ module.exports.run = async (client, message, args, level, Discord) => {
         return message.error('Code Already in Database!', 'You already have a friend code set! You can delete it by running \`.friendcode delete\`!');
       }
 
-      const code = args[1].toUpperCase();
+      const code = args[1];
 
-      if (code.length !== 17 || code.charAt(0) !== 'S' || code.charAt(1) !== 'W' || code.charAt(2) !== '-' || code.charAt(7) !== '-' || code.charAt(12) !== '-') {
-        return message.error('Invalid Code!', 'Please check to see if the code was typed correctly and include all dashes and \`SW\` at the beginning!');
+      if (/(SW-)[0-9]{4}-[0-9]{4}-[0-9]{4}/i.test(code)) {
+        return message.error('Invalid Code!', 'Please check to see if the code was typed correctly and include all dashes!');
       }
 
+      code = /SW-/i.test(code) ? code : `SW-${code}`;
       client.friendCodes.set(message.author.id, code);
       embed.setDescription(`Successfully set your friend code!\n**${code}**`);
 
