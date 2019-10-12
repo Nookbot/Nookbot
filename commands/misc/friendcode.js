@@ -37,7 +37,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         return message.error('Code Already in Database!', 'You already have a friend code set! You can delete it by running \`.friendcode delete\`!');
       }
 
-      const code = args[1];
+      let code = args[1];
 
       if (/(SW-)[0-9]{4}-[0-9]{4}-[0-9]{4}/i.test(code)) {
         return message.error('Invalid Code!', 'Please check to see if the code was typed correctly and include all dashes!');
