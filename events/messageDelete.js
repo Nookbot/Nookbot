@@ -10,12 +10,25 @@ module.exports = async (client, message) => {
   const msg = message.content.length > 1024 ? `${message.content.slice(0,1021)}...` : message.content.slice(0, 1024);
 
   const embed = new Discord.RichEmbed()
-    .setColor('#ff9292')
+    .setColor('#dd5f53')
     .setAuthor(message.author.tag, message.author.displayAvatarURL)
     .setDescription(`[Jump to message in](https://discordapp.com/channels/${message.guild.id}/${message.channel.id} 'Jump') <#${message.channel.id}>`)
     .setTimestamp()
-    .setFooter(`ID: ${message.author.id}`)
-    .addField('**Message Deleted**', msg);
+    .setFooter(`ID: ${message.author.id}`);
 
+  if (msg.length !== 0) {
+    embed.addField('**Message Deleted**', msg);
+  }
+
+  if (message.attachments.length > 0) {
+    var attachList = '';
+    message.attachments.forEach(value => {
+      var fileSize = value.filesize > 1048576 ? `${Math.floor(value.filesize / 1048576)} MB` : `${Math.floor(value.filesize / 1024)} KB`;
+      attachList += `\n[${value.filename}](${value.url} 'Link to Image') | ${fileSize}`;
+    });
+    if (attachList.length !== 0) {
+      embed.addField('**Attachments Deleted**', attachList.slice(1));
+    }
+  }
   message.guild.channels.get(client.getSettings(message.guild).actionLog).send(embed);
 };
