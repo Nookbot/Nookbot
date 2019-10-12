@@ -77,18 +77,20 @@ module.exports = (client) => {
     let c = 0;
     for (let t = 0; t < units.length; t++) {
       if (times[t] > 0) {
-        outTimes += `${times[t]} ${units[t]}${times[t] === 1 ? '' : 's'}${c === 0 || c === 1 ? ',' : ''} ${c === 1 ? 'and ' : ''}`;
+        outTimes += `${c === 1 ? '|' : ''}${c === 2 ? '=' : ''}${times[t]} ${units[t]}${times[t] === 1 ? '' : 's'}`;
         c += 1;
         if (c === 3) {
           break;
         }
       }
     }
-
-    if (c === 1) {
-      outTimes = outTimes.replace(/,/, '');
+    
+    if (outTimes.includes('=')) {
+      outTimes = outTimes.replace('|', ', ').replace('=', ', and ');
+    } else {
+      outTimes = outTimes.replace('|', ' and ');
     }
-
+    
     return outTimes;
   };
 
