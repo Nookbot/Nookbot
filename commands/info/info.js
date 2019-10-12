@@ -34,7 +34,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     }
     case 'user': {
       // Setting the member to the mentioned user, if no mentioned user, falls back to author
-      const member = message.mentions.members.first() || message.member;
+      const member = message.mentions.members.first() || message.guild.members.get(args[1]) || message.member;
 
       const roles = member.roles.filter((r) => r.id !== message.guild.id).map((r) => r.name).join(', ') || 'No Roles';
       const roleSize = member.roles.filter((r) => r.id !== message.guild.id).size;
