@@ -40,20 +40,15 @@ module.exports.run = async (client, message, args, level, Discord) => {
       const roleSize = member.roles.filter((r) => r.id !== message.guild.id).size;
 
       let activity = member.presence.status;
-      let emoji;
 
       if (activity === 'online') {
-        emoji = client.emojis.find((e) => e.name === 'online');
-        activity = `${emoji} Online`;
+        activity = `${client.emoji.online} Online`;
       } else if (activity === 'idle') {
-        emoji = client.emojis.find((e) => e.name === 'idle');
-        activity = `${emoji} Idle`;
+        activity = `${client.emoji.idle} Idle`;
       } else if (activity === 'dnd') {
-        emoji = client.emojis.find((e) => e.name === 'dnd');
-        activity = `${emoji} Do Not Disturb`;
+        activity = `${client.emoji.dnd} Do Not Disturb`;
       } else if (activity === 'offline') {
-        emoji = client.emojis.find((e) => e.name === 'offline');
-        activity = 'Offline/Invisible';
+        activity = `${client.emoji.offline} Offline/Invisible`;
       }
 
       embed.setTitle(`${member.displayName}\'s Info`)
