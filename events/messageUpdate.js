@@ -11,13 +11,13 @@ module.exports = async (client, oldMessage, newMessage) => {
   const newMsg = newMessage.content.length > 499 ? `${newMessage.content.slice(0,496)}...` : newMessage.content.slice(0,499);
 
   const embed = new Discord.RichEmbed()
+    .setColor('#00e5ff')
     .setTitle('Jump to Message')
     .setURL(`https://discordapp.com/channels/${newMessage.guild.id}/${newMessage.channel.id}/${newMessage.id}`)
     .setAuthor(newMessage.author.tag, newMessage.author.displayAvatarURL)
-    .setColor('#00e5ff')
+    .setDescription(`**Message edited in** <#${newMessage.channel.id}>`)
     .setTimestamp()
     .setFooter(`ID: ${newMessage.author.id}`)
-    .addDescription(`**Message edited in** <#${newMessage.channel.id}>`)
     .addField('\u200b', `**Before:** ${oldMsg}\n**+After:** ${newMsg}`);
 
   newMessage.guild.channels.get(client.getSettings(newMessage.guild).actionLog).send(embed);
