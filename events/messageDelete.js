@@ -20,7 +20,7 @@ module.exports = async (client, message) => {
     embed.addField('**Message Deleted**', msg);
   }
 
-  if (message.attachments.length > 0) {
+  if (message.attachments.size > 0) {
     var attachList = '';
     message.attachments.forEach(value => {
       var fileSize = value.filesize > 1048576 ? `${Math.floor(value.filesize / 1048576)} MB` : `${Math.floor(value.filesize / 1024)} KB`;
