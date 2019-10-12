@@ -12,5 +12,5 @@ module.exports = async (client, oldMessage, newMessage) => {
     .setFooter(`ID: ${newMessage.author.id}`)
     .addField(`**Message Edited in** <#${newMessage.channel.id}> [Jump](https://discordapp.com/channels/${newMessage.guild.id}/${newMessage.channel.id}/${newMessage.id} 'Jump to Message')`, `**Before:** ${oldMsg}\n**+After:** ${newMsg}`);
 
-  newMessage.guild.channels.get(client.getSettings(member.guild).actionLog).send(embed);
+  newMessage.guild.channels.get(client.getSettings(newMessage.guild).actionLog).send(embed);
 };
