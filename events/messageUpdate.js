@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, oldMessage, newMessage) => {
-  // Ignore all bots
-  if (newMessage.author.bot) {
+  // Ignore all bots and make sure the content of the message changed.
+  if (newMessage.author.bot || oldMessage.content === newMessage.content) {
     return;
   }
 

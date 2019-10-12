@@ -6,7 +6,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
   const embed = new Discord.RichEmbed()
     .setAuthor(member.user.tag, member.user.displayAvatarURL)
     .setTitle(`${member.displayName}'s Friend Code`)
-    .setColor('#4199c2')
+    .setColor('#e60012')
     .setTimestamp()
     .setFooter(`Created and Maintained by ${owner.tag} | ${client.version}`, client.user.displayAvatarURL);
 
@@ -22,24 +22,25 @@ module.exports.run = async (client, message, args, level, Discord) => {
     return message.channel.send(embed);
   }
 
-  if (!args[0]) {
+  if (args.length === 0) {
     if (!fc) {
-      return message.error('No Code Found!', 'You have not set a friend code! You can do so by running \`.friendcode <code>\`!');
+      return message.error('No Code Found!', 'You have not set a friend code! You can do so by running \`.fc set <code>\`!');
     }
 
     embed.setDescription(`**${fc}**`);
     return message.channel.send(embed);
   }
 
-  switch (message.flags[0]) {
-    case 'set': {
-      if (fc) {
-        return message.error('Code Already in Database!', 'You already have a friend code set! You can delete it by running \`.friendcode delete\`!');
+  switch (args[0]) {
+    case 'set': 
+    case 'add': {
+      if (args.length === 1) {
+        return message.error('No Code Given!', 'Please supply your Switch friend code!');
       }
+      
+      let code = args[1];
 
-      let code = args[0];
-
-      if (/(SW-)[0-9]{4}-[0-9]{4}-[0-9]{4}/i.test(code)) {
+      if (/^(SW-)?[0-9]{4}-[0-9]{4}-[0-9]{4}$/i.test(code)) {
         return message.error('Invalid Code!', 'Please check to see if the code was typed correctly and include all dashes!');
       }
 
@@ -51,11 +52,13 @@ module.exports.run = async (client, message, args, level, Discord) => {
       break;
     }
     case 'del':
+    case 'delete':
+    case 'remove':
       client.friendCodes.delete(message.author.id);
-      message.success('Successfully Deleted!', "I've successfully deleted your friend code from the database! You can set it again by running \`.fc -set <code>\`!");
+      message.success('Successfully Deleted!', "I've successfully deleted your friend code! You can set it again by running \`.fc set <code>\`!");
       break;
     default:
-      message.error('Invalid Flag!', `Remember to use flags when using this command! For example: \`-set\` or \`-del\`! For further details, use \`${client.getSettings(message.guild).prefix}help friendcode\`!`);
+      message.error('Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`set\` or \`del\`! For further details, use \`${client.getSettings(message.guild).prefix}help friendcode\`!`);
       break;
   }
 };
@@ -69,7 +72,7 @@ module.exports.conf = {
 module.exports.help = {
   name: 'friendcode',
   category: 'misc',
-  description: 'Controls the friendcode db',
-  usage: 'friendcode <-set|-get|-del> <code|@member>',
-  details: "<-set|-get|-del> => Whether to set a new friend code, get an existing one, or delete an existing one. (Notice the - it's important)\n<code|@member> => Only necessary if you're setting a new code or getting the code of another member.",
+  description: 'Switch friend code management',
+  usage: 'friendcode <set|del> <code|@member>',
+  details: "<set|del> => Whether to set a new friend code or delete an existing one.\n<code|@member> => Only necessary if you're setting a new code or getting the code of another member.",
 };

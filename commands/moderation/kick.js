@@ -5,7 +5,7 @@ module.exports.run = async (client, message, args, level) => {
 
   // If no member mentioned, display this message
   if (!member) {
-    return message.error('Invalid Member!', 'Please mention a valid member of this server');
+    return message.error('Invalid Member!', 'Please mention a valid member of this server!');
   }
 
   // If member can't be kicked, display this

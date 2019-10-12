@@ -11,23 +11,9 @@ module.exports.run = async (client, message, args, level, Discord) => {
     .setTimestamp()
     .setFooter(`Created and Maintained by ${owner.tag} | ${client.version}`, client.user.displayAvatarURL);
 
-  switch (message.flags[0]) {
+  switch (args[0]) {
     case 'bot': {
-      // Turning uptime milliseconds into normal seconds
-      const totalSeconds = (client.uptime / 1000);
-
-      // Math for days, hours, and minutes
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds / 3600) % 24);
-      const minutes = Math.floor((totalSeconds / 60) % 60);
-
-      // If something = 1 don't make it plural
-      const daysP = (days === 1) ? 'day' : 'days';
-      const hoursP = (hours === 1) ? 'hour' : 'hours';
-      const minutesP = (minutes === 1) ? 'minute' : 'minutes';
-
-      // Set uptime
-      const uptime = `${days} ${daysP}, ${hours} ${hoursP}, and ${minutes} ${minutesP}`;
+      const uptime = client.humanTimeBetween(client.uptime, 0);
 
       embed.setTitle('Bot Information')
         .setThumbnail(client.user.displayAvatarURL)
@@ -66,6 +52,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         emoji = client.emojis.find((e) => e.name === 'dnd');
         activity = `${emoji} Do Not Disturb`;
       } else if (activity === 'offline') {
+        emoji = client.emojis.find((e) => e.name === 'offline');
         activity = 'Offline/Invisible';
       }
 
@@ -93,7 +80,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       message.channel.send(embed);
       break;
     default:
-      message.error('Invalid Flag!', `Remember to use flags when using this command! For example: \`-bot\`, \`-server\`, or \`-user\`! For further details, use \`${client.getSettings(message.guild).prefix}help info\`!`);
+      message.error('Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`bot\`, \`server\`, or \`user\`! For further details, use \`${client.getSettings(message.guild).prefix}help info\`!`);
   }
 };
 
@@ -108,6 +95,6 @@ module.exports.help = {
   name: 'info',
   category: 'info',
   description: 'Provides info of the specified source',
-  usage: 'info <-bot|-user|-server>',
-  details: "<-bot|-user|-server> => The source of info, (notice the - it's important)",
+  usage: 'info <bot|user|server>',
+  details: "<bot|user|server> => The source of info.",
 };

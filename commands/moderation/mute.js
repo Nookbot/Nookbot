@@ -1,14 +1,14 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = (client, message, args, level) => {
-  // Sets the role to the Brick Block role
+  // Sets the role to the Muted role
   const role = message.guild.roles.find((r) => r.name === 'Muted');
 
   // Sets the member to the user mentioned
-  const member = message.mentions.members.first();
+  const member = message.mentions.members.first() || message.guild.members.get(args[0]);
 
   // If no user mentioned, display this
   if (!member) {
-    return message.error('Invalid Member!', 'Please mention a valid member of this server');
+    return message.error('Invalid Member!', 'Please mention a valid member of this server!');
   }
 
   // Adds the role to the member and deletes the message that initiated the command
@@ -27,7 +27,7 @@ module.exports.conf = {
 module.exports.help = {
   name: 'mute',
   category: 'moderation',
-  description: 'Gives the mentioned user the Brick Block role',
+  description: 'Gives the mentioned user the Muted role',
   usage: 'mute <@user>',
   details: '<@user> => Any valid member of the server',
 };

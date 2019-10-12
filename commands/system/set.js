@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 // eslint-disable-next-line no-unused-vars
-module.exports.run = async (client, message, [key, ...value], level) => {
+module.exports.run = async (client, message, [flag, key, ...value], level) => {
   const settings = client.getSettings(message.guild);
   const defaults = client.settings.get('default');
   const overrides = client.settings.get(message.guild.id);
@@ -9,7 +9,7 @@ module.exports.run = async (client, message, [key, ...value], level) => {
     client.settings.set(message.guild.id, {});
   }
 
-  switch (message.flags[0]) {
+  switch (flag) {
     case 'edit': {
       if (!key) {
         return message.error('No Key Specified!', 'Please specify a key to edit!');
@@ -34,15 +34,15 @@ module.exports.run = async (client, message, [key, ...value], level) => {
     }
     case 'del': case 'delete': {
       if (!key) {
-        return message.error('No Key Specified!', 'Please specify a key to reset.');
+        return message.error('No Key Specified!', 'Please specify a key to reset!');
       }
 
       if (!defaults[key]) {
-        return message.error('Invalid Key!', 'This key does not exist in the settings');
+        return message.error('Invalid Key!', 'This key does not exist in the settings!');
       }
 
       if (!overrides[key]) {
-        return message.error('Setting Already Set to Default!', 'This key does not have an override and is already using defaults.');
+        return message.error('Setting Already Set to Default!', 'This key does not have an override and is already using defaults!');
       }
 
       const msgReset = await message.channel.send(`Are you sure you want to reset **${key}** to its deafult configuration?`);
@@ -65,7 +65,7 @@ module.exports.run = async (client, message, [key, ...value], level) => {
           }
         })
         .catch(() => {
-          console.log('After a minute, a configuration setting was not changed');
+          console.log('After a minute, a configuration setting was not changed.');
           message.error('Time Expired!', "So... I guess we're not changing the configuration settings today. Time's up.");
         });
       break;
@@ -75,11 +75,11 @@ module.exports.run = async (client, message, [key, ...value], level) => {
       Object.entries(settings).forEach(([k, val]) => {
         currentSettings.push(`${k}${' '.repeat(20 - k.length)}: ${val}`);
       });
-      message.channel.send(`**Current Server Configurations**:\n\n\`\`\`${currentSettings.join('\n')}\`\`\``);
+      message.channel.send(`**Current Server Configurations**:\n\`\`\`${currentSettings.join('\n')}\`\`\``);
       break;
     }
     default:
-      message.error('Invalid Flag!', `Remember to use flags when using this command! For example: \`-edit\`, \`-del\`, or \`-view\`! For further details, use \`${client.getSettings(message.guild).prefix}help set\`!`);
+      message.error('Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`edit\`, \`del\`, or \`view\`! For further details, use \`${client.getSettings(message.guild).prefix}help set\`!`);
       break;
   }
 };
@@ -95,6 +95,6 @@ module.exports.help = {
   name: 'set',
   category: 'system',
   description: 'Controls configuration settings',
-  usage: 'set <-edit|-del|-view> <key> <value>',
-  details: "<-edit|-del|-view> => Whether to edit a setting, delete a setting, or view all settings. (Notice the - it's important!)\n<key> => The key you wish to change\n<value> => The value you wish to change",
+  usage: 'set <edit|del|view> <key> <value>',
+  details: "<edit|del|view> => Whether to edit a setting, delete a setting, or view all settings.\n<key> => The key you wish to change\n<value> => The value you wish to change",
 };

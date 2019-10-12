@@ -91,11 +91,6 @@ module.exports = async (client, message) => {
   timestamps.set(message.author.id, now);
   setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
-  message.flags = [];
-  while (args[0] && args[0][0] === '-') {
-    message.flags.push(args.shift().slice(1));
-  }
-
   // Run the command
   const guildUsed = message.guild ? `**${message.guild.name}** *(${message.guild.id})*` : '**DMs**';
 

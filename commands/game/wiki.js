@@ -4,13 +4,13 @@ const request = require('request');
 
 // eslint-disable-next-line no-unused-vars
 module.exports.run = (client, message, args, level) => {
-  const character = args.join('_');
-  const fixedChar = character.replace(/_/, ' ').toProperCase();
-  const link = `https://nookipedia.com/wiki/${character}`;
+  const search = args.join('_');
+  const fixedChar = search.replace(/_/, ' ').toProperCase();
+  const link = `https://nookipedia.com/wiki/${search}`;
 
   request(link, (err, res, html) => {
     if (err || res.statusCode !== 200) {
-      return message.error('Invalid Character!', 'Please check your spelling and that the character actually exists');
+      return message.error('Invalid Search Terms!', 'Please check your spelling and that what you searched for actually exists!');
     }
 
     const $ = cheerio.load(html);
@@ -44,14 +44,14 @@ module.exports.run = (client, message, args, level) => {
 module.exports.conf = {
   enabled: true,
   guildOnly: false,
-  aliases: ['char'],
+  aliases: ['character', 'char', 'villager', 'vil', 'item'],
   permLevel: 'User',
   args: 1,
 };
 
 module.exports.help = {
-  name: 'character',
+  name: 'wiki',
   category: 'game',
-  description: 'Gets info on the specified AC character',
-  usage: 'character <character>',
+  description: 'Gets info from the wiki on specified search',
+  usage: 'wiki <search>',
 };
