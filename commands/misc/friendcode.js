@@ -10,7 +10,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     .setTimestamp()
     .setFooter(`Created and Maintained by ${owner.tag} | ${client.version}`, client.user.displayAvatarURL);
 
-  const fc = client.friendCodes.ensure(message.author.id, {});
+  const fc = client.friendCodes.ensure(message.author.id, '');
 
   if (member === message.mentions.members.first()) {
     const memberFC = client.friendCodes.get(member.user.id);
