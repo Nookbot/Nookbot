@@ -13,7 +13,7 @@ module.exports = async (client, oldMessage, newMessage) => {
   const embed = new Discord.RichEmbed()
     .setColor('#00e5ff')
     .setAuthor(newMessage.author.tag, newMessage.author.displayAvatarURL)
-    .setDescription(`[Jump to message in](https://discordapp.com/channels/${newMessage.guild.id}/${newMessage.channel.id}/${newMessage.id}) <#${newMessage.channel.id}>`)
+    .setDescription(`[Jump to message in](${newMessage.url}) <#${newMessage.channel.id}>`)
     .setTimestamp()
     .setFooter(`ID: ${newMessage.author.id}`)
     .addField('**Message Edited**', `**Before:** ${oldMsg}\n**+After:** ${newMsg}`);
