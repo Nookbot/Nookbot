@@ -24,7 +24,7 @@ module.exports = async (client, message) => {
     var attachList = '';
     message.attachments.forEach(value => {
       var fileSize = value.filesize > 1048576 ? `${Math.floor(value.filesize / 1048576)} MB` : `${Math.floor(value.filesize / 1024)} KB`;
-      attachList += `\n[${value.filename}](${value.url} 'Link to Image') | ${fileSize}`;
+      attachList += `\n${value.filename} | ${fileSize}`;
     });
     if (attachList.length !== 0) {
       embed.addField('**Attachments Deleted**', attachList.slice(1));
