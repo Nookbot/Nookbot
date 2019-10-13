@@ -1,6 +1,6 @@
 // eslint-disable-next-line consistent-return
 module.exports.run = async (client, message, args, level, Discord) => {
-  const member = message.mentions.members.first() || message.member;
+  const member = message.mentions.members.first() || message.guild.members.get(args[0]) || message.member;
   const owner = await client.fetchOwner();
 
   const embed = new Discord.RichEmbed()
@@ -10,14 +10,13 @@ module.exports.run = async (client, message, args, level, Discord) => {
     .setTimestamp()
     .setFooter(`Created and Maintained by ${owner.tag} | ${client.version}`, client.user.displayAvatarURL);
 
-  const fc = client.friendCodes.ensure(message.author.id, '');
+  const fc = client.userDB.ensure(member.user.id, {friendcode: ''}).friendcode;
 
-  if (member === message.mentions.members.first()) {
-    const memberFC = client.friendCodes.get(member.user.id);
-    if (!memberFC) {
+  if (member !== message.member) {
+    if (!fc) {
       return message.error('No Code Found!', 'That user has not set their friend code!');
     }
-    embed.setDescription(`**${memberFC}**`);
+    embed.setDescription(`**${fc}**`);
 
     return message.channel.send(embed);
   }
@@ -26,7 +25,6 @@ module.exports.run = async (client, message, args, level, Discord) => {
     if (!fc) {
       return message.error('No Code Found!', 'You have not set a friend code! You can do so by running \`.fc set <code>\`!');
     }
-
     embed.setDescription(`**${fc}**`);
     return message.channel.send(embed);
   }
@@ -40,12 +38,12 @@ module.exports.run = async (client, message, args, level, Discord) => {
       
       let code = args[1];
 
-      if (/^(SW-)?[0-9]{4}-[0-9]{4}-[0-9]{4}$/i.test(code)) {
+      if (!/^(SW-)?[0-9]{4}-[0-9]{4}-[0-9]{4}$/i.test(code)) {
         return message.error('Invalid Code!', 'Please check to see if the code was typed correctly and include all dashes!');
       }
 
       code = /SW-/i.test(code) ? code : `SW-${code}`;
-      client.friendCodes.set(message.author.id, code);
+      client.userDB.set(member.user.id, code, 'friendcode');
       embed.setDescription(`Successfully set your friend code!\n**${code}**`);
 
       message.channel.send(embed);
@@ -54,7 +52,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'del':
     case 'delete':
     case 'remove':
-      client.friendCodes.delete(message.author.id);
+      client.userDB.delete(member.user.id, 'friendcode');
       message.success('Successfully Deleted!', "I've successfully deleted your friend code! You can set it again by running \`.fc set <code>\`!");
       break;
     default:
