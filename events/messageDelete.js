@@ -7,7 +7,7 @@ module.exports = async (client, message) => {
   }
 
   // Description value length limit for embeds is 1024
-  const msg = message.content.length > 1024 ? `${message.content.slice(0,1021)}...` : message.content.slice(0, 1024);
+  const msg = message.content.length > 1024 ? `${message.content.slice(0, 1021)}...` : message.content.slice(0, 1024);
 
   const embed = new Discord.RichEmbed()
     .setColor('#dd5f53')
@@ -21,11 +21,13 @@ module.exports = async (client, message) => {
   }
 
   if (message.attachments.size > 0) {
-    var attachList = '';
-    message.attachments.forEach(value => {
-      var fileSize = value.filesize > 1048576 ? `${Math.floor(value.filesize / 1048576)} MB` : `${Math.floor(value.filesize / 1024)} KB`;
+    let attachList = '';
+
+    message.attachments.forEach((value) => {
+      const fileSize = value.filesize > 1048576 ? `${Math.floor(value.filesize / 1048576)} MB` : `${Math.floor(value.filesize / 1024)} KB`;
       attachList += `\n${value.filename} | ${fileSize}`;
     });
+
     if (attachList.length !== 0) {
       embed.addField('**Attachments Deleted**', attachList.slice(1));
     }

@@ -3,10 +3,12 @@ const cheerio = require('cheerio');
 const request = require('request');
 
 // eslint-disable-next-line no-unused-vars
-module.exports.run = (client, message, args, level) => {
+module.exports.run = async (client, message, args, level) => {
   const search = args.join('_');
   const fixedChar = search.replace(/_/, ' ').toProperCase();
   const link = `https://nookipedia.com/wiki/${search}`;
+
+  const waitingMsg = await message.channel.send('Please wait while Nookbot counts its bells...');
 
   request(link, (err, res, html) => {
     if (err || res.statusCode !== 200) {
@@ -37,7 +39,7 @@ module.exports.run = (client, message, args, level) => {
       .setImage(`https://nookipedia.com${image}`)
       .setFooter(`Info from Nookipedia | ${client.version}`, client.user.displayAvatarURL);
 
-    return message.channel.send(embed);
+    return waitingMsg.edit(embed);
   });
 };
 

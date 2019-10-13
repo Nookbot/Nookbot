@@ -96,5 +96,5 @@ module.exports.help = {
   category: 'system',
   description: 'Controls configuration settings',
   usage: 'set <edit|del|view> <key> <value>',
-  details: "<edit|del|view> => Whether to edit a setting, delete a setting, or view all settings.\n<key> => The key you wish to change\n<value> => The value you wish to change",
+  details: '<edit|del|view> => Whether to edit a setting, delete a setting, or view all settings.\n<key> => The key you wish to change\n<value> => The value you wish to change',
 };

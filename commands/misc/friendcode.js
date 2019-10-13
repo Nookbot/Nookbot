@@ -10,14 +10,14 @@ module.exports.run = async (client, message, args, level, Discord) => {
     .setTimestamp()
     .setFooter(`Created and Maintained by ${owner.tag} | ${client.version}`, client.user.displayAvatarURL);
 
-  const fc = client.userDB.ensure(member.user.id, {friendcode: ''}).friendcode;
+  const fc = client.userDB.ensure(member.user.id, { friendcode: '' }).friendcode;
 
   if (member !== message.member) {
     if (!fc) {
       return message.error('No Code Found!', 'That user has not set their friend code!');
     }
-    embed.setDescription(`**${fc}**`);
 
+    embed.setDescription(`**${fc}**`);
     return message.channel.send(embed);
   }
 
@@ -25,17 +25,18 @@ module.exports.run = async (client, message, args, level, Discord) => {
     if (!fc) {
       return message.error('No Code Found!', 'You have not set a friend code! You can do so by running \`.fc set <code>\`!');
     }
+
     embed.setDescription(`**${fc}**`);
     return message.channel.send(embed);
   }
 
   switch (args[0]) {
-    case 'set': 
+    case 'set':
     case 'add': {
       if (args.length === 1) {
         return message.error('No Code Given!', 'Please supply your Switch friend code!');
       }
-      
+
       let code = args[1];
 
       if (!/^(SW-)?[0-9]{4}-[0-9]{4}-[0-9]{4}$/i.test(code)) {

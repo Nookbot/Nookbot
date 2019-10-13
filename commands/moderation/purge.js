@@ -5,7 +5,7 @@ module.exports.run = (client, message, args, level) => {
 
   // If delete count is nonexistent, less than 1 or greater than 100, display this
   if (!deleteCount || deleteCount < 1 || deleteCount > 100) {
-    return message.error('Invalid Number of Messages to Purge!', "Please provide a number **between 1 and 100** for the number of messages to delete!");
+    return message.error('Invalid Number of Messages to Purge!', 'Please provide a number **between 1 and 100** for the number of messages to delete!');
   }
 
   return message.channel.bulkDelete(deleteCount)

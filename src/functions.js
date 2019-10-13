@@ -84,13 +84,13 @@ module.exports = (client) => {
         }
       }
     }
-    
+
     if (outTimes.includes('=')) {
       outTimes = outTimes.replace('|', ', ').replace('=', ', and ');
     } else {
       outTimes = outTimes.replace('|', ' and ');
     }
-    
+
     return outTimes;
   };
 
