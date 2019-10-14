@@ -94,6 +94,15 @@ module.exports = (client) => {
     return outTimes;
   };
 
+  client.regexCount = (regexp, str) => {
+    if (typeof regexp !== 'string') {
+      return 0;
+    }
+    regexp = regexp === '.' ? `\\${regexp}` : regexp;
+    regexp = regexp === '' ? '.' : regexp;
+    return ((str || '').match(new RegExp(regexp, 'g')) || []).length;
+  };
+
   // eslint-disable-next-line no-extend-native
   Object.defineProperty(String.prototype, 'toProperCase', {
     value() {
