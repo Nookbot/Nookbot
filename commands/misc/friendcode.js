@@ -9,11 +9,11 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   const fc = client.userDB.ensure(member.user.id, { friendcode: '' }).friendcode;
 
-  if (args.length === 0 || member !== message.member || message.member === message.mentions.members.first()) {
+  if (args.length === 0 || member !== message.member || message.member === message.mentions.members.first() || message.member === message.guild.members.get(args[0])) {
     if (!fc && member !== message.member) {
       return message.error('No Code Found!', 'That user has not set their friend code!');
     }
-    
+
     if (!fc) {
       return message.error('No Code Found!', 'You have not set a friend code! You can do so by running \`.fc set <code>\`!');
     }
