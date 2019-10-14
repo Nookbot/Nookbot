@@ -7,7 +7,7 @@ module.exports = async (client, message) => {
   }
 
   // Description value length limit for embeds is 1024
-  const msg = message.content.length > 1024 ? `${message.content.slice(0, 1021)}...` : message.content.slice(0, 1024);
+  const msg = message.content.length > 1024 ? `${message.content.slice(0, 1021)}...` : message.content;
 
   const embed = new Discord.RichEmbed()
     .setColor('#dd5f53')
