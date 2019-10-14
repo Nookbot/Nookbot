@@ -4,7 +4,7 @@ const request = require('request');
 
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  const search = args.join('_');
+  const search = args.join(' ').toProperCase().join('_');
   const fixedChar = search.replace(/_/, ' ').toProperCase();
   const link = `https://nookipedia.com/wiki/${escape(search)}`;
 
@@ -37,7 +37,7 @@ module.exports.run = async (client, message, args, level) => {
       .setTitle(fixedChar)
       .setDescription(`${bio}[Read More](${link})`)
       .setImage(`https://nookipedia.com${image}`)
-      .setFooter(`Info from Nookipedia`, client.user.displayAvatarURL);
+      .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
 
     return waitingMsg.edit(embed);
   });
