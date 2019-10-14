@@ -6,7 +6,7 @@ const request = require('request');
 module.exports.run = async (client, message, args, level) => {
   const search = args.join('_');
   const fixedChar = search.replace(/_/, ' ').toProperCase();
-  const link = `https://nookipedia.com/wiki/${search}`;
+  const link = `https://nookipedia.com/wiki/${escape(search)}`;
 
   const waitingMsg = await message.channel.send('Please wait while Nookbot counts its bells...');
 
@@ -37,7 +37,7 @@ module.exports.run = async (client, message, args, level) => {
       .setTitle(fixedChar)
       .setDescription(`${bio}[Read More](${link})`)
       .setImage(`https://nookipedia.com${image}`)
-      .setFooter(`Info from Nookipedia | ${client.version}`, client.user.displayAvatarURL);
+      .setFooter(`Info from Nookipedia`, client.user.displayAvatarURL);
 
     return waitingMsg.edit(embed);
   });

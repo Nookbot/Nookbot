@@ -4,24 +4,16 @@ module.exports.run = async (client, message, args, level, Discord) => {
   const owner = await client.fetchOwner();
 
   const embed = new Discord.RichEmbed()
-    .setAuthor(member.user.tag, member.user.displayAvatarURL)
-    .setTitle(`${member.displayName}'s Friend Code`)
-    .setColor('#e60012')
-    .setTimestamp()
-    .setFooter(`Created and Maintained by ${owner.tag} | ${client.version}`, client.user.displayAvatarURL);
+    .setAuthor(`${member.displayName}'s Friend Code`, member.user.displayAvatarURL)
+    .setColor('#e4000f');
 
   const fc = client.userDB.ensure(member.user.id, { friendcode: '' }).friendcode;
 
-  if (member !== message.member) {
-    if (!fc) {
+  if (args.length === 0 || member !== message.member || message.member === message.mentions.members.first() || message.member === message.guild.members.get(args[0])) {
+    if (!fc && member !== message.member) {
       return message.error('No Code Found!', 'That user has not set their friend code!');
     }
 
-    embed.setDescription(`**${fc}**`);
-    return message.channel.send(embed);
-  }
-
-  if (args.length === 0) {
     if (!fc) {
       return message.error('No Code Found!', 'You have not set a friend code! You can do so by running \`.fc set <code>\`!');
     }
