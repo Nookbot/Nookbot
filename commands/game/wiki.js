@@ -11,7 +11,7 @@ module.exports.run = async (client, message, args, level) => {
 
   request(link, (err, res, html) => {
     if (err || res.statusCode !== 200) {
-      await waitingMsg.delete();
+      waitingMsg.delete();
       return message.error('Invalid Search Terms!', 'Please check your spelling and that what you searched for actually exists!');
     }
 
@@ -39,7 +39,7 @@ module.exports.run = async (client, message, args, level) => {
       .setImage(`https://nookipedia.com${image}`)
       .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
 
-    await waitingMsg.delete();
+    waitingMsg.delete();
     return message.channel.send(embed);
   });
 };
