@@ -4,14 +4,14 @@ const request = require('request');
 
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  const search = args.join(' ').toProperCase().join('_');
-  const fixedChar = search.replace(/_/, ' ').toProperCase();
-  const link = `https://nookipedia.com/wiki/${escape(search)}`;
+  const fixedSearch = args.join(' ').toProperCase();
+  const link = `https://nookipedia.com/wiki/${escape(fixedSearch.replace(' ', '_'))}`;
 
   const waitingMsg = await message.channel.send('Please wait while Nookbot counts its bells...');
 
   request(link, (err, res, html) => {
     if (err || res.statusCode !== 200) {
+      await waitingMsg.delete();
       return message.error('Invalid Search Terms!', 'Please check your spelling and that what you searched for actually exists!');
     }
 
@@ -34,12 +34,13 @@ module.exports.run = async (client, message, args, level) => {
       .setColor('RANDOM')
       .setTimestamp()
       .setAuthor(message.author.tag, message.author.displayAvatarURL)
-      .setTitle(fixedChar)
+      .setTitle(fixedSearch)
       .setDescription(`${bio}[Read More](${link})`)
       .setImage(`https://nookipedia.com${image}`)
       .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
 
-    return waitingMsg.edit(embed);
+    await waitingMsg.delete();
+    return message.channel.send(embed);
   });
 };
 
