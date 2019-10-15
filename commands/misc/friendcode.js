@@ -37,7 +37,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       code = /SW-/i.test(code) ? code : `SW-${code}`;
       client.userDB.set(member.user.id, code, 'friendcode');
-      embed.setDescription(`Successfully set your friend code!\n**${code}**`);
+      embed.setTitle('Successfully set your friend code!')
+      .setDescription(`**${code}**`);
 
       message.channel.send(embed);
       break;
