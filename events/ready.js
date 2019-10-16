@@ -5,17 +5,7 @@ module.exports = (client) => {
   const guild = client.guilds.first();
   setInterval(() => client.user.setActivity(`ACNH with ${guild.memberCount} users!`), 30000);
 
-  const now = moment();
-  const postTime = moment().set({
-    h: '00', m: '00', s: '00', ms: '00',
-  });
-  let timeUntilFirstPost;
-
-  if (now > postTime) {
-    timeUntilFirstPost = now - postTime;
-  } else {
-    timeUntilFirstPost = postTime - now;
-  }
+  const timeUntilFirstPost = moment().add(1, 'd').startOf('day').diff(moment());
 
   const channel = guild.channels.get('494376688877174785');
 
