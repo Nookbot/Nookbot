@@ -22,7 +22,7 @@ module.exports = (client) => {
       const daysUntilRelease = releaseDate.diff(moment(), 'days');
 
       const channel = guild.channels.get('494376688877174785');
-      return channel.send(`**Animal Crossing: New Horizons** releases in **$${daysUntilRelease} days!**`);
+      return channel.send(`**Animal Crossing: New Horizons** releases in **${daysUntilRelease} days!**`);
     };
 
     setTimeout(() => {
