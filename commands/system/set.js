@@ -87,7 +87,7 @@ module.exports.run = async (client, message, [flag, key, ...value], level) => {
 module.exports.conf = {
   guildOnly: true,
   aliases: ['setting', 'settings'],
-  permLevel: 'Bot Admin',
+  permLevel: 'Bot Owner',
   args: 1,
 };
 
