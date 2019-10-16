@@ -103,6 +103,14 @@ module.exports = (client) => {
     return ((str || '').match(new RegExp(regexp, 'g')) || []).length;
   };
 
+  client.countdown = (channel) => {
+    const now = moment();
+    const releaseDate = moment([2020, 2, 20]);
+    const daysUntilRelease = releaseDate.diff(now, 'days');
+
+    return channel.send(`**Animal Crossing: New Horizons** releases in **${daysUntilRelease} days!**`);
+  };
+
   // eslint-disable-next-line no-extend-native
   Object.defineProperty(String.prototype, 'toProperCase', {
     value() {
