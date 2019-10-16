@@ -9,7 +9,9 @@ module.exports = (client) => {
   const releaseDate = moment([2020, 2, 20]);
 
   if (now < releaseDate) {
-    const postTime = moment().set({ h: '00', m: '00', ms: '00' });
+    const postTime = moment().set({
+      h: '00', m: '00', s: '00', ms: '00',
+    });
     let timeUntilFirstPost;
 
     if (now > postTime) {
