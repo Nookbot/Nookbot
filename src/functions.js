@@ -106,7 +106,7 @@ module.exports = (client) => {
   client.countdown = (channel) => {
     const now = moment();
     const releaseDate = moment([2020, 2, 20]);
-    const daysUntilRelease = releaseDate.diff(now, 'days');
+    const daysUntilRelease = Math.round(releaseDate.diff(now, 'days', true));
 
     return channel.send(`**Animal Crossing: New Horizons** releases in **${daysUntilRelease} days!**`);
   };
