@@ -10,7 +10,7 @@ module.exports = async (client, message) => {
   const msg = message.content.length > 1024 ? `${message.content.slice(0, 1021)}...` : message.content;
 
   const embed = new Discord.RichEmbed()
-    .setColor('#dd5f53')
+    .setColor('#ff9292')
     .setAuthor(message.author.tag, message.author.displayAvatarURL)
     .setDescription(`[Jump to message in](https://discordapp.com/channels/${message.guild.id}/${message.channel.id} 'Jump') <#${message.channel.id}>`)
     .setTimestamp()
