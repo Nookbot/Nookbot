@@ -16,8 +16,8 @@ module.exports.run = async (client, message, args, level) => {
     }
 
     const nookLink = html.match(/(?<=uddg=)[^']+/);
-    
-    request(nookLink, (err2, res2, html2) => {
+
+    request(unescape(nookLink), (err2, res2, html2) => {
       if (err2 || res2.statusCode !== 200) {
         waitingMsg.delete();
         return message.error('Invalid Search Terms!', 'Please check your spelling and that what you searched for actually exists!');
