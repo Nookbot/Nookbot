@@ -4,7 +4,7 @@ const request = require('request');
 
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  const search = args.join(' ');
+  const search = args.join(' ').toProperCase();
   const link = `https://duckduckgo.com/?q=%5C${escape(search)}+site%3Anookipedia.com`;
 
   const waitingMsg = await message.channel.send('Please wait while Nookbot counts its bells...');
@@ -43,7 +43,7 @@ module.exports.run = async (client, message, args, level) => {
         .setTimestamp()
         .setAuthor(message.author.tag, message.author.displayAvatarURL)
         .setTitle(search)
-        .setDescription(`${bio}[Read More](${nookLink})`)
+        .setDescription(`${bio}[Read More](${escape(nookLink)})`)
         .setImage(`https://nookipedia.com${image}`)
         .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
 
