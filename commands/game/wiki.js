@@ -42,7 +42,7 @@ module.exports.run = async (client, message, args, level) => {
         .setColor('RANDOM')
         .setTimestamp()
         .setAuthor(message.author.tag, message.author.displayAvatarURL)
-        .setTitle(fixedSearch)
+        .setTitle(search)
         .setDescription(`${bio}[Read More](${nookLink})`)
         .setImage(`https://nookipedia.com${image}`)
         .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
