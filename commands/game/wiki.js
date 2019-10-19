@@ -37,12 +37,12 @@ module.exports.run = async (client, message, args, level) => {
       if (bio.indexOf(' ') > 30) {
         bio = outputBio.eq(1).text();
       }
-
+      const title = output.find('table').eq(1).find('big').find('big').text();
       const embed = new Discord.RichEmbed()
         .setColor('RANDOM')
         .setTimestamp()
         .setAuthor(message.author.tag, message.author.displayAvatarURL)
-        .setTitle(search)
+        .setTitle(title)
         .setDescription(`${bio}[Read More](${unescape(nookLink).slice(0,29)}${escape(unescape(nookLink).slice(29))})`)
         .setImage(`https://nookipedia.com${image}`)
         .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
