@@ -43,7 +43,7 @@ module.exports.run = async (client, message, args, level) => {
         .setTimestamp()
         .setAuthor(message.author.tag, message.author.displayAvatarURL)
         .setTitle(search)
-        .setDescription(`${bio}[Read More](${escape(nookLink)})`)
+        .setDescription(`${bio}[Read More](${unescape(nookLink).slice(0,29)}${escape(unescape(nookLink).slice(29))})`)
         .setImage(`https://nookipedia.com${image}`)
         .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
 
