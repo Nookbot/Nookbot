@@ -50,13 +50,15 @@ module.exports.run = async (client, message, args, level) => {
       if (hasAPI) {
         bio = output.find('p').eq(1).text();
       } else {
+        let foundInfoBox = false;
         const infoBox = output.find('table').filter((i, elem) => {
+          foundInfoBox = true;
           return $(elem).attr('id') == 'Infobox-villager';
         });
-        if (infoBox) {
+        if (foundInfoBox) {
           name = infoBox.find('tr').first().text().trim();
           image = `https://nookipedia.com${infoBox.find('img', 'a').attr('src')}`;
-          gender = infoBox.text().match(/(Male|Female)/)[0];
+          gender = (infoBox.text().match(/(Male|Female)/) || [''])[0];
           bio = output.find('p').eq(0).text();
         } else {
           name = output.find('table').eq(1).find('tr').first().text().trim();
