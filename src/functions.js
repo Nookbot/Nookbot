@@ -129,8 +129,8 @@ module.exports = (client) => {
             decision = true;
           }
           confirm.delete();
+          return decision;
         });
-      return decision;
     } else {
       let counter = 0x1F1E6;
       let body = question;
@@ -156,8 +156,8 @@ module.exports = (client) => {
 
           decision = opt[reaction.emoji.toString().charCodeAt(0) - 0x1F1E6];
           confirm.delete();
+          return decision;
         });
-      return decision;
     }
   };
 
