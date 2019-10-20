@@ -25,26 +25,87 @@ module.exports.run = async (client, message, args, level) => {
       
       const $ = cheerio.load(html2);
       const output = $('.mw-parser-output');
-      const outputBio = output.find('p');
-      const image = output.find('table')
-        .eq(1)
-        .find('a')
-        .find('img')
-        .attr('src');
 
-      let bio = outputBio.eq(0).text();
+      let hasAPI = false;
+      let name, gender, personality, image, bio, color = 'RANDOM';
 
-      if (bio.indexOf(' ') > 30) {
-        bio = outputBio.eq(1).text();
+      output.find('p').eq(0).find('span').each((i, elem) => {
+        switch($(elem).attr('id')) {
+          case 'api-villager_name':
+            hasAPI = true;
+            name = $(elem).text().trim();
+            break;
+          case 'api-villager_image':
+            image = $(elem).find('a').attr('href');
+            break;
+          case 'api-villager_gender':
+            gender = $(elem).text().trim();
+            break;
+          case 'api-villager_personality':
+            personality = $(elem).text().trim();
+            break;
+        }
+      });
+
+      if (hasAPI) {
+        bio = output.find('p').eq(1).text();
+      } else {
+        const infoBox = output.find('table').filter((i, elem) => {
+          return $(elem).attr('id') == 'Infobox-villager';
+        });
+        if (infoBox) {
+          name = infoBox.find('tr').first().text().trim();
+          image = `https://nookipedia.com${infoBox.find('img', 'a').attr('src')}`;
+          gender = infoBox.text().match(/(Male|Female)/)[0];
+          bio = output.find('p').eq(0).text();
+        } else {
+          name = output.find('table').eq(1).find('tr').first().text().trim();
+          image = `https://nookipedia.com${output.find('table').eq(1).find('img', 'a').attr('src')}`;
+          gender = output.find('table').eq(1).text().match(/(Male|Female)/)[0];
+          bio = output.find('p').eq(0).text();
+        }
       }
-      const title = output.find('table').eq(1).find('big').find('big').text();
+      
+      switch(personality || gender) {
+        case 'Cranky':
+          color = '#ff9292';
+          break;
+        case 'Jock':
+          color = '#6eb5ff';
+          break;
+        case 'Lazy':
+          color = '#f8e081';
+          break;
+        case 'Normal':
+          color = '#bdecb6';
+          break;
+        case 'Peppy':
+          color = '#ffccf9';
+          break;
+        case 'Smug':
+          color = '#97a2ff';
+          break;
+        case 'Snooty':
+          color = '#d5aaff';
+          break;
+        case 'Uchi':
+          color = '#ffbd61';
+          break;
+        case 'Male':
+          color = '#61abff';
+          break;
+        case 'Female':
+          color = '#efb5d5';
+          break;
+      }
+
       const embed = new Discord.RichEmbed()
-        .setColor('RANDOM')
+        .setColor(color)
         .setTimestamp()
         .setAuthor(message.author.tag, message.author.displayAvatarURL)
-        .setTitle(title)
+        .setTitle(name)
         .setDescription(`${bio}[Read More](${unescape(nookLink).slice(0,29)}${unescape(nookLink).slice(29).replace('(','%28').replace(')', '%29')})`)
-        .setImage(`https://nookipedia.com${image}`)
+        .setImage(image)
         .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
 
       waitingMsg.delete();
