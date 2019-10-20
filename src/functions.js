@@ -157,7 +157,7 @@ module.exports = (client) => {
         .then(collected => {
           const reaction = collected.first();
 
-          decision = opt[reaction.emoji.toString().charCodeAt(0) - 0x1F1E6];
+          decision = opt[reaction.emoji.toString().codePointAt(0) - 0x1F1E6];
         })
         .catch(() => {
           console.log('React Prompt timed out.');
