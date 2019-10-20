@@ -49,6 +49,9 @@ module.exports.run = async (client, message, args, level) => {
 
       if (hasAPI) {
         bio = output.find('p').eq(1).text();
+        if (bio.length < 5) {
+          bio = output.find('p').eq(2).text();
+        }
       } else {
         const infoBox = output.find('table').filter((i, elem) => {
           return $(elem).attr('id') == 'Infobox-villager';
@@ -57,12 +60,14 @@ module.exports.run = async (client, message, args, level) => {
           name = infoBox.find('tr').first().text().trim();
           image = `https://nookipedia.com${infoBox.find('img', 'a').attr('src')}`;
           gender = (infoBox.text().match(/(Male|Female)/) || [''])[0];
-          bio = output.find('p').eq(0).text();
         } else {
           name = output.find('table').eq(1).find('tr').first().text().trim();
           image = `https://nookipedia.com${output.find('table').eq(1).find('img', 'a').attr('src')}`;
           gender = (output.find('table').eq(1).text().match(/(Male|Female)/) || [''])[0];
-          bio = output.find('p').eq(0).text();
+        }
+        bio = output.find('p').eq(0).text();
+        if (bio.length < 5) {
+          bio = output.find('p').eq(1).text();
         }
       }
       
