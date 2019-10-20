@@ -29,11 +29,11 @@ module.exports.run = async (client, message, args, level) => {
       let hasAPI = false;
       let name, gender, personality, image, bio, color = 'RANDOM';
 
+      name = $('h1').first().text().trim();
       output.find('p').eq(0).find('span').each((i, elem) => {
         switch($(elem).attr('id')) {
           case 'api-villager_name':
             hasAPI = true;
-            name = $(elem).text().trim();
             break;
           case 'api-villager_image':
             image = $(elem).find('a').attr('href');
@@ -57,11 +57,9 @@ module.exports.run = async (client, message, args, level) => {
           return $(elem).attr('id') == 'Infobox-villager';
         });
         if (infoBox.attr('id') == 'Infobox-villager') {
-          name = infoBox.find('tr').first().text().trim();
           image = `https://nookipedia.com${infoBox.find('img', 'a').attr('src')}`;
           gender = (infoBox.text().match(/(Male|Female)/) || [''])[0];
         } else {
-          name = output.find('table').eq(1).find('tr').first().text().trim();
           image = `https://nookipedia.com${output.find('table').eq(1).find('img', 'a').attr('src')}`;
           gender = (output.find('table').eq(1).text().match(/(Male|Female)/) || [''])[0];
         }
@@ -108,8 +106,8 @@ module.exports.run = async (client, message, args, level) => {
         .setColor(color)
         .setTimestamp()
         .setAuthor(message.author.tag, message.author.displayAvatarURL)
-        .setTitle(name)
-        .setDescription(`${bio}[Read More](${unescape(nookLink).slice(0,29)}${unescape(nookLink).slice(29).replace('(','%28').replace(')', '%29')})`)
+        .setTitle(name.splice(0, 256))
+        .setDescription(`${bio}[Read More](${unescape(nookLink).slice(0,29)}${unescape(nookLink).slice(29).replace('(','%28').replace(')', '%29')})`.splice(0, 2048))
         .setImage(image)
         .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
 
