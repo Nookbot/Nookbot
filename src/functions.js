@@ -128,8 +128,8 @@ module.exports = (client) => {
           if (reaction.emoji.name === client.emoji.checkMark) {
             decision = true;
           }
+          confirm.delete();
         });
-      await confirm.delete();
       return decision;
     } else {
       let counter = 0x1F1E6;
@@ -155,8 +155,8 @@ module.exports = (client) => {
           const reaction = collected.first();
 
           decision = opt[reaction.emoji.toString().charCodeAt(0) - 0x1F1E6];
+          confirm.delete();
         });
-      await confirm.delete();
       return decision;
     }
   };
