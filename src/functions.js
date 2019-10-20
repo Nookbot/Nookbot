@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const moment = require('moment');
+const distance = require('jaro-winkler');
 
 module.exports = (client) => {
   client.getSettings = (guild) => {
@@ -171,6 +172,26 @@ module.exports = (client) => {
     for (let i = 0; i < array.length; i++) {
       await callback(array[i], i, array);
     }
+  };
+
+  client.searchMember = (name, threshold = 0.5) => {
+    let rated = [];
+    
+    client.guilds.first().members.forEach(m => {
+      let score = Math.max(distance(name, m.user.username), distance(name, m.displayName));
+      if (score > threshold) {
+        rated.push({
+          member: m,
+          score: score
+        });
+      }
+    });
+
+    rated.sort((a, b) => {
+      b.score - a.score;
+    });
+
+    return rated[0].member;
   };
 
   // eslint-disable-next-line no-extend-native
