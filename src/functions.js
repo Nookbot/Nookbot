@@ -141,7 +141,7 @@ module.exports = (client) => {
       const confirm = message.channel.send(body);
       counter = 0x1F1E6;
       let emojiList = [];
-      opt.slice(0, 20).forEach(option => {
+      opt.slice(0, 20).forEach(async (option) => {
         await confirm.react(String.fromCodePoint(counter));
         emojiList.push(String.fromCodePoint(counter));
         counter++;
