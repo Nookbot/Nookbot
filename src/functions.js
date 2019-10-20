@@ -111,6 +111,56 @@ module.exports = (client) => {
     return channel.send(`**Animal Crossing: New Horizons** releases in **${daysUntilRelease} days!**`);
   };
 
+  client.reactPrompt = async (message, question, opt) => {
+    if (!opt) {
+      const confirm = message.channel.send(question);
+      await confirm.react(client.emoji.checkMark);
+      await confirm.react(client.emoji.redX);
+
+      const filter = (reaction, user) => [client.emoji.checkMark, client.emoji.redX].includes(reaction.emoji.name)
+          && user.id === message.author.id;
+      
+      let decision = false;
+      confirm.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
+        .then(collected => {
+          const reaction = collected.first();
+
+          if (reaction.emoji.name === client.emoji.checkMark) {
+            decision = true;
+          }
+        });
+      await confirm.delete();
+      return decision;
+    } else {
+      let counter = 0x1F1E6;
+      let body = question;
+      opt.slice(0, 20).forEach(option => {
+        body += `\n${String.fromCodePoint(counter)}: \`${option}\``;
+        counter++;
+      });
+      const confirm = message.channel.send(body);
+      counter = 0x1F1E6;
+      let emojiList = [];
+      opt.slice(0, 20).forEach(option => {
+        await confirm.react(String.fromCodePoint(counter));
+        emojiList.push(String.fromCodePoint(counter));
+        counter++;
+      });
+      const filter = (reaction, user) => emojiList.includes(reaction.emoji.name)
+          && user.id === message.author.id;
+      
+      let decision = '';
+      confirm.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
+        .then(collected => {
+          const reaction = collected.first();
+
+          decision = opt[reaction.emoji.toString().charCodeAt(0) - 0x1F1E6];
+        });
+      await confirm.delete();
+      return decision;
+    }
+  };
+
   // eslint-disable-next-line no-extend-native
   Object.defineProperty(String.prototype, 'toProperCase', {
     value() {
