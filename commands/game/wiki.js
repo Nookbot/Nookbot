@@ -50,12 +50,10 @@ module.exports.run = async (client, message, args, level) => {
       if (hasAPI) {
         bio = output.find('p').eq(1).text();
       } else {
-        let foundInfoBox = false;
         const infoBox = output.find('table').filter((i, elem) => {
-          foundInfoBox = true;
           return $(elem).attr('id') == 'Infobox-villager';
         });
-        if (foundInfoBox) {
+        if (infoBox.attr('id') == 'Infobox-villager') {
           name = infoBox.find('tr').first().text().trim();
           image = `https://nookipedia.com${infoBox.find('img', 'a').attr('src')}`;
           gender = (infoBox.text().match(/(Male|Female)/) || [''])[0];
@@ -63,7 +61,7 @@ module.exports.run = async (client, message, args, level) => {
         } else {
           name = output.find('table').eq(1).find('tr').first().text().trim();
           image = `https://nookipedia.com${output.find('table').eq(1).find('img', 'a').attr('src')}`;
-          gender = output.find('table').eq(1).text().match(/(Male|Female)/)[0];
+          gender = (output.find('table').eq(1).text().match(/(Male|Female)/) || [''])[0];
           bio = output.find('p').eq(0).text();
         }
       }
