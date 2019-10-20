@@ -113,7 +113,7 @@ module.exports = (client) => {
 
   client.reactPrompt = async (message, question, opt) => {
     if (!opt) {
-      const confirm = message.channel.send(question);
+      const confirm = await message.channel.send(question);
       await confirm.react(client.emoji.checkMark);
       await confirm.react(client.emoji.redX);
 
@@ -138,7 +138,7 @@ module.exports = (client) => {
         body += `\n${String.fromCodePoint(counter)}: \`${option}\``;
         counter++;
       });
-      const confirm = message.channel.send(body);
+      const confirm = await message.channel.send(body);
       counter = 0x1F1E6;
       let emojiList = [];
       opt.slice(0, 20).forEach(async (option) => {
