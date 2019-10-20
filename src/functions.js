@@ -138,16 +138,16 @@ module.exports = (client) => {
       let counter = 0x1F1E6;
       let body = question;
       opt.slice(0, 20).forEach(option => {
-        body += `\n${String.fromCodePoint(counter)}: \`${option}\``;
-        counter++;
+        body += `\n${String.fromCodePoint(counter)} : \`${option}\``;
+        counter += 1;
       });
       const confirm = await message.channel.send(body);
       counter = 0x1F1E6;
       let emojiList = [];
-      opt.slice(0, 20).forEach(async (option) => {
-        await confirm.react(String.fromCodePoint(counter));
+      await client.asyncForEach(opt.slice(0, 20), async (option) => {
         emojiList.push(String.fromCodePoint(counter));
-        counter++;
+        await confirm.react(String.fromCodePoint(counter));
+        counter += 1;
       });
       const filter = (reaction, user) => emojiList.includes(reaction.emoji.name)
           && user.id === message.author.id;
@@ -164,6 +164,12 @@ module.exports = (client) => {
         });
       confirm.delete();
       return decision;
+    }
+  };
+
+  client.asyncForEach = async (array, callback) => {
+    for (let i = 0; i < array.length; i++) {
+      await callback(array[i], i, array);
     }
   };
 
