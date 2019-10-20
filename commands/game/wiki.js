@@ -60,7 +60,7 @@ module.exports.run = async (client, message, args, level) => {
           image = `https://nookipedia.com${infoBox.find('img', 'a').attr('src')}`;
           gender = (infoBox.text().match(/(Male|Female)/) || [''])[0];
         } else {
-          image = `https://nookipedia.com${output.find('table').eq(1).find('img', 'a').attr('src')}`;
+          image = `https://nookipedia.com${output.find('img', 'a').attr('src')}`;
           gender = (output.find('table').eq(1).text().match(/(Male|Female)/) || [''])[0];
         }
         bio = output.find('p').eq(0).text();
