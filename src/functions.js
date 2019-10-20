@@ -121,16 +121,16 @@ module.exports = (client) => {
           && user.id === message.author.id;
       
       let decision = false;
-      confirm.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
+      await confirm.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
         .then(collected => {
           const reaction = collected.first();
 
           if (reaction.emoji.name === client.emoji.checkMark) {
             decision = true;
           }
-          confirm.delete();
-          return decision;
         });
+      confirm.delete();
+      return decision;
     } else {
       let counter = 0x1F1E6;
       let body = question;
@@ -150,14 +150,14 @@ module.exports = (client) => {
           && user.id === message.author.id;
       
       let decision = '';
-      confirm.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
+      await confirm.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
         .then(collected => {
           const reaction = collected.first();
 
           decision = opt[reaction.emoji.toString().charCodeAt(0) - 0x1F1E6];
-          confirm.delete();
-          return decision;
         });
+      confirm.delete();
+      return decision;
     }
   };
 
