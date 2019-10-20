@@ -106,8 +106,8 @@ module.exports.run = async (client, message, args, level) => {
         .setColor(color)
         .setTimestamp()
         .setAuthor(message.author.tag, message.author.displayAvatarURL)
-        .setTitle(name.splice(0, 256))
-        .setDescription(`${bio}[Read More](${unescape(nookLink).slice(0,29)}${unescape(nookLink).slice(29).replace('(','%28').replace(')', '%29')})`.splice(0, 2048))
+        .setTitle(name.slice(0, 256))
+        .setDescription(`${bio}[Read More](${unescape(nookLink).slice(0,29)}${unescape(nookLink).slice(29).replace('(','%28').replace(')', '%29')})`.slice(0, 2048))
         .setImage(image)
         .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
 
