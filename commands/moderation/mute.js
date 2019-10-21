@@ -8,7 +8,7 @@ module.exports.run = async (client, message, args, level) => {
   
   if (!member) {
     const searchedMember = client.searchMember(args[0]);
-    if (searchMember) {
+    if (searchedMember) {
       const decision = await client.reactPrompt(message, `Would you like to mute \`${searchedMember.user.tag}\`?`);
       if (decision) {
         member = searchedMember;
@@ -18,7 +18,7 @@ module.exports.run = async (client, message, args, level) => {
       }
     }
   }
-  
+
   // If no user mentioned, display this
   if (!member) {
     return message.error('Invalid Member!', 'Please mention a valid member of this server!');
