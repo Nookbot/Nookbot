@@ -59,7 +59,7 @@ module.exports = async (client, message) => {
 
   if (level[1] < client.levelCache[cmd.conf.permLevel]) {
     message.error('Invalid Permissions!', `You do not currently have the proper permssions to run this command!\n**Current Level:** \`${level[0]}: Level ${level[1]}\`\n**Level Required:** \`${cmd.conf.permLevel}: Level ${client.levelCache[cmd.conf.permLevel]}\``);
-    return console.log(`**${message.author.tag}** *(${message.author.id})* tried to use cmd \`${cmd.help.name}\` without proper perms!`);
+    return console.log(`${message.author.tag} (${message.author.id}) tried to use cmd '${cmd.help.name}' without proper perms!`);
   }
 
   if (cmd.conf.args && (cmd.conf.args > args.length)) {
@@ -92,8 +92,8 @@ module.exports = async (client, message) => {
   setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
   // Run the command
-  const guildUsed = message.guild ? `**${message.guild.name}** *(${message.guild.id})*` : '**DMs**';
+  const guildUsed = message.guild ? `${message.channel.name} (${message.channel.id})` : 'DMs';
 
-  console.log(`**${message.author.tag}** *(${message.author.id})* ran cmd \`${cmd.help.name}\` in ${guildUsed}!`);
+  console.log(`${message.author.tag} (${message.author.id}) ran cmd '${cmd.help.name}' in ${guildUsed}!`);
   cmd.run(client, message, args, level[1], Discord);
 };
