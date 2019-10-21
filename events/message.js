@@ -92,7 +92,7 @@ module.exports = async (client, message) => {
   setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
   // Run the command
-  const guildUsed = message.guild ? `${message.channel.name} (${message.channel.id})` : 'DMs';
+  const guildUsed = message.guild ? `#${message.channel.name}` : 'DMs';
 
   console.log(`${message.author.tag} (${message.author.id}) ran cmd '${cmd.help.name}' in ${guildUsed}!`);
   cmd.run(client, message, args, level[1], Discord);
