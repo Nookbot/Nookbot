@@ -178,7 +178,7 @@ module.exports = (client) => {
     let rated = [];
 
     client.guilds.first().members.forEach(m => {
-      let score = Math.max(distance(name, m.user.username), distance(name, m.displayName));
+      let score = Math.max(distance(name, m.user.username, { caseSensitive: false }), distance(name, m.displayName, { caseSensitive: false }));
       if (score > threshold) {
         rated.push({
           member: m,
