@@ -29,7 +29,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         return message.error('No Code Given!', 'Please supply your Switch friend code!');
       }
 
-      let code = args[1];
+      let code = args.slice(1).join('-');
 
       if (!/^(SW-)?[0-9]{4}-[0-9]{4}-[0-9]{4}$/i.test(code)) {
         return message.error('Invalid Code!', 'Please check to see if the code was typed correctly and include all dashes!');
