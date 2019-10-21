@@ -1,11 +1,24 @@
 // eslint-disable-next-line no-unused-vars
-module.exports.run = (client, message, args, level) => {
+module.exports.run = async (client, message, args, level) => {
   // Sets the role to the Muted role
   const role = message.guild.roles.find((r) => r.name === 'Muted');
 
   // Sets the member to the user mentioned
-  const member = message.mentions.members.first() || message.guild.members.get(args[0]);
-
+  let member = message.mentions.members.first() || message.guild.members.get(args[0]);
+  
+  if (!member) {
+    const searchedMember = client.searchMember(args[0]);
+    if (searchMember) {
+      const decision = await client.reactPrompt(message, `Would you like to mute \`${searchedMember.user.tag}\`?`);
+      if (decision) {
+        member = searchedMember;
+      } else {
+        message.delete().catch((err) => console.error(err));
+        return message.error('Member Not Muted!', 'The prompt timed out, or you selected no.')
+      }
+    }
+  }
+  
   // If no user mentioned, display this
   if (!member) {
     return message.error('Invalid Member!', 'Please mention a valid member of this server!');
@@ -14,7 +27,7 @@ module.exports.run = (client, message, args, level) => {
   // Adds the role to the member and deletes the message that initiated the command
   member.addRole(role).catch((err) => console.error(err));
   message.delete().catch((err) => console.error(err));
-  return message.author.send(`Successfully muted ${member}!`).catch((err) => console.error(err));
+  return message.channel.send(`Successfully muted ${member}!`).catch((err) => console.error(err));
 };
 
 module.exports.conf = {
