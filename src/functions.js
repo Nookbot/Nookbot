@@ -176,7 +176,7 @@ module.exports = (client) => {
 
   client.searchMember = (name, threshold = 0.5) => {
     let rated = [];
-    
+
     client.guilds.first().members.forEach(m => {
       let score = Math.max(distance(name, m.user.username), distance(name, m.displayName));
       if (score > threshold) {
@@ -188,7 +188,7 @@ module.exports = (client) => {
     });
 
     rated.sort((a, b) => {
-      b.score - a.score;
+      return b.score - a.score;
     });
 
     return rated[0].member;
