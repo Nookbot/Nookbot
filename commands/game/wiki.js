@@ -61,7 +61,7 @@ module.exports.run = async (client, message, args, level) => {
           gender = (infoBox.text().match(/(Male|Female)/) || [''])[0];
         } else {
           const src = output.find('img', 'a').filter((i, elem) => {
-            return $(elem).attr('width') > 30;
+            return $(elem).attr('width') > 40;
           }).first().attr('src');
           image = `https://nookipedia.com${src}`;
           gender = (output.find('table').eq(1).text().match(/(Male|Female)/) || [''])[0];
