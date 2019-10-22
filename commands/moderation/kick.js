@@ -3,6 +3,19 @@ module.exports.run = async (client, message, args, level) => {
   // Setting member to first member memntioned
   const member = message.mentions.members.first() || message.guild.members.get(args[0]);
 
+  if (!member) {
+    const searchedMember = client.searchMember(args[0]);
+    if (searchedMember) {
+      const decision = await client.reactPrompt(message, `Would you like to kick \`${searchedMember.user.tag}\`?`);
+      if (decision) {
+        member = searchedMember;
+      } else {
+        message.delete().catch((err) => console.error(err));
+        return message.error('Member Not Kicked!', 'The prompt timed out, or you selected no.')
+      }
+    }
+  }
+
   // If no member mentioned, display this message
   if (!member) {
     return message.error('Invalid Member!', 'Please mention a valid member of this server!');
