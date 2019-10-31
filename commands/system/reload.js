@@ -20,7 +20,7 @@ module.exports.run = (client, message, args, level) => {
 module.exports.conf = {
   guildOnly: false,
   aliases: [],
-  permLevel: 'Bot Admin',
+  permLevel: 'Bot Owner',
   args: 1,
 };
 

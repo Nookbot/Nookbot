@@ -1,8 +1,9 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, message) => {
-  // Ignore all bots
-  if (message.author.bot) {
+  // Ignore all bots, ignoreMembers, and ignoreChannels
+  if (message.author.bot || client.config.ignoreChannels.includes(message.channel.id)
+      || client.config.ignoreMembers.includes(message.author.id)) {
     return;
   }
 
