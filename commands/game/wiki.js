@@ -12,15 +12,20 @@ module.exports.run = async (client, message, args, level) => {
   request(link, (err, res, html) => {
     if (err || res.statusCode !== 200) {
       waitingMsg.delete();
-      return message.error('Invalid Search Terms!', 'Please check your spelling and that what you searched for actually exists!');
+      return message.error('Error!', 'There was an error when searching for your terms!');
     }
 
     const nookLink = html.match(/(?<=uddg=)[^']+/);
 
+    if (!/\/\/nookipedia\.com\//.test(nookLink)) {
+      waitingMsg.delete();
+      return message.error('Not On The Wiki!', 'What you searched for is not on the wiki!');
+    }
+    
     request(unescape(nookLink), (err2, res2, html2) => {
       if (err2 || res2.statusCode !== 200) {
         waitingMsg.delete();
-        return message.error('Invalid Search Terms!', 'Please check your spelling and that what you searched for actually exists!');
+        return message.error('Error!', 'There was an error when retriving the wiki page!');
       }
       
       const $ = cheerio.load(html2);
