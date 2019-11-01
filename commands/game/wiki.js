@@ -17,11 +17,11 @@ module.exports.run = async (client, message, args, level) => {
 
     const nookLink = html.match(/(?<=uddg=)[^']+/);
 
-    if (!/\/\/nookipedia\.com\//.test(nookLink)) {
+    if (!/%2F%2Fnookipedia\.com%2F/.test(nookLink)) {
       waitingMsg.delete();
       return message.error('Not On The Wiki!', 'What you searched for is not on the wiki!');
     }
-    
+
     request(unescape(nookLink), (err2, res2, html2) => {
       if (err2 || res2.statusCode !== 200) {
         waitingMsg.delete();
