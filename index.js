@@ -69,6 +69,8 @@ for (let i = 0; i < config.permLevels.length; i++) {
   client.levelCache[thislvl.name] = thislvl.level;
 }
 
+client.firstReady = false;
+
 Object.assign(client, Enmap.multi(['settings', 'enabledCmds', 'userDB'], { ensureProps: true }));
 
 client.login(config.token);
