@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // Setting member to first member memntioned
-  const member = message.mentions.members.first() || message.guild.members.get(args[0]);
+  let member = message.mentions.members.first() || message.guild.members.get(args[0]);
 
   if (!member) {
     const searchedMember = client.searchMember(args[0]);
@@ -11,28 +11,28 @@ module.exports.run = async (client, message, args, level) => {
         member = searchedMember;
       } else {
         message.delete().catch((err) => console.error(err));
-        return message.error('Member Not Kicked!', 'The prompt timed out, or you selected no.')
+        return client.error(message.channel, 'Member Not Kicked!', 'The prompt timed out, or you selected no.');
       }
     }
   }
 
   // If no member mentioned, display this message
   if (!member) {
-    return message.error('Invalid Member!', 'Please mention a valid member of this server!');
+    return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
   }
 
   // If member can't be kicked, display this
   if (!member.kickable) {
-    return message.error('Member Not Kickable!', 'I cannot kick this user! Do they have a higher role? Do I have kick permissions? Are you trying to kick the owner?');
+    return client.error(message.channel, 'Member Not Kickable!', 'I cannot kick this user! Do they have a higher role? Do I have kick permissions? Are you trying to kick the owner?');
   }
 
   // Sets reason shown in audit logs
   const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided';
 
   // Kicks the member
-  await member.kick(reason).catch((error) => message.error('Kick Failed!', `I've failed to kick this member! Error: ${error}`));
+  await member.kick(reason).catch((error) => client.error(message.channel, 'Kick Failed!', `I've failed to kick this member! Error: ${error}`));
   // If kick is successful, display this
-  return message.success('Kick Successful!', `I've successfully kicked **${member.tag}**!`);
+  return client.success(message.channel, 'Kick Successful!', `I've successfully kicked **${member.tag}**!`);
 };
 
 module.exports.conf = {

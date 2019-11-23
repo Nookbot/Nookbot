@@ -1,7 +1,6 @@
 // eslint-disable-next-line consistent-return
 module.exports.run = async (client, message, args, level, Discord) => {
   const member = message.mentions.members.first() || message.guild.members.get(args[0]) || message.member;
-  const owner = await client.fetchOwner();
 
   const embed = new Discord.RichEmbed()
     .setAuthor(`${member.displayName}'s Friend Code`, member.user.displayAvatarURL)
@@ -11,11 +10,11 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   if (args.length === 0 || member !== message.member || message.member === message.mentions.members.first() || message.member === message.guild.members.get(args[0])) {
     if (!fc && member !== message.member) {
-      return message.error('No Code Found!', 'That user has not set their friend code!');
+      return client.error(message.channel, 'No Code Found!', 'That user has not set their friend code!');
     }
 
     if (!fc) {
-      return message.error('No Code Found!', 'You have not set a friend code! You can do so by running \`.fc set <code>\`!');
+      return client.error(message.channel, 'No Code Found!', 'You have not set a friend code! You can do so by running \`.fc set <code>\`!');
     }
 
     embed.setDescription(`**${fc}**`);
@@ -26,19 +25,19 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'set':
     case 'add': {
       if (args.length === 1) {
-        return message.error('No Code Given!', 'Please supply your Switch friend code!');
+        return client.error(message.channel, 'No Code Given!', 'Please supply your Switch friend code!');
       }
 
       let code = args.slice(1).join('-');
 
       if (!/^(SW-)?[0-9]{4}-[0-9]{4}-[0-9]{4}$/i.test(code)) {
-        return message.error('Invalid Code!', 'Please check to see if the code was typed correctly and include all dashes!');
+        return client.error(message.channel, 'Invalid Code!', 'Please check to see if the code was typed correctly and include all dashes!');
       }
 
       code = /SW-/i.test(code) ? code : `SW-${code}`;
       client.userDB.set(member.user.id, code, 'friendcode');
       embed.setTitle('Successfully set your friend code!')
-      .setDescription(`**${code}**`);
+        .setDescription(`**${code}**`);
 
       message.channel.send(embed);
       break;
@@ -47,10 +46,10 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'delete':
     case 'remove':
       client.userDB.delete(member.user.id, 'friendcode');
-      message.success('Successfully Deleted!', "I've successfully deleted your friend code! You can set it again by running \`.fc set <code>\`!");
+      client.success(message.channel, 'Successfully Deleted!', "I've successfully deleted your friend code! You can set it again by running \`.fc set <code>\`!");
       break;
     default:
-      message.error('Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`set\` or \`del\`! For further details, use \`${client.getSettings(message.guild).prefix}help friendcode\`!`);
+      client.error(message.channel, 'Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`set\` or \`del\`! For further details, use \`${client.getSettings(message.guild).prefix}help friendcode\`!`);
       break;
   }
 };

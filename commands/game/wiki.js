@@ -9,34 +9,36 @@ module.exports.run = async (client, message, args, level) => {
 
   const waitingMsg = await message.channel.send('Please wait while Nookbot counts its bells...');
 
+  // eslint-disable-next-line consistent-return
   request(link, (err, res, html) => {
     if (err || res.statusCode !== 200) {
       waitingMsg.delete();
-      return message.error('Error!', 'There was an error when searching for your terms!');
+      return client.error(message.channel, 'Error!', 'There was an error when searching for your terms!');
     }
 
     const nookLink = html.match(/(?<=uddg=)[^']+/);
 
     if (!/%2F%2Fnookipedia\.com%2F/.test(nookLink)) {
       waitingMsg.delete();
-      return message.error('Not On The Wiki!', 'What you searched for is not on the wiki!');
+      return client.error(message.channel, 'Not On The Wiki!', 'What you searched for is not on the wiki!');
     }
 
     request(unescape(nookLink), (err2, res2, html2) => {
       if (err2 || res2.statusCode !== 200) {
         waitingMsg.delete();
-        return message.error('Error!', 'There was an error when retriving the wiki page!');
+        return client.error(message.channel, 'Error!', 'There was an error when retriving the wiki page!');
       }
-      
+
       const $ = cheerio.load(html2);
       const output = $('.mw-parser-output');
 
-      let hasAPI = false;
-      let name, gender, personality, image, bio, color = 'RANDOM';
 
-      name = $('h1').first().text().trim();
+      let hasAPI = false;
+      let gender; let personality; let image; let bio; let color;
+      const name = $('h1').first().text().trim();
+
       output.find('p').eq(0).find('span').each((i, elem) => {
-        switch($(elem).attr('id')) {
+        switch ($(elem).attr('id')) {
           case 'api-villager_name':
             hasAPI = true;
             break;
@@ -49,6 +51,8 @@ module.exports.run = async (client, message, args, level) => {
           case 'api-villager_personality':
             personality = $(elem).text().trim();
             break;
+          default:
+            console.log(`Couldn't find an attribute for ${search}`);
         }
       });
 
@@ -58,17 +62,15 @@ module.exports.run = async (client, message, args, level) => {
           bio = output.find('p').eq(2).text();
         }
       } else {
-        const infoBox = output.find('table').filter((i, elem) => {
-          return $(elem).attr('id') == 'Infobox-villager';
-        });
-        if (infoBox.attr('id') == 'Infobox-villager') {
+        const infoBox = output.find('table').filter((i, elem) => $(elem).attr('id') === 'Infobox-villager');
+        if (infoBox.attr('id') === 'Infobox-villager') {
           image = `https://nookipedia.com${infoBox.find('img', 'a').attr('src')}`;
+          // eslint-disable-next-line prefer-destructuring
           gender = (infoBox.text().match(/(Male|Female)/) || [''])[0];
         } else {
-          const src = output.find('img', 'a').filter((i, elem) => {
-            return ($(elem).attr('width') > 40 && $(elem).attr('height') > 40);
-          }).first().attr('src');
+          const src = output.find('img', 'a').filter((i, elem) => ($(elem).attr('width') > 40 && $(elem).attr('height') > 40)).first().attr('src');
           image = `https://nookipedia.com${src}`;
+          // eslint-disable-next-line prefer-destructuring
           gender = (output.find('table').eq(1).text().match(/(Male|Female)/) || [''])[0];
         }
         bio = output.find('p').eq(0).text();
@@ -76,8 +78,8 @@ module.exports.run = async (client, message, args, level) => {
           bio = output.find('p').eq(1).text();
         }
       }
-      
-      switch(personality || gender) {
+
+      switch (personality || gender) {
         case 'Cranky':
           color = '#ff9292';
           break;
@@ -108,6 +110,8 @@ module.exports.run = async (client, message, args, level) => {
         case 'Female':
           color = '#efb5d5';
           break;
+        default:
+          color = 'RANDOM';
       }
 
       const embed = new Discord.RichEmbed()
@@ -115,7 +119,7 @@ module.exports.run = async (client, message, args, level) => {
         .setTimestamp()
         .setAuthor(message.author.tag, message.author.displayAvatarURL)
         .setTitle(name.slice(0, 256))
-        .setDescription(`${bio}[Read More](${unescape(nookLink).slice(0,29)}${unescape(nookLink).slice(29).replace('(','%28').replace(')', '%29')})`.slice(0, 2048))
+        .setDescription(`${bio}[Read More](${unescape(nookLink).slice(0, 29)}${unescape(nookLink).slice(29).replace('(', '%28').replace(')', '%29')})`.slice(0, 2048))
         .setImage(image)
         .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
 
@@ -126,7 +130,6 @@ module.exports.run = async (client, message, args, level) => {
 };
 
 module.exports.conf = {
-  enabled: true,
   guildOnly: false,
   aliases: ['character', 'char', 'villager', 'vil', 'item'],
   permLevel: 'User',

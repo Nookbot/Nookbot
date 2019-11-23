@@ -35,15 +35,6 @@ module.exports = async (client, message) => {
     return;
   }
 
-  // Custom objects on message
-  message.success = (suc, msg) => {
-    message.channel.send(`${client.emoji.checkMark} **${suc}**\n${msg}`);
-  };
-
-  message.error = (err, msg) => {
-    message.channel.send(`${client.emoji.redX} **${err}**\n${msg}`);
-  };
-
   if (enabledCmds.enabled === false) {
     if (level[1] < 2) {
       return message.error('Command Disabled!', 'This command is currently disabled!');

@@ -54,6 +54,14 @@ module.exports = (client) => {
     return owner;
   };
 
+  client.success = (channel, suc, msg) => {
+    channel.send(`${client.emoji.checkMark} **${suc}**\n${msg}`);
+  };
+
+  client.error = (channel, err, msg) => {
+    channel.send(`${client.emoji.redX} **${err}**\n${msg}`);
+  };
+
   client.humanTimeBetween = (time1, time2) => {
     if (time1 < time2) {
       const temp = time1;
@@ -120,10 +128,10 @@ module.exports = (client) => {
 
       const filter = (reaction, user) => [client.emoji.checkMark, client.emoji.redX].includes(reaction.emoji.name)
           && user.id === message.author.id;
-      
+
       let decision = false;
       await confirm.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
-        .then(collected => {
+        .then((collected) => {
           const reaction = collected.first();
 
           if (reaction.emoji.name === client.emoji.checkMark) {
@@ -135,61 +143,59 @@ module.exports = (client) => {
         });
       confirm.delete();
       return decision;
-    } else {
-      let counter = 0x1F1E6;
-      let body = question;
-      opt.slice(0, 20).forEach(option => {
-        body += `\n${String.fromCodePoint(counter)} : \`${option}\``;
-        counter += 1;
-      });
-      const confirm = await message.channel.send(body);
-      counter = 0x1F1E6;
-      let emojiList = [];
-      await client.asyncForEach(opt.slice(0, 20), async (option) => {
-        emojiList.push(String.fromCodePoint(counter));
-        await confirm.react(String.fromCodePoint(counter));
-        counter += 1;
-      });
-      const filter = (reaction, user) => emojiList.includes(reaction.emoji.name)
-          && user.id === message.author.id;
-      
-      let decision = '';
-      await confirm.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
-        .then(collected => {
-          const reaction = collected.first();
-
-          decision = opt[reaction.emoji.toString().codePointAt(0) - 0x1F1E6];
-        })
-        .catch(() => {
-          console.log('React Prompt timed out.');
-        });
-      confirm.delete();
-      return decision;
     }
+    let counter = 0x1F1E6;
+    let body = question;
+    opt.slice(0, 20).forEach((option) => {
+      body += `\n${String.fromCodePoint(counter)} : \`${option}\``;
+      counter += 1;
+    });
+    const confirm = await message.channel.send(body);
+    counter = 0x1F1E6;
+    const emojiList = [];
+    await client.asyncForEach(opt.slice(0, 20), async () => {
+      emojiList.push(String.fromCodePoint(counter));
+      await confirm.react(String.fromCodePoint(counter));
+      counter += 1;
+    });
+    const filter = (reaction, user) => emojiList.includes(reaction.emoji.name)
+          && user.id === message.author.id;
+
+    let decision = '';
+    await confirm.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
+      .then((collected) => {
+        const reaction = collected.first();
+
+        decision = opt[reaction.emoji.toString().codePointAt(0) - 0x1F1E6];
+      })
+      .catch(() => {
+        console.log('React Prompt timed out.');
+      });
+    confirm.delete();
+    return decision;
   };
 
   client.asyncForEach = async (array, callback) => {
     for (let i = 0; i < array.length; i++) {
+      // eslint-disable-next-line no-await-in-loop
       await callback(array[i], i, array);
     }
   };
 
   client.searchMember = (name, threshold = 0.5) => {
-    let rated = [];
+    const rated = [];
 
-    client.guilds.first().members.forEach(m => {
-      let score = Math.max(distance(name, m.user.username, { caseSensitive: false }), distance(name, m.displayName, { caseSensitive: false }));
+    client.guilds.first().members.forEach((m) => {
+      const score = Math.max(distance(name, m.user.username, { caseSensitive: false }), distance(name, m.displayName, { caseSensitive: false }));
       if (score > threshold) {
         rated.push({
           member: m,
-          score: score
+          score,
         });
       }
     });
 
-    rated.sort((a, b) => {
-      return b.score - a.score;
-    });
+    rated.sort((a, b) => b.score - a.score);
 
     return rated[0].member;
   };

@@ -5,7 +5,7 @@ module.exports.run = async (client, message, args, level) => {
 
   // Sets the member to the user mentioned
   let member = message.mentions.members.first() || message.guild.members.get(args[0]);
-  
+
   if (!member) {
     const searchedMember = client.searchMember(args[0]);
     if (searchedMember) {
@@ -14,14 +14,14 @@ module.exports.run = async (client, message, args, level) => {
         member = searchedMember;
       } else {
         message.delete().catch((err) => console.error(err));
-        return message.error('Member Not Muted!', 'The prompt timed out, or you selected no.')
+        return client.error(message.channel, 'Member Not Muted!', 'The prompt timed out, or you selected no.');
       }
     }
   }
 
   // If no user mentioned, display this
   if (!member) {
-    return message.error('Invalid Member!', 'Please mention a valid member of this server!');
+    return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
   }
 
   // Adds the role to the member and deletes the message that initiated the command

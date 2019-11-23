@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // Setting member to first member memntioned
-  const member = message.mentions.members.first() || message.guild.members.get(args[0]);
+  let member = message.mentions.members.first() || message.guild.members.get(args[0]);
 
   if (!member) {
     const searchedMember = client.searchMember(args[0]);
@@ -11,28 +11,28 @@ module.exports.run = async (client, message, args, level) => {
         member = searchedMember;
       } else {
         message.delete().catch((err) => console.error(err));
-        return message.error('Member Not Banned!', 'The prompt timed out, or you selected no.')
+        return client.error(message.channel, 'Member Not Banned!', 'The prompt timed out, or you selected no.');
       }
     }
   }
 
   // If no member mentioned, display this message
   if (!member) {
-    return message.error('Invalid Member!', 'Please mention a valid member of this server!');
+    return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
   }
 
   // If member can't be banned, display this
   if (!member.bannable) {
-    return message.error('Member Not Bannable!', 'I cannot ban this user! Do they have a higher role? Do I have ban permissions? Are you trying to ban the owner?');
+    return client.error(message.channel, 'Member Not Bannable!', 'I cannot ban this user! Do they have a higher role? Do I have ban permissions? Are you trying to ban the owner?');
   }
 
   // Sets reason shown in audit logs
   const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided';
 
   // Bans the member
-  await member.ban(reason).catch((error) => message.error('Ban Failed!', `I've failed to ban this member! Error: ${error}`));
+  await member.ban(reason).catch((error) => client.error(message.channel, 'Ban Failed!', `I've failed to ban this member! Error: ${error}`));
   // If ban is successful, display this
-  return message.success('Ban Successful!', `I've successfully banned **${member.tag}**!`);
+  return client.success(message.channel, 'Ban Successful!', `I've successfully banned **${member.tag}**!`);
 };
 
 module.exports.conf = {

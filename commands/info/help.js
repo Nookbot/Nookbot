@@ -41,11 +41,11 @@ module.exports.run = (client, message, [command], level) => {
       output += `\nDetails :: ${cmd.help.details}`;
     }
 
-    output += `\nGuild Only :: ${cmd.conf.guildOnly}\nPerm Level :: ${cmd.conf.permLevel}`;
+    output += `\nPerm Level :: ${cmd.conf.permLevel}`;
 
     message.channel.send(output, { code: 'asciidoc' });
   } else {
-    message.error('Invalid Command!', `All valid commands can be found by using \`${settings.prefix}help\`!`);
+    client.error(message.channel, 'Invalid Command!', `All valid commands can be found by using \`${settings.prefix}help\`!`);
   }
 };
 
