@@ -18,7 +18,7 @@ module.exports = async (client, member) => {
     client.invites = guildInvites;
     // Discover which invite was used
     const invite = guildInvites.find(i => {
-      if (!ei.includes(i.code)) {
+      if (!ei.has(i.code)) {
         // This is a new code, check if it's used.
         return 0 < i.uses;
       } else {
