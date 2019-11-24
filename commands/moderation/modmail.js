@@ -6,14 +6,14 @@ module.exports.run = async (client, message, args, level) => {
   // #staff-discussion but the name might change so the id is best
   const staffCh = client.guilds.first().channels.get('588480202338861107');
 
-  if (args.length == 0) {
+  if (args.length === 0) {
     if (message.guild) {
       message.delete().catch((err) => console.error(err));
       dmCh.send(initMsg)
-        .then(() => message.channel.send("I've sent you a DM!"), (err) => {
+        .then(() => message.channel.send("I've sent you a DM!"))
+        .catch((err) => {
           client.error(message.channel, 'Error!', 'Failed to send a DM to you! Do you have DMs off?');
-          console.error(err);
-          return;
+          return console.error(err);
         });
     } else if (message.channel.type === 'dm') {
       await dmCh.send(initMsg);
@@ -30,9 +30,11 @@ module.exports.run = async (client, message, args, level) => {
       });
   } else {
     // Remove the message from the guild chat as it may contain sensitive information.
-    if (message.guild) message.delete().catch((err) => console.error(err));
+    if (message.guild) {
+      message.delete().catch((err) => console.error(err));
+    }
     await staffCh.send(`**${message.author.tag}** (${message.author}) : ${args.join(' ')}`, { split: true });
-    await client.success(message.channel, 'Sent!', 'Pete has delivered your message safely to the Town Hall!')
+    await client.success(message.channel, 'Sent!', 'Pete has delivered your message safely to the Town Hall!');
   }
 };
 

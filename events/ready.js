@@ -19,7 +19,7 @@ module.exports = (client) => {
     }, timeUntilFirstPost);
 
     // Save the current collection of guild invites.
-    client.guilds.first().fetchInvites().then(guildInvites => {
+    client.guilds.first().fetchInvites().then((guildInvites) => {
       client.invites = guildInvites;
     });
 

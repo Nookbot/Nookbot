@@ -11,31 +11,29 @@ module.exports = async (client, member) => {
 
   let inviteField = 'Unknown';
   // Check which invite was used.
-  await member.guild.fetchInvites().then(guildInvites => {
-    // Existing invites
-    const ei = client.invites;
-    // Update cached invites
-    client.invites = guildInvites;
-    // Discover which invite was used
-    const invite = guildInvites.find(i => {
-      if (!ei.has(i.code)) {
-        // This is a new code, check if it's used.
-        return 0 < i.uses;
-      } else {
-        // This is a cached code, check if it's uses increased.
-        return ei.get(i.code).uses < i.uses;
-      }
-    });
-    // If invite isn't valid, that most likely means the vanity URL was used so default to it.
-    if (invite) {
-      // Inviter
-      const inviter = client.users.get(invite.inviter.id);
-      inviteField = `${invite.code} from ${inviter.tag} (${inviter.id}) with ${invite.uses}`;
-    } else {
-      // Vanity URL was used
-      inviteField = 'Vanity URL';
+  const guildInvites = await member.guild.fetchInvites();
+  // Existing invites
+  const ei = client.invites;
+  // Update cached invites
+  client.invites = guildInvites;
+  // Discover which invite was used
+  const invite = guildInvites.find((i) => {
+    if (!ei.has(i.code)) {
+      // This is a new code, check if it's used.
+      return i.uses > 0;
     }
+    // This is a cached code, check if it's uses increased.
+    return ei.get(i.code).uses < i.uses;
   });
+    // If invite isn't valid, that most likely means the vanity URL was used so default to it.
+  if (invite) {
+    // Inviter
+    const inviter = client.users.get(invite.inviter.id);
+    inviteField = `${invite.code} from ${inviter.tag} (${inviter.id}) with ${invite.uses}`;
+  } else {
+    // Vanity URL was used
+    inviteField = 'Vanity URL';
+  }
 
   const embed = new Discord.RichEmbed()
     .setAuthor(member.user.tag, member.user.displayAvatarURL)
