@@ -18,6 +18,11 @@ module.exports = (client) => {
       }, 3600000 * 24);
     }, timeUntilFirstPost);
 
+    // Save the current collection of guild invites.
+    client.guilds.first().fetchInvites().then(guildInvites => {
+      client.invites = guildInvites;
+    });
+
     // Logging a ready message on first boot
     console.log(`Ready to follow orders sir, with ${guild.memberCount} users, in ${guild.channels.size} channels of ${client.guilds.size} guilds.`);
     client.firstReady = true;
