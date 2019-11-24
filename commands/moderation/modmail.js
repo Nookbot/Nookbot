@@ -40,6 +40,7 @@ module.exports.conf = {
   guildOnly: false,
   aliases: ['mod', 'mail', 'mm'],
   permLevel: 'User',
+  cooldown: 60,
 };
 
 module.exports.help = {
