@@ -8,6 +8,7 @@ module.exports.run = async (client, message, args, level) => {
 
   if (args.length == 0) {
     if (message.guild) {
+      message.delete().catch((err) => console.error(err));
       dmCh.send(initMsg)
         .then(message.channel.send("I've sent you a DM!"))
         .catch((err) => {
