@@ -11,7 +11,7 @@ module.exports = async (client, member) => {
 
   let inviteField = 'Unknown';
   // Check which invite was used.
-  member.guild.fetchInvites().then(guildInvites => {
+  await member.guild.fetchInvites().then(guildInvites => {
     // Existing invites
     const ei = client.invites;
     // Update cached invites
