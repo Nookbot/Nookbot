@@ -10,9 +10,10 @@ module.exports.run = async (client, message, args, level) => {
     if (message.guild) {
       message.delete().catch((err) => console.error(err));
       dmCh.send(initMsg)
-        .then(message.channel.send("I've sent you a DM!"), (err) => {
+        .then(() => message.channel.send("I've sent you a DM!"), (err) => {
           client.error(message.channel, 'Error!', 'Failed to send a DM to you! Do you have DMs off?');
           console.error(err);
+          return;
         });
     } else if (message.channel.type === 'dm') {
       await dmCh.send(initMsg);
