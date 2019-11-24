@@ -10,8 +10,7 @@ module.exports.run = async (client, message, args, level) => {
     if (message.guild) {
       message.delete().catch((err) => console.error(err));
       dmCh.send(initMsg)
-        .then(message.channel.send("I've sent you a DM!"))
-        .catch((err) => {
+        .then(message.channel.send("I've sent you a DM!"), (err) => {
           client.error(message.channel, 'Error!', 'Failed to send a DM to you! Do you have DMs off?');
           console.error(err);
         });
@@ -22,7 +21,7 @@ module.exports.run = async (client, message, args, level) => {
     const filter = (m) => !m.author.bot;
     await dmCh.awaitMessages(filter, { max: 1, time: 60000, errors: ['time'] })
       .then(async (collected) => {
-        await staffCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}`);
+        await staffCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}`, { split: true });
         await client.success(dmCh, 'Sent!', 'Pete has delivered your message safely to the Town Hall!');
       })
       .catch(() => {
@@ -31,7 +30,7 @@ module.exports.run = async (client, message, args, level) => {
   } else {
     // Remove the message from the guild chat as it may contain sensitive information.
     if (message.guild) message.delete().catch((err) => console.error(err));
-    await staffCh.send(`**${message.author.tag}** (${message.author}) : ${args.join(' ')}`);
+    await staffCh.send(`**${message.author.tag}** (${message.author}) : ${args.join(' ')}`, { split: true });
     await client.success(message.channel, 'Sent!', 'Pete has delivered your message safely to the Town Hall!')
   }
 };
