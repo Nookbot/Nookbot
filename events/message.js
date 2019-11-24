@@ -37,24 +37,24 @@ module.exports = async (client, message) => {
 
   if (enabledCmds.enabled === false) {
     if (level[1] < 2) {
-      return message.error('Command Disabled!', 'This command is currently disabled!');
+      return client.error(message.channel, 'Command Disabled!', 'This command is currently disabled!');
     }
   }
 
   if (!message.guild && cmd.conf.guildOnly) {
-    return message.error('Command Not Available in DMs!', 'This command is unavailable in DMs. Please use it in a server!');
+    return client.error(message.channel, 'Command Not Available in DMs!', 'This command is unavailable in DMs. Please use it in a server!');
   }
 
   // eslint-disable-next-line prefer-destructuring
   message.author.permLevel = level[1];
 
   if (level[1] < client.levelCache[cmd.conf.permLevel]) {
-    message.error('Invalid Permissions!', `You do not currently have the proper permssions to run this command!\n**Current Level:** \`${level[0]}: Level ${level[1]}\`\n**Level Required:** \`${cmd.conf.permLevel}: Level ${client.levelCache[cmd.conf.permLevel]}\``);
+    client.error(message.channel, 'Invalid Permissions!', `You do not currently have the proper permssions to run this command!\n**Current Level:** \`${level[0]}: Level ${level[1]}\`\n**Level Required:** \`${cmd.conf.permLevel}: Level ${client.levelCache[cmd.conf.permLevel]}\``);
     return console.log(`${message.author.tag} (${message.author.id}) tried to use cmd '${cmd.help.name}' without proper perms!`);
   }
 
   if (cmd.conf.args && (cmd.conf.args > args.length)) {
-    return message.error('Invalid Arguments!', `The proper usage for this command is \`${settings.prefix}${cmd.help.usage}\`! For more information, please see the help command by using \`${settings.prefix}help ${cmd.help.name}\`!`);
+    return client.error(message.channel, 'Invalid Arguments!', `The proper usage for this command is \`${settings.prefix}${cmd.help.usage}\`! For more information, please see the help command by using \`${settings.prefix}help ${cmd.help.name}\`!`);
   }
 
   if (!cooldowns.has(cmd.help.name)) {
@@ -75,7 +75,7 @@ module.exports = async (client, message) => {
         timeLeft = (expirationTime - now) / 60000;
         time = 'minute(s)';
       }
-      return message.error('Woah There Bucko!', `Please wait **${timeLeft.toFixed(2)} more ${time}** before reusing the \`${cmd.help.name}\` command!`);
+      return client.error(message.channel, 'Woah There Bucko!', `Please wait **${timeLeft.toFixed(2)} more ${time}** before reusing the \`${cmd.help.name}\` command!`);
     }
   }
 

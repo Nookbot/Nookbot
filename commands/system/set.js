@@ -12,37 +12,37 @@ module.exports.run = async (client, message, [flag, key, ...value], level) => {
   switch (flag) {
     case 'edit': {
       if (!key) {
-        return message.error('No Key Specified!', 'Please specify a key to edit!');
+        return client.error(message.channel, 'No Key Specified!', 'Please specify a key to edit!');
       }
 
       if (!defaults[key]) {
-        return message.error('Invalid Key!', 'This key does not exist in the settings!');
+        return client.error(message.channel, 'Invalid Key!', 'This key does not exist in the settings!');
       }
 
       const joinedValue = value.join(' ');
       if (joinedValue.length < 1) {
-        return message.error('Invalid Value!', 'Please specify a new value!');
+        return client.error(message.channel, 'Invalid Value!', 'Please specify a new value!');
       }
 
       if (joinedValue === settings[key]) {
-        return message.error('Value Already Exists!', 'This setting already has that value!');
+        return client.error(message.channel, 'Value Already Exists!', 'This setting already has that value!');
       }
 
       client.settings.set(message.guild.id, joinedValue, key);
-      message.success('Success!', `**${key}** successfully edited to \`${joinedValue}\`!`);
+      client.success(message.channel, 'Success!', `**${key}** successfully edited to \`${joinedValue}\`!`);
       break;
     }
     case 'del': case 'delete': {
       if (!key) {
-        return message.error('No Key Specified!', 'Please specify a key to reset!');
+        return client.error(message.channel, 'No Key Specified!', 'Please specify a key to reset!');
       }
 
       if (!defaults[key]) {
-        return message.error('Invalid Key!', 'This key does not exist in the settings!');
+        return client.error(message.channel, 'Invalid Key!', 'This key does not exist in the settings!');
       }
 
       if (!overrides[key]) {
-        return message.error('Setting Already Set to Default!', 'This key does not have an override and is already using defaults!');
+        return client.error(message.channel, 'Setting Already Set to Default!', 'This key does not have an override and is already using defaults!');
       }
 
       const msgReset = await message.channel.send(`Are you sure you want to reset **${key}** to its deafult configuration?`);
@@ -59,14 +59,14 @@ module.exports.run = async (client, message, [flag, key, ...value], level) => {
 
           if (reaction.emoji.name === client.emoji.checkMark) {
             client.settings.delete(message.guild.id, key);
-            message.success('Success!', `**${key}** was successfully reset to default!`);
+            client.success(message.channel, 'Success!', `**${key}** was successfully reset to default!`);
           } else {
             message.reply(`Alright then, **${key}** still remains as \`${settings[key]}\`!`);
           }
         })
         .catch(() => {
           console.log('After a minute, a configuration setting was not changed.');
-          message.error('Time Expired!', "So... I guess we're not changing the configuration settings today. Time's up.");
+          client.error(message.channel, 'Time Expired!', "So... I guess we're not changing the configuration settings today. Time's up.");
         });
       break;
     }
@@ -79,7 +79,7 @@ module.exports.run = async (client, message, [flag, key, ...value], level) => {
       break;
     }
     default:
-      message.error('Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`edit\`, \`del\`, or \`view\`! For further details, use \`${client.getSettings(message.guild).prefix}help set\`!`);
+      client.error(message.channel, 'Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`edit\`, \`del\`, or \`view\`! For further details, use \`${client.getSettings(message.guild).prefix}help set\`!`);
       break;
   }
 };

@@ -5,7 +5,7 @@ module.exports.run = (client, message, args, level) => {
   const command = client.commands.get(args[0]) || client.commands.get(client.aliases.get(args[0]));
 
   if (!command) {
-    return message.error('Invalid Command!', "That's not a valid command!");
+    return client.error(message.channel, 'Invalid Command!', "That's not a valid command!");
   }
 
   const props = require(`../../commands/${command.help.category}/${command.help.name}`);
@@ -14,7 +14,7 @@ module.exports.run = (client, message, args, level) => {
   client.commands.set(command.help.name, props);
 
   console.log(`${command.help.name} command was reloaded!`);
-  return message.success('Success!', `Successfully reloaded command \`${command.help.name}\`!`);
+  return client.success(message.channel, 'Success!', `Successfully reloaded command \`${command.help.name}\`!`);
 };
 
 module.exports.conf = {
