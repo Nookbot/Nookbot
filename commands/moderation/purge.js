@@ -7,9 +7,13 @@ module.exports.run = (client, message, args, level) => {
   if (!deleteCount || deleteCount < 1 || deleteCount > 100) {
     return client.error(message.channel, 'Invalid Number of Messages to Purge!', 'Please provide a number **between 1 and 100** for the number of messages to delete!');
   }
-
-  return message.channel.bulkDelete(deleteCount)
-    .catch((error) => client.error(message.channel, 'Purge Failed!', `Couldn't delete messages because: \`${error}\``));
+  const descision = await client.reactPrompt(message, `Would you like to delete ${deleteCount} messages from <#${message.channel.id}>?`);
+  if (descision) {
+    return message.channel.bulkDelete(deleteCount)
+      .catch((error) => client.error(message.channel, 'Purge Failed!', `Couldn't delete messages because: \`${error}\``));
+  } else {
+    return client.error(message.channel, 'Messages Not Purged!', 'The prompt timed out, or you selected no.');
+  }
 };
 
 module.exports.conf = {
