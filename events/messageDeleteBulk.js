@@ -14,13 +14,13 @@ module.exports = async (client, messages) => {
       msg = temp + msg;
     } else {
       // Store this full message in our list
-      msgs.push(msg.trim());
+      msgs.unshift(msg.trim());
       // Start new msg with what wouldn't fit
       msg = temp;
     }
   });
   // Push the final message in to the list
-  msgs.push(msg.trim());
+  msgs.unshift(msg.trim());
   // Go through our list of messages to send, and send each of them.
   client.asyncForEach(msgs, async (m, i) => {
     // Update the embed with the latest message and index count
