@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-module.exports.run = (client, message, args, level) => {
+module.exports.run = async (client, message, args, level) => {
   // Gets the delete count
   const deleteCount = parseInt(args[0], 10);
 
