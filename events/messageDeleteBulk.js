@@ -22,7 +22,7 @@ module.exports = async (client, messages) => {
   // Push the final message in to the list
   msgs.push(msg.trim());
   // Go through our list of messages to send, and send each of them.
-  client.asyncForEach(msgs, (m, i) => {
+  client.asyncForEach(msgs, async (m, i) => {
     // Update the embed with the latest message and index count
     embed.setDescription(m).setFooter(`[${i+1}/${msgs.length}]`);
     // Send the embed in the channel.
