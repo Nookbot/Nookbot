@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 module.exports = async (client, messages) => {
   let embed = new Discord.RichEmbed()
     .setColor('#ff9292')
-    .setTitle(`${messages.length} Messages Purged in #${messages.first().channel.name}`)
+    .setTitle(`${messages.size} Messages Purged in #${messages.first().channel.name}`)
     .setTimestamp();
   
   let msgs = [];
@@ -11,7 +11,7 @@ module.exports = async (client, messages) => {
   messages.forEach(m => {
     const temp = `[${m.author.tag}]: ${m.content}\n`;
     if (msg.length + temp.length < 2048) {
-      msg += temp;
+      msg = temp + msg;
     } else {
       // Store this full message in our list
       msgs.push(msg.trim());

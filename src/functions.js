@@ -141,7 +141,7 @@ module.exports = (client) => {
         .catch(() => {
           console.log('React Prompt timed out.');
         });
-      confirm.delete();
+      await confirm.delete();
       return decision;
     }
     let counter = 0x1F1E6;
@@ -171,7 +171,7 @@ module.exports = (client) => {
       .catch(() => {
         console.log('React Prompt timed out.');
       });
-    confirm.delete();
+    await confirm.delete();
     return decision;
   };
 
