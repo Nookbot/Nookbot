@@ -28,7 +28,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
     await client.raidMessage.react(client.emoji.redX);
     // Listen for reactions and log which action was taken and who made the decision.
     const filter = (reaction, user) => [client.emoji.checkMark, client.emoji.redX].includes(reaction.emoji.name)
-        && member.guild.fetchMember(user).hasPermission('BAN_MEMBERS');
+        && member.guild.fetchMember(user).then((m) => m.hasPermission('BAN_MEMBERS'));
     client.raidMessage.awaitReactions(filter, { max: 1 })
       .then(async (collected) => {
         const reaction = collected.first();
