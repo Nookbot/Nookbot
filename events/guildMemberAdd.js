@@ -50,7 +50,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
                 actionLog.send(`The above ${client.raidMembersPrinted} members have been banned.`);
                 // Reset all raid variables
                 client.raidMode = false;
-                client.raidJoins = {};
+                client.raidJoins = [];
                 client.raidMessage = null;
                 client.raidMembersPrinted = 0;
                 // Resolve this promise and clear interval.
@@ -64,7 +64,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
           client.error(staffChat, 'Not Banning!', `User ${modUser.tag} has chosen to not ban the raid. Raid Mode is deactivated.`);
           // Reset all raid variables
           client.raidMode = false;
-          client.raidJoins = {};
+          client.raidJoins = [];
           client.raidMessage = null;
           client.raidMembersPrinted = 0;
         }
