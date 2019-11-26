@@ -30,7 +30,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
     const filter = (reaction, user) => [client.emoji.checkMark, client.emoji.redX].includes(reaction.emoji.name)
         && member.guild.fetchMember(user).hasPermission('BAN_MEMBERS');
     client.raidMessage.awaitReactions(filter, { max: 1 })
-      .then((collected) => {
+      .then(async (collected) => {
         const reaction = collected.first();
         const modUser = reaction.users.first();
         if (reaction.emoji.name === client.emoji.checkMark) {
