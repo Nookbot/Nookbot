@@ -76,10 +76,8 @@ This message updates every 5 seconds, and you should wait to decide until the co
         }
       })
       .catch(console.error);
-    
-    // Send a message prefacing the members outputted to nook-log.
-    actionLog.send('**##### RAID MODE ACTIVATED #####**\nBELOW IS A LIST OF ALL MEMBERS THAT JOINED IN THE RAID');
     // If there are new joins, regularly log them to nook-log and update the message with the count
+    let msg = '**##### RAID MODE ACTIVATED #####**\nBELOW IS A LIST OF ALL MEMBERS THAT JOINED IN THE RAID';
     const updateRaid = setInterval(() => {
       // If the raid is over, don't update anymore.
       if (!client.raidMode)  {
@@ -95,11 +93,11 @@ This message updates every 5 seconds, and you should wait to decide until the co
         if (client.raidMembersPrinted !== client.raidJoins.length) {
           const newMembers = client.raidJoins.slice(client.raidMembersPrinted);
           client.raidMembersPrinted += newMembers.length;
-          let msg = '';
           newMembers.forEach(mem => {
             msg += `${mem.user.tag} (${mem.id})\n`;
           });
           actionLog.send(msg, { split: true });
+          msg = '';
         }
       }
     }, 5000);
