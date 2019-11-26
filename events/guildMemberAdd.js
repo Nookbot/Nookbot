@@ -32,7 +32,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
     client.raidMessage.awaitReactions(filter, { max: 1 })
       .then(async (collected) => {
         const reaction = collected.first();
-        const modUser = reaction.users.first();
+        const modUser = reaction.users.last();
         if (reaction.emoji.name === client.emoji.checkMark) {
           // A valid user has selected to ban the raid party.
           // Log that the banning is beginning and who approved of the action.
@@ -53,6 +53,9 @@ This message updates every 5 seconds, and you should wait to decide until the co
                 client.raidJoins = [];
                 client.raidMessage = null;
                 client.raidMembersPrinted = 0;
+                // Allow users to send messages again.
+                perms.add('SEND_MESSAGES');
+                everyone.setPermissions(perms);
                 // Resolve this promise and clear interval.
                 resolve();
                 clearInterval(interval);
@@ -67,9 +70,15 @@ This message updates every 5 seconds, and you should wait to decide until the co
           client.raidJoins = [];
           client.raidMessage = null;
           client.raidMembersPrinted = 0;
+          // Allow users to send messages again.
+          perms.add('SEND_MESSAGES');
+          everyone.setPermissions(perms);
         }
       })
       .catch(console.error);
+    
+    // Send a message prefacing the members outputted to nook-log.
+    actionLog.send('**##### RAID MODE ACTIVATED #####**\nBELOW IS A LIST OF ALL MEMBERS THAT JOINED IN THE RAID');
     // If there are new joins, regularly log them to nook-log and update the message with the count
     const updateRaid = setInterval(() => {
       // If the raid is over, don't update anymore.
