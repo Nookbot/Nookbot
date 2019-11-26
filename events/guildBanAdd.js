@@ -10,5 +10,5 @@ module.exports = async (client, guild, user) => {
     .setTitle('**Member Banned**')
     .setDescription(user.id);
 
-  guild.channels.get(client.getSettings(guild).modLog).send(embed);
+  if (!client.raidMode) guild.channels.get(client.getSettings(guild).modLog).send(embed);
 };

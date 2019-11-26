@@ -5,7 +5,7 @@ const Discord = require('discord.js');
 const Enmap = require('enmap');
 const fs = require('fs');
 
-const client = new Discord.Client();
+const client = new Discord.Client({messageCacheMaxSize: 500});
 const config = require('./config');
 const { version } = require('./package.json');
 const emoji = require('./src/emoji');
@@ -73,6 +73,16 @@ client.firstReady = false;
 
 client.invites = {};
 
+// Raid Mode
+client.raidMode = false;
+client.raidJoins = {};
+client.raidMessage = null;
+client.raidMembersPrinted = 0;
+
 Object.assign(client, Enmap.multi(['settings', 'enabledCmds', 'userDB'], { ensureProps: true }));
 
-client.login(config.token);
+client.login(config.token).catch(() => {
+  const interval = setInterval(() => {
+    client.login(config.token).then(clearInterval(interval));
+  }, 5000);
+});
