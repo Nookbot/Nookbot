@@ -9,7 +9,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     .setAuthor(message.author.tag, message.author.displayAvatarURL)
     .setColor('#4199c2')
     .setTimestamp()
-    .setFooter(`Created and Maintained by ${owner.tag} | ${client.version}`, client.user.displayAvatarURL);
+    .setFooter('Nookbot', client.user.displayAvatarURL);
 
   switch (args[0]) {
     case 'bot': {
@@ -34,7 +34,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     }
     case 'user': {
       // Setting the member to the mentioned user, if no mentioned user, falls back to author
-      const member = message.mentions.members.first() || message.guild.members.get(args[1]) || message.member;
+      const member = message.mentions.members.first() || message.guild.members.get(args[1]) || client.searchMember(args[1]) || message.member;
 
       const roles = member.roles.filter((r) => r.id !== message.guild.id).map((r) => r.name).join(', ') || 'No Roles';
       const roleSize = member.roles.filter((r) => r.id !== message.guild.id).size;
@@ -51,7 +51,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
         activity = `${client.emoji.offline} Offline/Invisible`;
       }
 
-      embed.setTitle(`${member.displayName}\'s Info`)
+      embed.setAuthor(member.tag, member.displayAvatarURL)
+        .setTitle(`${member.displayName}\'s Info`)
         .addField('ID', member.user.id, true)
         .addField('Nickname', member.displayName, true)
         .addField('Account Created', moment(member.user.createdAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
