@@ -5,7 +5,7 @@ const Discord = require('discord.js');
 const Enmap = require('enmap');
 const fs = require('fs');
 
-const client = new Discord.Client({messageCacheMaxSize: 500});
+const client = new Discord.Client({ messageCacheMaxSize: 500, disabledEvents: ['TYPING_START', 'PRESENCE_UPDATE', 'USER_NOTE_UPDATE'] });
 const config = require('./config');
 const { version } = require('./package.json');
 const emoji = require('./src/emoji');
