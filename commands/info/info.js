@@ -51,7 +51,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         activity = `${client.emoji.offline} Offline/Invisible`;
       }
 
-      embed.setAuthor(member.tag, member.displayAvatarURL)
+      embed.setAuthor(member.user.tag, member.user.displayAvatarURL)
         .setTitle(`${member.displayName}\'s Info`)
         .addField('ID', member.user.id, true)
         .addField('Nickname', member.displayName, true)
