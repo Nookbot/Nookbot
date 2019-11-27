@@ -54,11 +54,11 @@ module.exports.run = async (client, message, args, level) => {
         }
       });
 
+      
+      const paragraphs = output.find('p').filter((i, elem) => $(elem).text().length >= 75);
+
       if (hasAPI) {
-        bio = output.find('p').eq(1).text();
-        if (bio.length < 5) {
-          bio = output.find('p').eq(2).text();
-        }
+        bio = paragraphs.eq(1).text();
       } else {
         const infoBox = output.find('table').filter((i, elem) => $(elem).attr('id') === 'Infobox-villager');
         if (infoBox.attr('id') === 'Infobox-villager') {
@@ -71,10 +71,7 @@ module.exports.run = async (client, message, args, level) => {
           // eslint-disable-next-line prefer-destructuring
           gender = (output.find('table').eq(1).text().match(/(Male|Female)/) || [''])[0];
         }
-        bio = output.find('p').eq(0).text();
-        if (bio.length < 5) {
-          bio = output.find('p').eq(1).text();
-        }
+        bio = paragraphs.eq(0).text();
       }
 
       switch (personality || gender) {
