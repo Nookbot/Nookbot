@@ -51,8 +51,6 @@ module.exports.run = async (client, message, args, level) => {
           case 'api-villager_personality':
             personality = $(elem).text().trim();
             break;
-          default:
-            console.log(`Couldn't find an attribute for ${search}`);
         }
       });
 
