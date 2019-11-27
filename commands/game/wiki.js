@@ -37,7 +37,9 @@ module.exports.run = async (client, message, args, level) => {
       let gender; let personality; let image; let bio; let color;
       const name = $('h1').first().text().trim();
 
-      output.find('p').eq(0).find('span').each((i, elem) => {
+      const paragraphs = output.find('p').filter((i, elem) => $(elem).text().length >= 75);
+
+      paragraphs.eq(0).find('span').each((i, elem) => {
         switch ($(elem).attr('id')) {
           case 'api-villager_name':
             hasAPI = true;
@@ -54,11 +56,7 @@ module.exports.run = async (client, message, args, level) => {
         }
       });
 
-      
-      const paragraphs = output.find('p').filter((i, elem) => $(elem).text().length >= 75);
-
       if (hasAPI) {
-        console.log('API Was Found for wiki')
         bio = paragraphs.eq(1).text();
       } else {
         const infoBox = output.find('table').filter((i, elem) => $(elem).attr('id') === 'Infobox-villager');
