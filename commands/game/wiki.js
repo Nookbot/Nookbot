@@ -58,6 +58,7 @@ module.exports.run = async (client, message, args, level) => {
       const paragraphs = output.find('p').filter((i, elem) => $(elem).text().length >= 75);
 
       if (hasAPI) {
+        console.log('API Was Found for wiki')
         bio = paragraphs.eq(1).text();
       } else {
         const infoBox = output.find('table').filter((i, elem) => $(elem).attr('id') === 'Infobox-villager');
