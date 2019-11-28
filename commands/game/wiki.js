@@ -4,7 +4,7 @@ const request = require('request');
 
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  const search = args.join(' ');
+  const search = args.join(' ').toLowerCase();
   const link = `https://duckduckgo.com/?q=%5C${escape(search)}+site%3Anookipedia.com`;
 
   const waitingMsg = await message.channel.send('Please wait while Nookbot counts its bells...');
@@ -12,6 +12,7 @@ module.exports.run = async (client, message, args, level) => {
   // eslint-disable-next-line consistent-return
   request(link, (err, res, html) => {
     if (err || res.statusCode !== 200) {
+      console.error(err);
       waitingMsg.delete();
       return client.error(message.channel, 'Error!', 'There was an error when searching for your terms!');
     }
@@ -52,6 +53,8 @@ module.exports.run = async (client, message, args, level) => {
             break;
           case 'api-villager_personality':
             personality = $(elem).text().trim();
+            break;
+          default:
             break;
         }
       });
