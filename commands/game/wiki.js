@@ -26,6 +26,7 @@ module.exports.run = async (client, message, args, level) => {
 
     request(unescape(nookLink), (err2, res2, html2) => {
       if (err2 || res2.statusCode !== 200) {
+        console.error(err2);
         waitingMsg.delete();
         return client.error(message.channel, 'Error!', 'There was an error when retriving the wiki page!');
       }
@@ -68,7 +69,7 @@ module.exports.run = async (client, message, args, level) => {
           // eslint-disable-next-line prefer-destructuring
           gender = (infoBox.text().match(/(Male|Female)/) || [''])[0];
         } else {
-          const src = output.find('img', 'a').filter((i, elem) => ($(elem).attr('width') > 40 && $(elem).attr('height') > 40)).first().attr('src');
+          const src = output.find('img', 'a').filter((i, elem) => ($(elem).attr('width') > 60 && $(elem).attr('height') > 60)).first().attr('src');
           image = `https://nookipedia.com${src}`;
           // eslint-disable-next-line prefer-destructuring
           gender = (output.find('table').eq(1).text().match(/(Male|Female)/) || [''])[0];
