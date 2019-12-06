@@ -112,8 +112,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
       }
       return;
     default:
-      if (client.tags.has(args[1].toLowerCase())) {
-        message.channel.send(client.tags.get(args[1].toLowerCase()));
+      if (client.tags.has(args[0].toLowerCase())) {
+        message.channel.send(client.tags.get(args[0].toLowerCase()));
       } else {
         client.error(message.channel, 'Tag Does Not Exist!', 'The tag you attempted to display does not exist!');
       }
