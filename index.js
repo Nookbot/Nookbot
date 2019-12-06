@@ -79,7 +79,7 @@ client.raidJoins = [];
 client.raidMessage = null;
 client.raidMembersPrinted = 0;
 
-Object.assign(client, Enmap.multi(['settings', 'enabledCmds', 'userDB'], { ensureProps: true }));
+Object.assign(client, Enmap.multi(['settings', 'enabledCmds', 'userDB', 'tags'], { ensureProps: true }));
 
 client.login(config.token).catch(() => {
   const interval = setInterval(() => {
