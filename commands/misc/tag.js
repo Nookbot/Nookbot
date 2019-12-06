@@ -1,6 +1,6 @@
 module.exports.run = async (client, message, args, level, Discord) => {
   if (args.length === 0) {
-    const listTags = '';
+    let listTags = '';
 
     client.tags.indexes.sort().forEach((t, i) => {
       if (i != 0) listTags += `, ${t}`;
