@@ -12,7 +12,7 @@ module.exports.run = async (client, message, args, level) => {
   // eslint-disable-next-line consistent-return
   request(link, (err, res, html) => {
     if (err || res.statusCode !== 200) {
-      console.error(err);
+      console.error(err || res);
       waitingMsg.delete();
       return client.error(message.channel, 'Error!', 'There was an error when searching for your terms!');
     }
@@ -26,7 +26,7 @@ module.exports.run = async (client, message, args, level) => {
 
     request(unescape(nookLink), (err2, res2, html2) => {
       if (err2 || res2.statusCode !== 200) {
-        console.error(err2);
+        console.error(err2 || res2);
         waitingMsg.delete();
         return client.error(message.channel, 'Error!', 'There was an error when retriving the wiki page!');
       }
