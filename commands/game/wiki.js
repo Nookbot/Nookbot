@@ -12,7 +12,7 @@ module.exports.run = async (client, message, args, level) => {
   // eslint-disable-next-line consistent-return
   request(link, (err, res, html) => {
     if (err || res.statusCode !== 200) {
-      console.error(err || res);
+      console.error(err || `DuckDuckGo Error: Status Code-${res.statusCode} Status Message-${res.statusMessage}`);
       waitingMsg.delete();
       return client.error(message.channel, 'Error!', 'There was an error when searching for your terms!');
     }
@@ -26,7 +26,7 @@ module.exports.run = async (client, message, args, level) => {
 
     request(unescape(nookLink), (err2, res2, html2) => {
       if (err2 || res2.statusCode !== 200) {
-        console.error(err2 || res2);
+        console.error(err2 || `Wiki Error: Status Code-${res2.statusCode} Status Message-${res2.statusMessage}`);
         waitingMsg.delete();
         return client.error(message.channel, 'Error!', 'There was an error when retriving the wiki page!');
       }
