@@ -10,17 +10,29 @@ module.exports = async (client, message) => {
     return;
   }
 
+  // Emoji finding and tracking
+  const regex = /<a?:\w+:([\d]+)>/g;
+  const msg = message.content;
+  let regMatch;
+  while ((regMatch = regex.exec(msg)) !== null) {
+    // If the emoji ID is in our emojiDB, then increment its count
+    if (client.emojiDB.has(regMatch[1])) {
+      client.emojiDb.inc(regMatch[1]);
+    }
+  }
+
   if (message.guild && !message.member) {
     await message.guild.fetchMember(message.author);
   }
 
   const settings = client.getSettings(message.guild);
-  const level = client.permLevel(message);
 
   // Ignore messages not starting with the prefix
   if (message.content.indexOf(settings.prefix) !== 0) {
     return;
   }
+
+  const level = client.permLevel(message);
 
   // Our standard argument/command name definition.
   const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);

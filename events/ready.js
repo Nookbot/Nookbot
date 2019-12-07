@@ -4,6 +4,17 @@ module.exports = (client) => {
   // Setting activity
   if (!client.firstReady) {
     const guild = client.guilds.first();
+
+    // Emoji usage tracking database init
+    guild.emojis.forEach(e => {
+      // If EmojiDB does not have the emoji, add it.
+      if (!client.emojiDB.has(e.id)) {
+        client.emojiDB.set(e.id, 0);
+      }
+    });
+    // Sweep emojis from the DB that are no longer in the guild emojis
+    client.emojiDB.sweep((v, k) => !guild.emojis.has(k));
+
     setInterval(() => client.user.setActivity(`ACNH with ${guild.memberCount} users!`), 30000);
 
     const timeUntilFirstPost = moment().add(1, 'd').startOf('day').diff(moment());
