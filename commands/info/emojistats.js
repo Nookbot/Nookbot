@@ -8,7 +8,7 @@ module.exports.run = (client, message, args, level, Discord) => {
     return;
   }
 
-  if (min > max) {
+  if (max > min) {
     const temp = min;
     min = max;
     max = temp;
