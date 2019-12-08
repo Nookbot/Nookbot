@@ -25,6 +25,7 @@
     "jaro-winkler": "^0.2.8",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
+    "ping": "^0.2.2",
     "request": "^2.88.0"
   },
   "devDependencies": {
