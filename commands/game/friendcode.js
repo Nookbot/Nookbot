@@ -6,7 +6,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     .setAuthor(`${member.displayName}'s Friend Code`, member.user.displayAvatarURL)
     .setColor('#e4000f');
 
-  const fc = client.userDB.ensure(member.user.id, { friendcode: '' }).friendcode;
+  const fc = client.userDB.ensure(member.user.id, client.config.userDBDefaults).friendcode;
 
   if (args.length === 0 || member !== message.member || message.member === message.mentions.members.first() || message.member === message.guild.members.get(args[0])) {
     if (!fc && member !== message.member) {

@@ -1,6 +1,12 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, member) => {
+  client.userDB.ensure(member.id, client.config.userDBDefaults);
+
+  member.roles.forEach((r) => {
+    client.userDB.push(member.id, r.id, 'roles');
+  });
+
   const serverAge = client.humanTimeBetween(Date.now(), member.joinedTimestamp);
 
   const roles = member.roles.filter((r) => r.id !== member.guild.id).map((r) => r.name).join(', ') || 'No Roles';

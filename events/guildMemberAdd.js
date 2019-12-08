@@ -1,6 +1,14 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, member) => {
+  // Role persistence
+  const storedMember = client.userDB.get(member.id);
+  if (storedMember) {
+    storedMember.roles.forEach((r) => {
+      member.addRole(member.guild.roles.get(r));
+    });
+  }
+
   // Raid checking
   // Add this member to the list of raid joins.
   client.raidJoins.push(member);

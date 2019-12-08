@@ -10,6 +10,11 @@ const config = {
     adminRole: 'Admin',
   },
 
+  // UserDB Settings
+  userDBDefaults: {
+    friendcode: '',
+    roles: [], 
+  },
 
   // Bot Perms and Stuff
   ownerID: '392398406552780800',
