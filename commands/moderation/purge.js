@@ -10,13 +10,12 @@ module.exports.run = async (client, message, args, level) => {
   }
 
   const descision = await client.reactPrompt(message, `Would you like to delete ${deleteCount} messages from <#${message.channel.id}>?`);
-  
+
   if (descision) {
     return message.channel.bulkDelete(deleteCount)
       .catch((error) => client.error(message.channel, 'Purge Failed!', `Couldn't delete messages because: \`${error}\``));
-  } else {
-    return client.error(message.channel, 'Messages Not Purged!', 'The prompt timed out, or you selected no.');
   }
+  return client.error(message.channel, 'Messages Not Purged!', 'The prompt timed out, or you selected no.');
 };
 
 module.exports.conf = {

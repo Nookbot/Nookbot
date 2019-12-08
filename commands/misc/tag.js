@@ -3,7 +3,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     let listTags = '';
 
     client.tags.indexes.sort().forEach((t, i) => {
-      if (i != 0) listTags += `, ${t}`;
+      if (i !== 0) listTags += `, ${t}`;
       else listTags += t;
     });
 
@@ -12,10 +12,13 @@ module.exports.run = async (client, message, args, level, Discord) => {
       .setTitle(`Tags (${client.tags.count})`)
       .setDescription(listTags.slice(0, 2000) || 'No tags.')
       .setFooter('Use ".t name" to show a tag');
-    
+
     message.channel.send(embed);
     return;
   }
+
+  // Reserved words that cannot be used for tag names
+  const reserved = ['create', 'c', 'add', 'make', 'edit', 'e', 'set', 'delete', 'del', 'd', 'remove', 'r'];
 
   switch (args[0].toLowerCase()) {
     case 'create':
@@ -41,7 +44,6 @@ module.exports.run = async (client, message, args, level, Discord) => {
       }
 
       // Check if they are making a tag with a reserved name
-      const reserved = ['create', 'c', 'add', 'make', 'edit', 'e', 'set', 'delete', 'del', 'd', 'remove', 'r'];
       if (reserved.indexOf(args[1].toLowerCase()) !== -1) {
         client.error(message.channel, 'Reserved Word!', 'You attempted to create a tag with a reserved word!');
         return;
@@ -117,7 +119,6 @@ module.exports.run = async (client, message, args, level, Discord) => {
       } else {
         client.error(message.channel, 'Tag Does Not Exist!', 'The tag you attempted to display does not exist!');
       }
-      return;
   }
 };
 

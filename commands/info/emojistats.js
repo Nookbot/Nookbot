@@ -1,8 +1,8 @@
-module.exports.run = (client, message, args, level, Discord) => {
+module.exports.run = (client, message, args) => {
   let min = parseInt(args[0], 10);
   let max = parseInt(args[1], 10);
-  
-  if (isNaN(min) || isNaN(max) || min <= 0 || max <= 0) {
+
+  if (Number.isNaN(min) || Number.isNaN(max) || min <= 0 || max <= 0) {
     // We didn't get two numbers, print error
     client.error(message.channel, 'Not Numbers!', 'You must supply two numbers for the minimum and maximum ranked emojis to display.');
     return;
@@ -14,9 +14,8 @@ module.exports.run = (client, message, args, level, Discord) => {
     max = temp;
   }
 
-  const emojiArray = client.emojiDB.map((v, k) => {
-    return {id: k, uses: v};
-  }).sort((a, b) => b.uses - a.uses).slice(max - 1, min);
+  const emojiArray = client.emojiDB.map((v, k) => ({ id: k, uses: v }))
+    .sort((a, b) => b.uses - a.uses).slice(max - 1, min);
 
   let msg = '**Emoji Statistics**\nRank - Name - Uses';
 
@@ -31,7 +30,7 @@ module.exports.conf = {
   guildOnly: true,
   aliases: ['es', 'emoji'],
   permLevel: 'Mod',
-  args: 2
+  args: 2,
 };
 
 module.exports.help = {

@@ -6,7 +6,7 @@ module.exports = (client) => {
     const guild = client.guilds.first();
 
     // Emoji usage tracking database init
-    guild.emojis.forEach(e => {
+    guild.emojis.forEach((e) => {
       // If EmojiDB does not have the emoji, add it.
       if (!client.emojiDB.has(e.id)) {
         client.emojiDB.set(e.id, 0);

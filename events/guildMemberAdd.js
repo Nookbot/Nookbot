@@ -38,7 +38,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
           // Log that the banning is beginning and who approved of the action.
           client.success(staffChat, 'Banning!', `User ${modUser.tag} has chosen to ban the raid. It may take some time to finish banning all raid members.`);
           // Promisify a setInterval to ban members without rate limiting.
-          await new Promise(resolve => {
+          await new Promise((resolve) => {
             const interval = setInterval(() => {
               if (client.raidJoins.length !== 0) {
                 // Ban the next member
@@ -80,7 +80,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
     let msg = '**##### RAID MODE ACTIVATED #####**\nBELOW IS A LIST OF ALL MEMBERS THAT JOINED IN THE RAID';
     const updateRaid = setInterval(() => {
       // If the raid is over, don't update anymore.
-      if (!client.raidMode)  {
+      if (!client.raidMode) {
         clearInterval(updateRaid);
       } else {
         client.raidMessage.edit(`**##### RAID MODE ACTIVATED #####**
@@ -93,7 +93,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
         if (client.raidMembersPrinted !== client.raidJoins.length) {
           const newMembers = client.raidJoins.slice(client.raidMembersPrinted);
           client.raidMembersPrinted += newMembers.length;
-          newMembers.forEach(mem => {
+          newMembers.forEach((mem) => {
             msg += `${mem.user.tag} (${mem.id})\n`;
           });
           actionLog.send(msg, { split: true });

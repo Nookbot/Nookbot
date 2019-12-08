@@ -1,4 +1,4 @@
-module.exports.run = (client, message, args, level) => {
+module.exports.run = (client, message, args) => {
   // Check if raid mode is active.
   if (!client.raidMode) {
     client.error(message.guild.channels.get(client.getSettings(message.guild).staffChat),

@@ -1,14 +1,14 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, messages) => {
-  let embed = new Discord.RichEmbed()
+  const embed = new Discord.RichEmbed()
     .setColor('#ff9292')
     .setTitle(`${messages.size} Messages Purged in #${messages.first().channel.name}`)
     .setTimestamp();
-  
-  let msgs = [];
+
+  const msgs = [];
   let msg = '';
-  messages.forEach(m => {
+  messages.forEach((m) => {
     const temp = `[${m.author.tag}]: ${m.content}\n`;
     if (msg.length + temp.length < 2048) {
       msg = temp + msg;
@@ -24,7 +24,7 @@ module.exports = async (client, messages) => {
   // Go through our list of messages to send, and send each of them.
   client.asyncForEach(msgs, async (m, i) => {
     // Update the embed with the latest message and index count
-    embed.setDescription(m).setFooter(`[${i+1}/${msgs.length}]`);
+    embed.setDescription(m).setFooter(`[${i + 1}/${msgs.length}]`);
     // Send the embed in the channel.
     await messages.first().guild.channels.get(client.getSettings(messages.first().guild).actionLog).send(embed);
   });
