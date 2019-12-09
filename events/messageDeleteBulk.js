@@ -1,6 +1,11 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, messages) => {
+  // Ignore all ignoreChannels
+  if (client.config.ignoreChannel.includes(messages.first().channel.id)) {
+    return;
+  }
+
   const embed = new Discord.RichEmbed()
     .setColor('#ff9292')
     .setTitle(`${messages.size} Messages Purged in #${messages.first().channel.name}`)
