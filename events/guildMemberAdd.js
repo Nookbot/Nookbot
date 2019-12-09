@@ -1,14 +1,6 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, member) => {
-  // Role persistence
-  const storedMember = client.userDB.get(member.id);
-  if (storedMember) {
-    storedMember.roles.forEach((r) => {
-      member.addRole(member.guild.roles.get(r));
-    });
-  }
-
   // Raid checking
   // Add this member to the list of raid joins.
   client.raidJoins.push(member);
@@ -119,6 +111,14 @@ This message updates every 5 seconds, and you should wait to decide until the co
   } else {
     // We're in Raid Mode, don't make a fancy member join embed.
     return;
+  }
+
+  // Role persistence
+  const storedMember = client.userDB.get(member.id);
+  if (storedMember) {
+    storedMember.roles.forEach((r) => {
+      member.addRole(member.guild.roles.get(r));
+    });
   }
 
   const time = Date.now();
