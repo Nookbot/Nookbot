@@ -37,7 +37,7 @@ module.exports.run = async (client, message, args, level) => {
 
 module.exports.conf = {
   guildOnly: true,
-  aliases: [],
+  aliases: ['k'],
   permLevel: 'Mod',
   args: 1,
 };
