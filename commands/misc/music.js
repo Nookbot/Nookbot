@@ -65,7 +65,7 @@ module.exports.run = async (client, message, args) => {
         client.songQueue.connection = await voiceChannel.join();
 
         // Defining a play function so it can call itself recursively
-        const play = (song) => {
+        const play = (song = client.songQueue.songs[0]) => {
           // If a song wasn't given leave voice channel
           if (!song) {
             client.songQueue.playing = false;
@@ -90,11 +90,9 @@ module.exports.run = async (client, message, args) => {
 
         // Play the song
         play(client.songQueue.songs[0]);
-      } else {
+      } else if (client.songQueue.connection.dispatcher.paused) {
         // If the connection object is present, then see if the stream is paused, and resume it
-        if (client.songQueue.connection.dispatcher.paused) {
-          client.songQueue.connection.dispatcher.resume();
-        }
+        client.songQueue.connection.dispatcher.resume();
       }
       return;
     case 'skip':
