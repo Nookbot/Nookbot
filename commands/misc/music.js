@@ -76,9 +76,6 @@ module.exports.run = async (client, message, args) => {
             return;
           }
 
-          // Send a message with info about the song
-          message.channel.send(`__**Now Playing**__\nTitle: ${ytdl.getInfo(song).title}`);
-
           client.songQueue.connection.playStream(ytdl(song, { quality: 'highestaudio' })
             .on('info', (info) => message.channel.send(`__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLink: <${info.video_url}>`)))
             .on('end', () => {
@@ -108,19 +105,20 @@ module.exports.run = async (client, message, args) => {
       }
 
       // End the current song, and this will load the next song if any are in the queue
-      client.songQueue.connection.dispatcher.end();
+      if (client.songQueue.connection && client.songQueue.connection.dispatcher) client.songQueue.connection.dispatcher.end();
       return;
     case 'pause':
       // Check if a song is currently playing to pause
       if (client.songQueue.playing) {
         client.songQueue.playing = false;
         client.songQueue.connection.dispatcher.pause();
-        return client.success(message.channel, 'Song Paused!', 'The current song was paused! Resume it with \`.play\`.');
+        return client.success(message.channel, 'Song Paused!', 'The current song was paused! Resume it with \`.music play\`.');
       }
       return client.error(message.channel, 'No Song Playing!', 'There is no song to pause, or the song is already paused!');
     case 'stop':
       // Check if there is a queue, or if shuffle is on and destroy the connection
       if (client.songQueue.connection) {
+        client.songQueue.voiceChannel.leave();
         client.songQueue.connection.disconnect();
         client.songQueue.playing = false;
         client.songQueue.songs = [];
