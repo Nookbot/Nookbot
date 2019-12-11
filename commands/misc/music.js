@@ -67,7 +67,7 @@ module.exports.run = async (client, message, args) => {
         // Defining a play function so it can call itself recursively
         const play = (song = client.songQueue.songs[0]) => {
           // If a song wasn't given leave voice channel, or if the connection has been destroyed
-          if (!song || client.songQueue.connection.dispatcher.destroyed) {
+          if (!song || (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.destroyed)) {
             client.songQueue.playing = false;
             client.songQueue.songs = [];
             client.songQueue.voiceChannel = null;
