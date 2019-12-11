@@ -70,11 +70,17 @@ module.exports.run = async (client, message, args) => {
           if (!song) {
             client.songQueue.playing = false;
             client.songQueue.voiceChannel.leave();
+            client.songQueue.connection.disconnect();
             client.songQueue.connection = null;
+            client.songQueue.voiceChannel = null;
             return;
           }
 
-          client.songQueue.connection.playStream(ytdl(song, { quality: 'highestaudio' }))
+          // Send a message with info about the song
+          message.channel.send(`__**Now Playing**__\nTitle: ${ytdl.getInfo(song).title}`);
+
+          client.songQueue.connection.playStream(ytdl(song, { quality: 'highestaudio' })
+            .on('info', (info) => message.channel.send(`__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLink: <${info.video_url}>`)))
             .on('end', () => {
               client.songQueue.songs.shift();
               // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
@@ -132,6 +138,10 @@ module.exports.run = async (client, message, args) => {
       return client.error(message.channel, 'Shuffle Mode Off!', 'When the song queue is empty, the bot will leave the voice channel!');
     case 'info':
       // If a song is in the queue, display basic info about it and the others songs in the queue in voice text
+      if (client.songQueue.songs.length !== 0) {
+        const info = await ytdl.getInfo(client.songQueue.songs[0]);
+        message.channel.send(`__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLink: <${info.video_url}>`)
+      }
       break;
     default:
       break;
