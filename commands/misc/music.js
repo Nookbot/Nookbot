@@ -118,13 +118,13 @@ module.exports.run = async (client, message, args) => {
     case 'stop':
       // Check if there is a queue, or if shuffle is on and destroy the connection
       if (client.songQueue.connection) {
-        client.songQueue.voiceChannel.leave();
-        client.songQueue.connection.disconnect();
+        if (client.songQueue.voiceChannel) client.songQueue.voiceChannel.leave();
+        if (client.songQueue.connection) client.songQueue.connection.disconnect();
         client.songQueue.playing = false;
         client.songQueue.songs = [];
         client.songQueue.voiceChannel = null;
         client.songQueue.connection = null;
-        return client.success(message.channel, 'Music Stopped!', 'The current song queue');
+        return client.success(message.channel, 'Music Stopped!', 'The current song queue was ended!');
       }
       return client.error(message.channel, 'Nothing to Stop!', 'There is nothing playing right now, so there is nothing to stop!');
     case 'shuffle':
