@@ -55,9 +55,9 @@ module.exports.run = async (client, message, args) => {
         if (client.songQueue.songs.length === 0) {
           if (client.songQueue.shuffle) {
             client.songQueue.songs.push(client.playlist.randomKey());
+          } else {
+            return client.error(message.channel, 'Not in Shuffle Mode!', 'To play songs randomly, I need to be in shuffle mode! Use \`.music shuffle\`.');
           }
-        } else {
-          return client.error(message.channel, 'Not in Shuffle Mode!', 'To play songs randomly, I need to be in shuffle mode! Use \`.music shuffle\`.');
         }
 
         client.songQueue.playing = true;
