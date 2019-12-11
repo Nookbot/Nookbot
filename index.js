@@ -85,7 +85,7 @@ client.songQueue = {
   connection: null,
   songs: [],
   playing: false,
-  shuffle: false,
+  shuffle: true,
   lastPlaylistUpdate: null,
 };
 
