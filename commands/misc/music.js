@@ -52,8 +52,10 @@ module.exports.run = async (client, message, args) => {
       if (!client.songQueue.connection) {
         // If song queue is empty, that means play was called while the bot wasn't in the channel and without a song search,
         // and we need to check if shuffle mode is on and pick a random song and add it to the queue if it is
-        if (!client.songQueue.songs && client.songQueue.shuffle) {
-          client.songQueue.songs.push(client.playlist.randomKey());
+        if (client.songQueue.songs.length === 0) {
+          if (client.songQueue.shuffle) {
+            client.songQueue.songs.push(client.playlist.randomKey());
+          }
         } else {
           return client.error(message.channel, 'Not in Shuffle Mode!', 'To play songs randomly, I need to be in shuffle mode! Use \`.music shuffle\`.');
         }
@@ -72,12 +74,11 @@ module.exports.run = async (client, message, args) => {
             return;
           }
 
-
           client.songQueue.connection.playStream(ytdl(song, { quality: 'highestaudio' }))
             .on('end', () => {
               client.songQueue.songs.shift();
               // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
-              if (!client.songQueue.songs && client.songQueue.shuffle) {
+              if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
                 client.songQueue.songs.push(client.playlist.randomKey());
               }
               play(client.songQueue.songs[0]);
