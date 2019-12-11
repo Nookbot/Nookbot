@@ -67,16 +67,18 @@ module.exports.run = async (client, message, args) => {
         // Defining a play function so it can call itself recursively
         const play = (song = client.songQueue.songs[0]) => {
           // If a song wasn't given leave voice channel, or if the connection has been destroyed
-          if (!song || !client.songQueue.connection) {
+          if (!song || client.songQueue.connection.dispatcher.destroyed) {
             client.songQueue.playing = false;
             client.songQueue.songs = [];
             client.songQueue.voiceChannel = null;
+            client.songQueue.connection = null;
             return;
           }
 
           client.songQueue.connection.playStream(ytdl(song, { quality: 'highestaudio' })
             .on('info', (info) => message.channel.send(`__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLink: <${info.video_url}>`)))
             .on('end', () => {
+              if (client.songQueue)
               client.songQueue.songs.shift();
               // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
               if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
