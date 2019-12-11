@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const moment = require('moment');
-const { compareTwoStrings: distance, findBestMatch: findBest } = require('string-similarity');
+const { compareTwoStrings: distance } = require('string-similarity');
 
 module.exports = (client) => {
   client.getSettings = (guild) => {

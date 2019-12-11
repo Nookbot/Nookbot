@@ -22,6 +22,7 @@
     "cheerio": "^1.0.0-rc.3",
     "discord.js": "^11.5.1",
     "enmap": "^5.1.2",
+    "ffmpeg": "0.0.4",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
     "node-opus": "^0.3.3",

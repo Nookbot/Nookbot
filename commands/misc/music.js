@@ -1,10 +1,10 @@
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
-const { compareTwoStrings: distance, findBestMatch: findBest } = require('string-similarity');
+const { findBestMatch: findBest } = require('string-similarity');
 
-module.exports.run = async (client, message, args, level, Discord) => {
+module.exports.run = async (client, message, args) => {
   // The music commands must be used in voice text
-  const voiceChannel = message.member.voiceChannel;
+  const { voiceChannel } = message.member;
   if (!voiceChannel || client.getSettings(message.guild).voiceText !== message.channel.id) {
     return client.error(message.channel, 'Command Unavailable!', `To use this command, you must use the <#${client.getSettings(message.guild).voiceText}> channel and currently be in the voice channel.`);
   }
@@ -18,9 +18,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
         if (plistCount === 0 || Date.now() - (client.songQueue.lastPlaylistUpdate || 0) > 86400000) {
           ytpl('PLmJ4dQSfFie-81me0jlzewxPIxKuO2-sI', { limit: 0 }, (err, playlistObj) => {
             if (err) {
-              client.error(message.channel, 'Error Loading Playlist!', 'The playlist failed to load and the song was not added.');
               console.error(err);
-              return;
+              return client.error(message.channel, 'Error Loading Playlist!', 'The playlist failed to load and the song was not added.');
             }
 
             // Clear the database of old videos
@@ -105,6 +104,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         client.songQueue.connection.dispatcher.pause();
         return client.success(message.channel, 'Song Paused!', 'The current song was paused! Resume it with \`.play\`.');
       }
+      return client.error(message.channel, 'No Song Playing!', 'There is no song to pause, or the song is already paused!');
     case 'stop':
       // Check if there is a queue, or if shuffle is on and destroy the connection
       if (client.songQueue.connection) {
@@ -115,6 +115,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         client.songQueue.connection = null;
         return client.success(message.channel, 'Music Stopped!', 'The current song queue');
       }
+      return client.error(message.channel, 'Nothing to Stop!', 'There is nothing playing right now, so there is nothing to stop!');
     case 'shuffle':
       // Toggle shuffle mode
       client.songQueue.shuffle = !client.songQueue.shuffle;
@@ -124,9 +125,9 @@ module.exports.run = async (client, message, args, level, Discord) => {
       return client.error(message.channel, 'Shuffle Mode Off!', 'When the song queue is empty, the bot will leave the voice channel!');
     case 'info':
       // If a song is in the queue, display basic info about it and the others songs in the queue in voice text
-      return;
+      break;
     default:
-      return;
+      break;
   }
 };
 

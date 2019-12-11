@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = (client, message, args, level) => {
   // Grab the userID from arguments
-  let userID = args[0];
+  const userID = args[0];
 
   // Sets reason shown in audit logs
   const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided';
@@ -26,4 +26,3 @@ module.exports.help = {
   usage: 'unban <userID> <reason>',
   details: '<userID> => Any valid userID.\n<reason> => The reason for the unban. Totally optional.',
 };
-  
