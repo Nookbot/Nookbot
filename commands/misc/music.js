@@ -50,6 +50,14 @@ module.exports.run = async (client, message, args) => {
       }
 
       if (!client.songQueue.connection) {
+        // If song queue is empty, that means play was called while the bot wasn't in the channel and without a song search,
+        // and we need to check if shuffle mode is on and pick a random song and add it to the queue if it is
+        if (!client.songQueue.songs && client.songQueue.shuffle) {
+          client.songQueue.songs.push(client.playlist.randomKey());
+        } else {
+          return client.error(message.channel, 'Not in Shuffle Mode!', 'To play songs randomly, I need to be in shuffle mode! Use \`.music shuffle\`.');
+        }
+
         client.songQueue.playing = true;
         client.songQueue.voiceChannel = voiceChannel;
         client.songQueue.connection = await voiceChannel.join();
@@ -79,13 +87,13 @@ module.exports.run = async (client, message, args) => {
             });
         };
 
-        // If song queue is empty, that means play was called while the bot wasn't in the channel and without a song search,
-        // and we need to check if shuffle mode is on and pick a random song and add it to the queue if it is
-        if (!client.songQueue.songs && client.songQueue.shuffle) {
-          client.songQueue.songs.push(client.playlist.randomKey());
-        }
         // Play the song
         play(client.songQueue.songs[0]);
+      } else {
+        // If the connection object is present, then see if the stream is paused, and resume it
+        if (client.songQueue.connection.dispatcher.paused) {
+          client.songQueue.connection.dispatcher.resume();
+        }
       }
       return;
     case 'skip':
