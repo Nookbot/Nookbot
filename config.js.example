@@ -5,9 +5,14 @@ const config = {
   // Settings
   defaultSettings: {
     prefix: '.',
-    verifiedRole: 'Verified',
-    modRole: 'Moderator',
-    adminRole: 'Admin',
+    verifiedRole: 'Islander',
+    modRole: 'Nooklings (mod)',
+    adminRole: 'Tom Nook (admin)',
+    staffChat: 'channelID',
+    actionLog: 'channelID',
+    modLog: 'channelID',
+    voiceText: 'channelID',
+    voice: 'channelID',
   },
 
   // UserDB Settings
@@ -17,11 +22,11 @@ const config = {
   },
 
   // Bot Perms and Stuff
-  ownerID: '392398406552780800',
+  ownerID: 'userID',
 
-  admins: [],
+  admins: ['userID', 'userID'],
 
-  support: [],
+  support: ['userID', 'userID'],
 
   // Guild Perms and Stuff
   permLevels: [

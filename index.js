@@ -79,7 +79,17 @@ client.raidJoins = [];
 client.raidMessage = null;
 client.raidMembersPrinted = 0;
 
-Object.assign(client, Enmap.multi(['settings', 'enabledCmds', 'userDB', 'emojiDB', 'tags'], { ensureProps: true }));
+// Music Feature
+client.songQueue = {
+  voiceChannel: null,
+  connection: null,
+  songs: [],
+  playing: false,
+  shuffle: false,
+  lastPlaylistUpdate: null,
+};
+
+Object.assign(client, Enmap.multi(['settings', 'enabledCmds', 'userDB', 'emojiDB', 'tags', 'playlist'], { ensureProps: true }));
 
 client.login(config.token).catch(() => {
   const interval = setInterval(() => {

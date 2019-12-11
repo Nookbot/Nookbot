@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const moment = require('moment');
-const distance = require('jaro-winkler');
+const { compareTwoStrings: distance, findBestMatch: findBest } = require('string-similarity');
 
 module.exports = (client) => {
   client.getSettings = (guild) => {
@@ -186,7 +186,7 @@ module.exports = (client) => {
     const rated = [];
 
     client.guilds.first().members.forEach((m) => {
-      const score = Math.max(distance(name, m.user.username, { caseSensitive: false }), distance(name, m.displayName, { caseSensitive: false }));
+      const score = Math.max(distance(name, m.user.username), distance(name, m.displayName));
       if (score > threshold) {
         rated.push({
           member: m,

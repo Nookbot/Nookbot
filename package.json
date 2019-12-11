@@ -22,11 +22,14 @@
     "cheerio": "^1.0.0-rc.3",
     "discord.js": "^11.5.1",
     "enmap": "^5.1.2",
-    "jaro-winkler": "^0.2.8",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
+    "node-opus": "^0.3.3",
     "ping": "^0.2.2",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "string-similarity": "^3.0.0",
+    "ytdl-core": "^1.0.3",
+    "ytpl": "^0.1.18"
   },
   "devDependencies": {
     "eslint": "^6.7.2",
