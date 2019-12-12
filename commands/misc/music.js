@@ -14,7 +14,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     // Prepare the embed
     const embed = new Discord.RichEmbed()
       .setTitle('__**•• DJ Nookbot ••**__')
-      .setDescription(`Played ${client.songQueue.played} song${client.songQueue.played !== 1 ? 's' : ''} | Total Time ${client.humanTimeBetween(0, client.songQueue.timePlayed * 1000)}
+      .setDescription(`Played ${client.songQueue.played} song${client.songQueue.played !== 1 ? 's' : ''} | Total Time ${client.humanTimeBetween(0, client.songQueue.timePlayed * 1000) || '0 seconds'}
 Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX} | Shuffle Mode: ${client.songQueue.shuffle ? client.emoji.checkMark : client.emoji.redX}`)
       .setColor('#1de9b6')
       .setTimestamp();
@@ -85,6 +85,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
         // and we need to check if shuffle mode is on and pick a random song and add it to the queue if it is
         if (client.songQueue.songs.length === 0) {
           if (client.songQueue.shuffle) {
+            client.songQueue.playing = true;
             const info = await infoFromID(client.playlist.randomKey());
             client.songQueue.songs.push(info);
             updateInfo();
@@ -100,7 +101,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
         // Defining a play function so it can call itself recursively
         const play = (song) => {
           // If a song wasn't given leave voice channel, or if the connection has been destroyed
-          if (!song || (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.destroyed)) {
+          if (!song || !client.songQueue.connection || (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.destroyed)) {
             client.clearSongQueue();
             return;
           }
