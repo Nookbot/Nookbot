@@ -84,14 +84,11 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
         // If song queue is empty, that means play was called while the bot wasn't in the channel and without a song search,
         // and we need to check if shuffle mode is on and pick a random song and add it to the queue if it is
         if (client.songQueue.songs.length === 0) {
-          if (client.songQueue.shuffle) {
-            client.songQueue.playing = true;
-            const info = await infoFromID(client.playlist.randomKey());
-            client.songQueue.songs.push(info);
-            updateInfo();
-          } else {
-            return updateInfo('Not in Shuffle Mode!', 'To play songs randomly, I need to be in shuffle mode! Use \`.music shuffle\`.');
-          }
+          client.songQueue.playing = true;
+          client.songQueue.shuffle = true;
+          const info = await infoFromID(client.playlist.randomKey());
+          client.songQueue.songs.push(info);
+          updateInfo();
         }
 
         client.songQueue.playing = true;
