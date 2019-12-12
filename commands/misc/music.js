@@ -107,9 +107,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
 
           client.songQueue.connection.playStream(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }))
             .on('end', async () => {
-              if (client.songQueue.connection
-                  && client.songQueue.connection.dispatcher
-                  && !client.songQueue.connection.dispatcher.destroyed) {
+              if (client.songQueue.connection) {
                 client.songQueue.played += 1;
                 client.songQueue.timePlayed += client.songQueue.songs[0].timeNum;
                 client.songQueue.songs.shift();
