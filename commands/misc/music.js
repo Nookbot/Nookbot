@@ -107,16 +107,20 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
 
           client.songQueue.connection.playStream(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }))
             .on('end', async () => {
-              client.songQueue.played += 1;
-              client.songQueue.timePlayed += client.songQueue.songs[0].timeNum;
-              client.songQueue.songs.shift();
-              // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
-              if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
-                const info = await infoFromID(client.playlist.randomKey());
-                client.songQueue.songs.push(info);
+              if (client.songQueue.connection
+                  && client.songQueue.connection.dispatcher
+                  && !client.songQueue.connection.dispatcher.destroyed) {
+                client.songQueue.played += 1;
+                client.songQueue.timePlayed += client.songQueue.songs[0].timeNum;
+                client.songQueue.songs.shift();
+                // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
+                if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
+                  const info = await infoFromID(client.playlist.randomKey());
+                  client.songQueue.songs.push(info);
+                }
+                updateInfo();
+                play(client.songQueue.songs[0]);
               }
-              updateInfo();
-              play(client.songQueue.songs[0]);
             })
             .on('error', (error) => {
               console.error(error);
