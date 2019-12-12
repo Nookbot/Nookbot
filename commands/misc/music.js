@@ -106,7 +106,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       // End the current song, and this will load the next song if any are in the queue
       client.songQueue.connection && client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.end();
-      return;
+      return client.success(message.channel, 'Song Skipped!', 'The current song was skipped!');
     case 'pause':
       // Check if a song is currently playing to pause
       if (client.songQueue.playing) {
@@ -142,7 +142,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         let msg = `__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLength: ${time(info.length_seconds)}\nLink: <${info.video_url}>`;
         if (client.songQueue.songs.length > 1) {
           msg += `\n\n__**Next**__`;
-          client.asyncForEach(client.songQueue.songs.slice(1), async (s) => {
+          await client.asyncForEach(client.songQueue.songs.slice(1), async (s) => {
             info = await ytdl.getInfo(s);
             msg += `\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLength: ${time(info.length_seconds)}\nLink: <${info.video_url}>`;
           });
