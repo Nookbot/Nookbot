@@ -142,7 +142,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         let msg = `__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLength: ${time(info.length_seconds)}\nLink: <${info.video_url}>`;
         if (client.songQueue.songs.length > 1) {
           msg += `\n\n__**Next**__`;
-          client.asyncForEach(client.songQueue.songs.slice(1), (s) => {
+          client.asyncForEach(client.songQueue.songs.slice(1), async (s) => {
             info = await ytdl.getInfo(s);
             msg += `\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLength: ${time(info.length_seconds)}\nLink: <${info.video_url}>`;
           });
