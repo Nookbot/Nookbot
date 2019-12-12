@@ -77,7 +77,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
           }
 
           client.songQueue.connection.playStream(ytdl(song, { quality: 'highestaudio', highWaterMark: 4194304 })
-            .on('info', (info) => message.channel.send(`__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLink: <${info.video_url}>`)))
+            .on('info', (info) => message.channel.send(`__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}
+Length: ${Math.floor(parseInt(info.length_seconds, 10) / 60)}:${(parseInt(info.length_seconds, 10) % 60).toString().padStart(2, 0)}\nLink: <${info.video_url}>`)))
             .on('end', () => {
               client.songQueue.songs.shift();
               // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
@@ -138,7 +139,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       // If a song is in the queue, display basic info about it and the others songs in the queue in voice text
       if (client.songQueue.songs.length !== 0) {
         let info = await ytdl.getInfo(client.songQueue.songs[0]);
-        const time = (timeString) => `${Math.floor(parseInt(timeString, 10) / 60)}:${parseInt(timeString, 10) % 60}`;
+        const time = (timeString) => `${Math.floor(parseInt(timeString, 10) / 60)}:${(parseInt(timeString, 10) % 60).toString().padStart(2, 0)}`;
         let msg = `__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLength: ${time(info.length_seconds)}\nLink: <${info.video_url}>`;
         if (client.songQueue.songs.length > 1) {
           msg += `\n\n__**Next**__`;
