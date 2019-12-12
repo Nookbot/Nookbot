@@ -81,6 +81,7 @@ client.raidMembersPrinted = 0;
 
 // Music Feature
 client.songQueue = {
+  infoMessage: null,
   voiceChannel: null,
   connection: null,
   songs: [],

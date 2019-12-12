@@ -2,7 +2,7 @@ const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
 const { findBestMatch: findBest } = require('string-similarity');
 
-module.exports.run = async (client, message, args) => {
+module.exports.run = async (client, message, args, level, Discord) => {
   // The music commands must be used in voice text
   const { voiceChannel } = message.member;
   if (!voiceChannel || client.getSettings(message.guild).voiceText !== message.channel.id) {
@@ -46,6 +46,7 @@ module.exports.run = async (client, message, args) => {
           .trim();
         const titleName = findBest(search, titles).bestMatch.target;
         const songID = client.playlist.findKey((v) => v === titleName);
+        client.success(message.channel, 'Song Added!', `Your search matched best with **${titleName.toProperCase()}**, and was added to the queue!`);
         client.songQueue.songs.push(songID);
       }
 
@@ -65,7 +66,7 @@ module.exports.run = async (client, message, args) => {
         client.songQueue.connection = await voiceChannel.join();
 
         // Defining a play function so it can call itself recursively
-        const play = (song = client.songQueue.songs[0]) => {
+        const play = (song) => {
           // If a song wasn't given leave voice channel, or if the connection has been destroyed
           if (!song || (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.destroyed)) {
             client.songQueue.playing = false;
@@ -75,10 +76,9 @@ module.exports.run = async (client, message, args) => {
             return;
           }
 
-          client.songQueue.connection.playStream(ytdl(song, { quality: 'highestaudio' })
+          client.songQueue.connection.playStream(ytdl(song, { quality: 'highestaudio', highWaterMark: 4194304 })
             .on('info', (info) => message.channel.send(`__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLink: <${info.video_url}>`)))
             .on('end', () => {
-              if (client.songQueue)
               client.songQueue.songs.shift();
               // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
               if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
@@ -93,19 +93,19 @@ module.exports.run = async (client, message, args) => {
 
         // Play the song
         play(client.songQueue.songs[0]);
-      } else if (client.songQueue.connection.dispatcher.paused) {
+      } else if (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.paused) {
         // If the connection object is present, then see if the stream is paused, and resume it
         client.songQueue.connection.dispatcher.resume();
       }
       return;
     case 'skip':
       // Check if there's a song to skip
-      if (!client.songQueue.songs) {
+      if (client.songQueue.songs.length === 0) {
         return client.error(message.channel, 'No Song To Skip!', 'No song is currently playing, so there is nothing to skip!');
       }
 
       // End the current song, and this will load the next song if any are in the queue
-      if (client.songQueue.connection && client.songQueue.connection.dispatcher) client.songQueue.connection.dispatcher.end();
+      client.songQueue.connection && client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.end();
       return;
     case 'pause':
       // Check if a song is currently playing to pause
@@ -116,14 +116,14 @@ module.exports.run = async (client, message, args) => {
       }
       return client.error(message.channel, 'No Song Playing!', 'There is no song to pause, or the song is already paused!');
     case 'stop':
-      // Check if there is a queue, or if shuffle is on and destroy the connection
       if (client.songQueue.connection) {
-        if (client.songQueue.voiceChannel) client.songQueue.voiceChannel.leave();
-        if (client.songQueue.connection) client.songQueue.connection.disconnect();
-        client.songQueue.playing = false;
-        client.songQueue.songs = [];
-        client.songQueue.voiceChannel = null;
+        // If connection is not null, disconnect it
+        client.songQueue.connection.disconnect();
         client.songQueue.connection = null;
+        client.songQueue.voiceChannel = null;
+        client.songQueue.songs = [];
+        client.songQueue.infoMessage = null;
+        client.songQueue.playing = false;
         return client.success(message.channel, 'Music Stopped!', 'The current song queue was ended!');
       }
       return client.error(message.channel, 'Nothing to Stop!', 'There is nothing playing right now, so there is nothing to stop!');
@@ -137,12 +137,21 @@ module.exports.run = async (client, message, args) => {
     case 'info':
       // If a song is in the queue, display basic info about it and the others songs in the queue in voice text
       if (client.songQueue.songs.length !== 0) {
-        const info = await ytdl.getInfo(client.songQueue.songs[0]);
-        message.channel.send(`__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLink: <${info.video_url}>`)
+        let info = await ytdl.getInfo(client.songQueue.songs[0]);
+        const time = (timeString) => `${Math.floor(parseInt(timeString, 10) / 60)}:${parseInt(timeString, 10) % 60}`;
+        let msg = `__**Now Playing**__\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLength: ${time(info.length_seconds)}\nLink: <${info.video_url}>`;
+        if (client.songQueue.songs.length > 1) {
+          msg += `\n\n__**Next**__`;
+          client.asyncForEach(client.songQueue.songs.slice(1), (s) => {
+            info = await ytdl.getInfo(s);
+            msg += `\nTitle: ${info.title}\nAuthor: ${info.author.name}\nLength: ${time(info.length_seconds)}\nLink: <${info.video_url}>`;
+          });
+        }
+        return message.channel.send(msg);
       }
-      break;
+      return client.error(message.channel, 'No Songs in Queue!', 'There are currently no songs in the queue to display information for!');
     default:
-      break;
+      return client.error(message.channel, 'Wrong Sub Command!', `The sub command ${args[0]} is not valid. Use \`.help music\` to list the valid sub commands.`);
   }
 };
 
