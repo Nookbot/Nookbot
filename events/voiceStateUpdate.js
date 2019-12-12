@@ -4,11 +4,7 @@ module.exports = async (client, oldMember, newMember) => {
   if (client.voiceConnections.get(oldMember.guild.id)
       && oldMember.guild.channels.get(client.getSettings(oldMember.guild).voice).members.size === 1) {
     // If connection is not null, disconnect it
-    client.songQueue.connection && client.songQueue.connection.disconnect();
-    client.songQueue.connection = null;
-    client.songQueue.voiceChannel = null;
-    client.songQueue.infoMessage = null;
-    client.songQueue.playing = false;
+    client.clearSongQueue();
     return oldMember.guild.channels.get(client.getSettings(oldMember.guild).voiceText).send('Everyone left voice chat, so the music stopped.');
   }
 };

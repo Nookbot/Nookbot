@@ -200,6 +200,21 @@ module.exports = (client) => {
     return (rated[0] && rated[0].member) || null;
   };
 
+  client.clearSongQueue = () => {
+    if (client.songQueue.connection) {
+      client.songQueue.connection.disconnect();
+    }
+    client.songQueue.connection = null;
+    client.songQueue.voiceChannel = null;
+    client.songQueue.songs = [];
+    client.songQueue.infoMessage = null;
+    client.songQueue.playing = false;
+    client.songQueue.played = 0;
+    client.songQueue.timePlayed = 0;
+    client.songQueue.lastUpdateTitle = '';
+    client.songQueue.lastUpdateDesc = '';
+  };
+
   // eslint-disable-next-line no-extend-native
   Object.defineProperty(String.prototype, 'toProperCase', {
     value() {

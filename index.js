@@ -87,7 +87,10 @@ client.songQueue = {
   songs: [],
   playing: false,
   shuffle: true,
-  lastPlaylistUpdate: null,
+  played: 0,
+  timePlayed: 0,
+  lastUpdateTitle: '',
+  lastUpdateDesc: '',
 };
 
 Object.assign(client, Enmap.multi(['settings', 'enabledCmds', 'userDB', 'emojiDB', 'tags', 'playlist'], { ensureProps: true }));
