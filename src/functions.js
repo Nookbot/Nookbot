@@ -197,7 +197,7 @@ module.exports = (client) => {
 
     rated.sort((a, b) => b.score - a.score);
 
-    return rated[0].member;
+    return (rated[0] && rated[0].member) || null;
   };
 
   // eslint-disable-next-line no-extend-native
