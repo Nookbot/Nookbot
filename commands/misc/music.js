@@ -149,7 +149,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
       if (client.songQueue.connection && client.songQueue.connection.dispatcher) {
         client.songQueue.connection.dispatcher.end();
       }
-      return updateInfo('Song Skipped!', 'The current song was skipped!');
+      return await updateInfo('Song Skipped!', 'The current song was skipped!');
     case 'pause':
       // Check if a song is currently playing to pause
       if (client.songQueue.playing) {
