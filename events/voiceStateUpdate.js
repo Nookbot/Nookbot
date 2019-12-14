@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 // eslint-disable-next-line no-unused-vars
 module.exports = async (client, oldMember, newMember) => {
   // Check if this is the last user leaving the voice channel, and if the bot is in it

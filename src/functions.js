@@ -201,6 +201,7 @@ module.exports = (client) => {
   };
 
   client.clearSongQueue = () => {
+    client.songQueue.stopping = true;
     if (client.songQueue.connection) {
       client.songQueue.connection.disconnect();
     }
@@ -213,6 +214,7 @@ module.exports = (client) => {
     client.songQueue.timePlayed = 0;
     client.songQueue.lastUpdateTitle = '';
     client.songQueue.lastUpdateDesc = '';
+    client.songQueue.stopping = false;
   };
 
   // eslint-disable-next-line no-extend-native

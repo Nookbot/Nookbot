@@ -87,6 +87,7 @@ client.songQueue = {
   songs: [],
   playing: false,
   shuffle: true,
+  stopping: false,
   played: 0,
   timePlayed: 0,
   lastUpdateTitle: '',

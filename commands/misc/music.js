@@ -1,8 +1,38 @@
+/* eslint-disable consistent-return */
+
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
 const { findBestMatch: findBest } = require('string-similarity');
 
 module.exports.run = async (client, message, args, level, Discord) => {
+  // Secret update command to redownload the update, only Tristan can use
+  // Tristan's UserID
+  if (args[0] === 'update') {
+    if (message.author.id === '170307091628556289') {
+      ytpl('PLmJ4dQSfFie-81me0jlzewxPIxKuO2-sI', { limit: 0 }, (err, playlistObj) => {
+        if (err) {
+          console.error(err);
+          return client.error(message.channel, 'Error Loading Playlist!', 'The playlist failed to load and the song was not added.');
+        }
+
+        // Clear the database of old videos
+        client.playlist.deleteAll();
+
+        // Add the new playlist to the database
+        playlistObj.items.forEach((video) => {
+          client.playlist.set(video.id, video.title.toLowerCase()
+            .replace(/animal|crossing|ost|orginal|soundtrack|[^\w]/gi, ' ')
+            .replace(/\s+/g, ' ')
+            .trim());
+        });
+
+        return client.success(message.channel, 'Playlist Database Updated!', 'The newest version of the playlist has been loaded into the bot\'s database!');
+      });
+    } else {
+      return client.error(message.channel, 'Permission Denied!', 'You do not have permission to update the playlist database!');
+    }
+  }
+
   // The music commands must be used in voice text
   const { voiceChannel } = message.member;
   if (!voiceChannel || client.getSettings(message.guild).voiceText !== message.channel.id) {
@@ -14,7 +44,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     // Prepare the embed
     const embed = new Discord.RichEmbed()
       .setTitle('__**•• DJ Nookbot ••**__')
-      .setDescription(`Played ${client.songQueue.played} song${client.songQueue.played !== 1 ? 's' : ''} | Total Time ${client.humanTimeBetween(0, client.songQueue.timePlayed * 1000) || '0 seconds'}
+      .setDescription(`Played: ${client.songQueue.played} song${client.songQueue.played !== 1 ? 's' : ''} | Total Time: ${client.humanTimeBetween(0, client.songQueue.timePlayed * 1000) || '0 seconds'}
 Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX} | Shuffle Mode: ${client.songQueue.shuffle ? client.emoji.checkMark : client.emoji.redX}`)
       .setColor('#1de9b6')
       .setTimestamp();
@@ -76,6 +106,10 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
         const titleName = findBest(search, titles).bestMatch.target;
         const songID = client.playlist.findKey((v) => v === titleName);
         const info = await infoFromID(songID);
+        // If no songs are in the queue, start playing
+        if (client.songQueue.songs.length === 0) {
+          client.songQueue.playing = true;
+        }
         client.songQueue.songs.push(info);
         updateInfo('Song Added!', `Your search matched best with **${info.title}**, and was added to the queue!`);
       }
@@ -96,7 +130,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
         client.songQueue.connection = await voiceChannel.join();
 
         // Defining a play function so it can call itself recursively
-        const play = (song) => {
+        const play = async (song) => {
           // If a song wasn't given leave voice channel, or if the connection has been destroyed
           if (!song || !client.songQueue.connection || (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.destroyed)) {
             client.clearSongQueue();
@@ -104,20 +138,30 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
           }
 
           client.songQueue.connection.playStream(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }))
-            .on('end', () => {
-              if (client.songQueue.connection) {
-                client.songQueue.played += 1;
-                client.songQueue.timePlayed += client.songQueue.songs[0].timeNum;
+            .on('end', (reason) => {
+              if (!client.songQueue.stopping && client.songQueue.connection) {
+                if (reason !== 'skip') {
+                  client.songQueue.played += 1;
+                  client.songQueue.timePlayed += client.songQueue.songs[0].timeNum;
+                }
                 client.songQueue.songs.shift();
                 // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
                 if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
                   infoFromID(client.playlist.randomKey()).then((i) => {
                     client.songQueue.songs.push(i);
-                    updateInfo();
+                    if (reason === 'skip') {
+                      updateInfo('Song Skipped!', 'The current song was skipped!');
+                    } else {
+                      updateInfo();
+                    }
                     play(client.songQueue.songs[0]);
                   });
                 } else {
-                  updateInfo();
+                  if (reason === 'skip') {
+                    updateInfo('Song Skipped!', 'The current song was skipped!');
+                  } else {
+                    updateInfo();
+                  }
                   play(client.songQueue.songs[0]);
                 }
               }
@@ -144,9 +188,9 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
 
       // End the current song, and this will load the next song if any are in the queue
       if (client.songQueue.connection && client.songQueue.connection.dispatcher) {
-        client.songQueue.connection.dispatcher.end();
+        client.songQueue.connection.dispatcher.end('skip');
       }
-      return await updateInfo('Song Skipped!', 'The current song was skipped!');
+      return;
     case 'pause':
       // Check if a song is currently playing to pause
       if (client.songQueue.playing) {
@@ -182,32 +226,6 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
       return client.error(message.channel, 'Music Bot Inactive!', 'The music bot must bust be connected to the voice channel to change the shuffle mode!');
     case 'info':
       return updateInfo();
-    case 'update':
-      // Tristan's UserID
-      if (message.author.id === '170307091628556289') {
-        ytpl('PLmJ4dQSfFie-81me0jlzewxPIxKuO2-sI', { limit: 0 }, (err, playlistObj) => {
-          if (err) {
-            console.error(err);
-            return client.error(message.channel, 'Error Loading Playlist!', 'The playlist failed to load and the song was not added.');
-          }
-
-          // Clear the database of old videos
-          client.playlist.deleteAll();
-
-          // Add the new playlist to the database
-          playlistObj.items.forEach((video) => {
-            client.playlist.set(video.id, video.title.toLowerCase()
-              .replace(/animal|crossing|ost|orginal|soundtrack|[^\w]/gi, ' ')
-              .replace(/\s+/g, ' ')
-              .trim());
-          });
-
-          return client.success(message.channel, 'Playlist Database Updated!', 'The newest version of the playlist has been loaded into the bot\'s database!');
-        });
-      } else {
-        return client.error(message.channel, 'Permission Denied!', 'You do not have permission to update the playlist database!');
-      }
-      break;
     default:
       return client.error(message.channel, 'Wrong Sub Command!', `The sub command **${args[0]}** is not valid. Use \`.help music\` to list the valid sub commands.`);
   }
