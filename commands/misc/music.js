@@ -9,7 +9,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
   // Tristan's UserID
   if (args[0] === 'update') {
     if (message.author.id === '170307091628556289') {
-      ytpl('PLmJ4dQSfFie-81me0jlzewxPIxKuO2-sI', { limit: 0 }, (err, playlistObj) => {
+      return ytpl('PLmJ4dQSfFie-81me0jlzewxPIxKuO2-sI', { limit: 0 }, (err, playlistObj) => {
         if (err) {
           console.error(err);
           return client.error(message.channel, 'Error Loading Playlist!', 'The playlist failed to load and the song was not added.');
