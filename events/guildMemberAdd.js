@@ -37,6 +37,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
           // A valid user has selected to ban the raid party.
           // Log that the banning is beginning and who approved of the action.
           client.success(staffChat, 'Banning!', `User ${modUser.tag} has chosen to ban the raid. It may take some time to finish banning all raid members.`);
+          client.raidBanning = true;
           // Create a setInterval to ban members without rate limiting.
           const interval = setInterval(() => {
             if (client.raidJoins.length !== 0) {
@@ -48,9 +49,10 @@ This message updates every 5 seconds, and you should wait to decide until the co
               staffChat.send('Finished banning all raid members. Raid Mode is deactivated.');
               actionLog.send(`The above ${client.raidMembersPrinted} members have been banned.`);
               // Reset all raid variables
-              // Deactivate Raid Mode after a few seconds to allow for other events genereated to finish
+              client.raidMode = false;
+              // Deactivate Raid Banning after a few seconds to allow for other events generated to finish
               setTimeout(() => {
-                client.raidMode = false;
+                client.raidBanning = false;
               }, 3000);
               client.raidJoins = [];
               client.raidMessage = null;
@@ -81,7 +83,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
       // If the raid is over, don't update anymore.
       if (!client.raidMode) {
         clearInterval(updateRaid);
-      } else {
+      } else if (!client.raidBanning) {
         client.raidMessage.edit(`**##### RAID MODE ACTIVATED #####**
 <@&495865346591293443> <@&494448231036747777>
 Would you like to ban all ${client.raidJoins.length} members that joined in the raid?

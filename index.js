@@ -75,6 +75,7 @@ client.invites = {};
 
 // Raid Mode
 client.raidMode = false;
+client.raidBanning = false;
 client.raidJoins = [];
 client.raidMessage = null;
 client.raidMembersPrinted = 0;
