@@ -9,8 +9,16 @@ module.exports = async (client, member) => {
 
   const serverAge = client.humanTimeBetween(Date.now(), member.joinedTimestamp);
 
-  const roles = member.roles.filter((r) => r.id !== member.guild.id).map((r) => r.name).join(', ') || 'No Roles';
-  const roleSize = member.roles.filter((r) => r.id !== member.guild.id).size;
+  const rolesArray = member.roles.filter((r) => r.id !== member.guild.id);
+  const roles = rolesArray.map((r) => `<@&${r.id}>`).join(', ') || 'No Roles';
+
+  // Role persistence
+  rolesArray.forEach((r) => {
+    // Check if it's managed, since we can't add those roles back with the bot later
+    if (!r.managed) {
+      client.userDB.push(member.id, r.id, 'roles');
+    }
+  });
 
   const embed = new Discord.RichEmbed()
     .setAuthor(member.user.tag, member.user.displayAvatarURL)
@@ -20,7 +28,7 @@ module.exports = async (client, member) => {
     .setThumbnail(member.user.displayAvatarURL)
     .addField('**Member Left**', `<@${member.id}>`, true)
     .addField('**Member For**', serverAge, true)
-    .addField(`**Roles (${roleSize})**`, roles, true);
+    .addField(`**Roles (${rolesArray.size})**`, roles, true);
 
   member.guild.channels.get(client.getSettings(member.guild).actionLog).send(embed);
 };
