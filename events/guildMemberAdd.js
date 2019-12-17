@@ -37,31 +37,30 @@ This message updates every 5 seconds, and you should wait to decide until the co
           // A valid user has selected to ban the raid party.
           // Log that the banning is beginning and who approved of the action.
           client.success(staffChat, 'Banning!', `User ${modUser.tag} has chosen to ban the raid. It may take some time to finish banning all raid members.`);
-          // Promisify a setInterval to ban members without rate limiting.
-          await new Promise((resolve) => {
-            const interval = setInterval(() => {
-              if (client.raidJoins.length !== 0) {
-                // Ban the next member
-                client.raidJoins.shift().ban({ days: 1, reason: 'Member of raid.' })
-                  .catch(console.error);
-              } else {
-                // We've finished banning, annouce that raid mode is ending.
-                staffChat.send('Finished banning all raid members. Raid Mode is deactivated.');
-                actionLog.send(`The above ${client.raidMembersPrinted} members have been banned.`);
-                // Reset all raid variables
+          // Create a setInterval to ban members without rate limiting.
+          const interval = setInterval(() => {
+            if (client.raidJoins.length !== 0) {
+              // Ban the next member
+              client.raidJoins.shift().ban({ days: 1, reason: 'Member of raid.' })
+                .catch(console.error);
+            } else {
+              // We've finished banning, annouce that raid mode is ending.
+              staffChat.send('Finished banning all raid members. Raid Mode is deactivated.');
+              actionLog.send(`The above ${client.raidMembersPrinted} members have been banned.`);
+              // Reset all raid variables
+              // Deactivate Raid Mode after a few seconds to allow for other events genereated to finish
+              setTimeout(() => {
                 client.raidMode = false;
-                client.raidJoins = [];
-                client.raidMessage = null;
-                client.raidMembersPrinted = 0;
-                // Allow users to send messages again.
-                perms.add('SEND_MESSAGES');
-                everyone.setPermissions(perms);
-                // Resolve this promise and clear interval.
-                resolve();
-                clearInterval(interval);
-              }
-            }, 100); // 100 ms is 10 bans a second, hopefully not too many.
-          });
+              }, 3000);
+              client.raidJoins = [];
+              client.raidMessage = null;
+              client.raidMembersPrinted = 0;
+              // Allow users to send messages again.
+              perms.add('SEND_MESSAGES');
+              everyone.setPermissions(perms);
+              clearInterval(interval);
+            }
+          }, 100); // 100 ms is 10 bans a second, hopefully not too many.
         } else {
           // A valid user has selected not to ban the raid party.
           client.error(staffChat, 'Not Banning!', `User ${modUser.tag} has chosen to not ban the raid. Raid Mode is deactivated.`);
@@ -94,7 +93,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
           const newMembers = client.raidJoins.slice(client.raidMembersPrinted);
           client.raidMembersPrinted += newMembers.length;
           newMembers.forEach((mem) => {
-            msg += `${mem.user.tag} (${mem.id})\n`;
+            msg += `\n${mem.user.tag} (${mem.id})`;
           });
           actionLog.send(msg, { split: true });
           msg = '';
