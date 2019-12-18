@@ -11,6 +11,6 @@ module.exports = async (client, oldMember, newMember) => {
     client.userDB.ensure(newMember.id, client.config.userDBDefaults);
     client.userDB.push(newMember.id, { timestamp: Date.now(), nickname: newMember.nickname }, 'nicknames');
 
-    oldMember.guild.get(client.getSettings(client.guilds.first()).actionLog).send(embed);
+    oldMember.guild.channels.get(client.getSettings(client.guilds.first()).actionLog).send(embed);
   }
 };
