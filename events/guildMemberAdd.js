@@ -115,15 +115,15 @@ This message updates every 5 seconds, and you should wait to decide until the co
   }
 
   // Role persistence
-  const storedMember = client.userDB.get(member.id);
-  if (storedMember && storedMember.roles) {
+  const storedMember = client.userDB.ensure(member.id, client.config.userDBDefaults);
+  if (storedMember.roles.length !== 0) {
     storedMember.roles.forEach((r) => {
       const role = member.guild.roles.get(r);
       if (!role.managed) {
         member.addRole(role);
       }
     });
-    client.userDB.deleteProp(member.id, 'roles');
+    client.userDB.setProp(member.id, 'roles', []);
   }
 
   const time = Date.now();
