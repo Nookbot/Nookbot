@@ -1,14 +1,13 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, oldUser, newUser) => {
-  console.log(`userUpdate Event:\noldUser: ${oldUser.tag} | ${oldUser.username} ${oldUser.discriminator}\nnewUser: ${newUser.tag} | ${newUser.username} ${newUser.discriminator}`)
-  if (oldUser.username !== newUser.username || oldUser.discriminator !== newUser.discriminator) {
+  if (oldUser.tag !== newUser.tag) {
     const embed = new Discord.RichEmbed()
       .setAuthor(newUser.tag, newUser.displayAvatarURL)
       .setTimestamp()
       .setColor('#00e5ff')
       .setFooter(`ID: ${newUser.id}`)
-      .addField('**Username Update**', `**Before:**${oldUser.username}#${oldUser.discriminator}\n**+After:**${newUser.username}#${newUser.discriminator}`);
+      .addField('**Username Update**', `**Before:**${oldUser.tag}\n**+After:**${newUser.tag}`);
 
     client.userDB.ensure(newUser.id, client.config.userDBDefaults);
     client.userDB.push(newUser.id, { timestamp: Date.now(), username: newUser.tag }, 'usernames');
