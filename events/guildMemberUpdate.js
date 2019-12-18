@@ -10,7 +10,7 @@ module.exports = async (client, oldMember, newMember) => {
       .addField('**Nickname Update**', `**Before:**${oldMember.nickname || oldMember.user.username}\n**+After:**${newMember.nickname || newMember.user.username}`);
 
     client.userDB.ensure(newMember.id, client.config.userDBDefaults);
-    client.userDB.push(newMember.id, { timestamp: Date.now(), nickname: newMember.nickname || '' }, 'nicknames');
+    client.userDB.push(newMember.id, { timestamp: Date.now(), nickname: newMember.nickname || newMember.user.username }, 'nicknames');
 
     oldMember.guild.channels.get(client.getSettings(client.guilds.first()).actionLog).send(embed);
   }
