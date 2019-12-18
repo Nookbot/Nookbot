@@ -9,9 +9,9 @@ module.exports.run = async (client, message, args, level, Discord) => {
   });
 
   let currentPage = 1;
-  const maxPage = Math.ceil(nickArray.length / 15);
+  const maxPage = Math.ceil(nickArray.length / 15) || 1;
   const embed = new Discord.RichEmbed()
-    .setTitle(`Past nicknames of ${member.tag}`)
+    .setTitle(`Past nicknames of ${member.user.tag}`)
     .setDescription(`\`\`\`${nickArray.slice(0, 15).join('\n') || 'No stored nicknames.'}\`\`\``)
     .setFooter(`Page ${currentPage}/${maxPage}`)
     .setTimestamp();
