@@ -145,7 +145,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
                 }
                 client.songQueue.songs.shift();
                 // This was the fix for huge wait times between songs
-                client.songQueue.connection.dispatcher.player.streamingData.pausedTime = 0;
+                client.songQueue.connection.player.streamingData.pausedTime = 0;
                 // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
                 if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
                   infoFromID(client.playlist.randomKey()).then((i) => {

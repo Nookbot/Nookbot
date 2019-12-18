@@ -5,6 +5,7 @@ module.exports = async (client, oldUser, newUser) => {
     const embed = new Discord.RichEmbed()
       .setAuthor(newUser.tag, newUser.displayAvatarURL)
       .setTimestamp()
+      .setColor('#00e5ff')
       .setFooter(`ID: ${newUser.id}`)
       .addField('**Username Update**', `**Before:**${oldUser.tag}\n**+After:**${newUser.tag}`);
 
