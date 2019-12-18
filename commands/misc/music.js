@@ -130,7 +130,6 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
 
         // Defining a play function so it can call itself recursively
         const play = async (song) => {
-          console.log('##### DEBUG ##### The play function was called, checking if it should end.');
           // If a song wasn't given leave voice channel, or if the connection has been destroyed
           if (!song || !client.songQueue.connection || (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.destroyed)) {
             client.clearSongQueue();
@@ -139,13 +138,14 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
 
           client.songQueue.connection.playStream(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }))
             .on('end', (reason) => {
-              console.log('##### DEBUG ##### Start of the end event.');
               if (!client.songQueue.stopping && client.songQueue.connection) {
                 if (reason !== 'skip') {
                   client.songQueue.played += 1;
                   client.songQueue.timePlayed += client.songQueue.songs[0].timeNum;
                 }
                 client.songQueue.songs.shift();
+                // This was the fix for huge wait times between songs
+                client.songQueue.connection.dispatcher.player.streamingData.pausedTime = 0;
                 // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
                 if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
                   infoFromID(client.playlist.randomKey()).then((i) => {
@@ -155,7 +155,6 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
                     } else {
                       updateInfo();
                     }
-                    console.log('##### DEBUG ##### Recursively calling play() with shuffle');
                     play(client.songQueue.songs[0]);
                   });
                 } else {
@@ -164,21 +163,16 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
                   } else {
                     updateInfo();
                   }
-                  console.log('##### DEBUG ##### Recursively calling play() with shuffle');
                   play(client.songQueue.songs[0]);
                 }
-                console.log('##### DEBUG ##### Finished calling play()');
               }
-              console.log('##### DEBUG ##### End of the end event.');
             })
             .on('error', (error) => {
               console.error(error);
             });
-          console.log('##### DEBUG ##### After calling the playStream() function on the connection object');
         };
 
         // Play the song
-        console.log('##### DEBUG ##### Calling the play function for the first time because there was no connection.');
         play(client.songQueue.songs[0]);
       } else if (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.paused) {
         // If the connection object is present, then see if the stream is paused, and resume it
