@@ -20,7 +20,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
   if (userArray.length > 15) {
     await infoMessage.react('⬅️');
     await infoMessage.react('➡️');
-    const filter = (reaction) => reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️';
+    const filter = (reaction, user) => (reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️') && !user.bot;
     const collector = infoMessage.createReactionCollector(filter, { time: 120000 });
     collector.on('collect', (r) => {
       if (r.emoji.name === '⬅️' && currentPage !== 1) {
