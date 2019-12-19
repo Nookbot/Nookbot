@@ -136,8 +136,8 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
             return;
           }
 
-          client.songQueue.connection.playStream(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }))
-            .on('end', (reason) => {
+          const dispatcher = client.songQueue.connection.playStream(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }))
+            .once('end', (reason) => {
               if (!client.songQueue.stopping && client.songQueue.connection) {
                 if (reason !== 'skip') {
                   client.songQueue.played += 1;
@@ -166,9 +166,6 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
                   play(client.songQueue.songs[0]);
                 }
               }
-            })
-            .on('error', (error) => {
-              console.error(error);
             });
         };
 
