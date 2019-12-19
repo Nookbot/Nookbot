@@ -3,9 +3,9 @@
 module.exports = async (client, oldMember, newMember) => {
   // Check if this is the last user leaving the voice channel, and if the bot is in it
   if (client.voiceConnections.get(oldMember.guild.id)
-      && oldMember.guild.channels.get(client.getSettings(oldMember.guild).voice).members.size === 1) {
+      && oldMember.guild.channels.get(client.getSettings(oldMember.guild).music).members.size === 1) {
     // If connection is not null, disconnect it
     client.clearSongQueue();
-    return oldMember.guild.channels.get(client.getSettings(oldMember.guild).voiceText).send('Everyone left voice chat, so the music stopped. Back to writing up home loans!');
+    return oldMember.guild.channels.get(client.getSettings(oldMember.guild).musicText).send('Everyone left the music channel, so the music stopped. Back to writing up home loans!');
   }
 };

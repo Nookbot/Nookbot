@@ -11,8 +11,8 @@ const config = {
     staffChat: 'channelID',
     actionLog: 'channelID',
     modLog: 'channelID',
-    voiceText: 'channelID',
-    voice: 'channelID',
+    musicText: 'channelID',
+    music: 'channelID',
   },
 
   // UserDB Settings
