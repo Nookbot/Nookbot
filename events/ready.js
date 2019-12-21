@@ -34,46 +34,51 @@ module.exports = (client) => {
       client.invites = guildInvites;
     });
 
-    client.twitter.stream('statuses/filter', { follow: client.config.followedTwitterUsers.join(',') }, (stream) => {
-      // eslint-disable-next-line consistent-return
-      stream.on('data', (tweet) => {
-        switch (tweet.user.id) {
-          case 853812637:
-            // Tristan
-            return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'TristanTwitterTest', avatarURL: `${tweet.user.profile_image_url_https}` });
-          case 848450138:
-            // @Doubutsuno_Mori
-            return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Japan Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
-          case 1337012706:
-            // @AC_Isabelle
-            return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'United Kingdom Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
-          case 1337021028:
-            // @AC_Melinda
-            return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Germany Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
-          case 1337023806:
-            // @AC_Marie_FR
-            return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'France Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
-          case 1337029176:
-            // @AC_Fuffi
-            return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Italy Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
-          case 1337043620:
-            // @AC_Canela
-            return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Spain Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
-          case 1337057191:
-            // @AC_Isabelle_NL
-            return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Netherlands Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
-          case 1377451009:
-            // @AnimalCrossing
-            return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'United States Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
-          default:
-            // The tweet wasn't actually from the followed users, so toss it
-        }
-      });
+    try {
+      client.twitter.stream('statuses/filter', { follow: client.config.followedTwitterUsers.join(',') }, (stream) => {
+        // eslint-disable-next-line consistent-return
+        stream.on('data', (tweet) => {
+          switch (tweet.user.id) {
+            case 853812637:
+              // Tristan
+              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'TristanTwitterTest', avatarURL: `${tweet.user.profile_image_url_https}` });
+            case 848450138:
+              // @Doubutsuno_Mori
+              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Japan Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
+            case 1337012706:
+              // @AC_Isabelle
+              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'United Kingdom Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
+            case 1337021028:
+              // @AC_Melinda
+              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Germany Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
+            case 1337023806:
+              // @AC_Marie_FR
+              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'France Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
+            case 1337029176:
+              // @AC_Fuffi
+              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Italy Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
+            case 1337043620:
+              // @AC_Canela
+              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Spain Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
+            case 1337057191:
+              // @AC_Isabelle_NL
+              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Netherlands Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
+            case 1377451009:
+              // @AnimalCrossing
+              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'United States Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
+            default:
+              // The tweet wasn't actually from the followed users, so toss it
+          }
+        });
 
-      stream.on('error', (err) => {
-        console.error(err);
+        stream.on('error', (err) => {
+          console.error(err);
+        });
       });
-    });
+    } catch (err) {
+      // The stream function returned an error
+      console.error(err);
+    }
 
     // Logging a ready message on first boot
     console.log(`Ready to follow orders sir, with ${guild.memberCount} users, in ${guild.channels.size} channels of ${client.guilds.size} guilds.`);
