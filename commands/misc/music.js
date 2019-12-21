@@ -147,7 +147,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
                 // This was the fix for huge wait times between songs
                 client.songQueue.connection.player.streamingData.pausedTime = 0;
                 // This was the fix for the memory leak when skipping and starting new songs
-                client.songQueue.connection.player.prism.transcoder.ffmpeg.processes = [];
+                //client.songQueue.connection.player.prism.transcoder.ffmpeg.processes = [];
                 // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
                 if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
                   infoFromID(client.playlist.randomKey()).then((i) => {
