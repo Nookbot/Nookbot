@@ -146,6 +146,8 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
                 client.songQueue.songs.shift();
                 // This was the fix for huge wait times between songs
                 client.songQueue.connection.player.streamingData.pausedTime = 0;
+                // This was the fix for the memory leak when skipping and starting new songs
+                client.songQueue.connection.player.prism.transcoder.ffmpeg.processes = [];
                 // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
                 if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
                   infoFromID(client.playlist.randomKey()).then((i) => {
@@ -175,9 +177,9 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
         // If the connection object is present, then see if the stream is paused, and resume it
         client.songQueue.playing = true;
         client.songQueue.connection.dispatcher.resume();
-        return updateInfo();
+        return updateInfo('Song Resumed!', 'The current song has resumed playing!');
       }
-      return;
+      return updateInfo('Song Already Playing!', 'A song is already playing, you can add new songs with \`.music play <song name>\`.');
     case 'skip':
       // Check if there's a song to skip
       if (client.songQueue.songs.length === 0) {

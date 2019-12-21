@@ -3,6 +3,13 @@ const config = {
   token: '',
   twitterAPIKey: '',
   twitterAPISecret: '',
+  twitterAccessToken: '',
+  twitterAccessTokenSecret: '',
+  followedTwitterUsers: [],
+
+  // Webhooks
+  twitterHookID: '',
+  twitterHookToken: '',
 
   // Settings
   defaultSettings: {
