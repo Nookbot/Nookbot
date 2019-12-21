@@ -69,6 +69,10 @@ module.exports = (client) => {
             // The tweet wasn't actually from the followed users, so toss it
         }
       });
+
+      stream.on('error', (err) => {
+        console.error(err);
+      });
     });
 
     // Logging a ready message on first boot

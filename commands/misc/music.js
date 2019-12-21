@@ -173,7 +173,8 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
 
         // Play the song
         return play(client.songQueue.songs[0]);
-      } else if (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.paused) {
+      }
+      if (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.paused) {
         // If the connection object is present, then see if the stream is paused, and resume it
         client.songQueue.playing = true;
         client.songQueue.connection.dispatcher.resume();
