@@ -1,5 +1,4 @@
 const moment = require('moment');
-const Discord = require('discord.js');
 
 module.exports = (client) => {
   // Setting activity
@@ -36,6 +35,7 @@ module.exports = (client) => {
     });
 
     client.twitter.stream('statuses/filter', { follow: client.config.followedTwitterUsers.join(',') }, (stream) => {
+      // eslint-disable-next-line consistent-return
       stream.on('data', (tweet) => {
         switch (tweet.user.id) {
           case 853812637:
@@ -67,7 +67,6 @@ module.exports = (client) => {
             return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'United States Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
           default:
             // The tweet wasn't actually from the followed users, so toss it
-            return;
         }
       });
     });

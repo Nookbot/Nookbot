@@ -136,7 +136,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
             return;
           }
 
-          const dispatcher = client.songQueue.connection.playStream(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }))
+          client.songQueue.connection.playStream(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }))
             .once('end', (reason) => {
               if (!client.songQueue.stopping && client.songQueue.connection) {
                 if (reason !== 'skip') {
