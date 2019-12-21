@@ -105,7 +105,7 @@ client.twitter = new Twitter({
 });
 
 // Start up the twitter webhook listener
-client.twitterHook = new Discord.Webhook(client, client.config.twitterHookID, client.config.twitterHookToken);
+client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, client.config.twitterHookToken);
 
 Object.assign(client, Enmap.multi(['settings', 'enabledCmds', 'userDB', 'emojiDB', 'tags', 'playlist'], { ensureProps: true }));
 
