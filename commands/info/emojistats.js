@@ -1,7 +1,7 @@
 module.exports.run = (client, message, args) => {
   let num0 = parseInt(args[0], 10);
   let num1 = parseInt(args[1], 10);
-  let msg = '**Emoji Statistics**\nRank - Name - Uses';
+  let msg = '';
   const emojiDBSize = client.emojiDB.count;
   const emojiRegex = /<a?:\w+:([\d]+)>/g;
   let emojiMatch;
@@ -20,7 +20,10 @@ module.exports.run = (client, message, args) => {
           msg += `\n#${i + 1} - ${message.guild.emojis.get(e.id).name} - ${e.uses}`;
         });
 
-      return message.channel.send(msg, { split: true });
+      if (!msg) {
+        return client.error(message.channel, 'No Matches!', 'No emojis matched your search critera!');
+      }
+      return message.channel.send(`**Emoji Statistics**\nRank - Name - Uses${msg}`, { split: true });
     case 'b':
     case 'bottom':
       if (Number.isNaN(num1) || num1 <= 0) {
@@ -34,7 +37,10 @@ module.exports.run = (client, message, args) => {
           msg += `\n#${emojiDBSize - num1 + i + 1} - ${message.guild.emojis.get(e.id).name} - ${e.uses}`;
         });
 
-      return message.channel.send(msg, { split: true });
+      if (!msg) {
+        return client.error(message.channel, 'No Matches!', 'No emojis matched your search critera!');
+      }
+      return message.channel.send(`**Emoji Statistics**\nRank - Name - Uses${msg}`, { split: true });
     case 'm':
     case 'more':
       if (Number.isNaN(num1) || num1 < 0) {
@@ -48,7 +54,10 @@ module.exports.run = (client, message, args) => {
           msg += `\n#${i + 1} - ${message.guild.emojis.get(e.id).name} - ${e.uses}`;
         });
 
-      return message.channel.send(msg, { split: true });
+      if (!msg) {
+        return client.error(message.channel, 'No Matches!', 'No emojis matched your search critera!');
+      }
+      return message.channel.send(`**Emoji Statistics**\nRank - Name - Uses${msg}`, { split: true });
     case 'l':
     case 'less':
       if (Number.isNaN(num1) || num1 < 0) {
@@ -62,7 +71,10 @@ module.exports.run = (client, message, args) => {
           msg += `\n#${emojiDBSize - a.length + i + 1} - ${message.guild.emojis.get(e.id).name} - ${e.uses}`;
         });
 
-      return message.channel.send(msg, { split: true });
+      if (!msg) {
+        return client.error(message.channel, 'No Matches!', 'No emojis matched your search critera!');
+      }
+      return message.channel.send(`**Emoji Statistics**\nRank - Name - Uses${msg}`, { split: true });
     default:
       if (args.length === 2 && Number.isInteger(num0) && Number.isInteger(num1)) {
         if (num0 <= 0 || num1 <= 0) {
@@ -82,7 +94,10 @@ module.exports.run = (client, message, args) => {
             msg += `\n#${num1 + i} - ${message.guild.emojis.get(e.id).name} - ${e.uses}`;
           });
 
-        return message.channel.send(msg, { split: true });
+        if (!msg) {
+          return client.error(message.channel, 'No Matches!', 'No emojis matched your search critera!');
+        }
+        return message.channel.send(`**Emoji Statistics**\nRank - Name - Uses${msg}`, { split: true });
       }
 
       while ((emojiMatch = emojiRegex.exec(args.join(' ')))) {
@@ -103,9 +118,12 @@ module.exports.run = (client, message, args) => {
             }
           });
 
-        return message.channel.send(msg, { split: true });
+        if (!msg) {
+          return client.error(message.channel, 'No Matches!', 'No emojis matched your search critera!');
+        }
+        return message.channel.send(`**Emoji Statistics**\nRank - Name - Uses${msg}`, { split: true });
       }
-      return client.error(message.channel, 'Invalid Usage!', 'You used this command incorrectly, use');
+      return client.error(message.channel, 'Invalid Usage!', 'You used this command incorrectly! Use \`.help emojistats\` for details on how to use this command.');
   }
 };
 
