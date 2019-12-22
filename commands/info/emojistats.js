@@ -37,7 +37,7 @@ module.exports.run = (client, message, args) => {
       return message.channel.send(msg, { split: true });
     case 'm':
     case 'more':
-      if (Number.isNaN(num1) || num1 <= 0) {
+      if (Number.isNaN(num1) || num1 < 0) {
         return client.error(message.channel, 'Not a Number!', 'You must supply a number for the minimum amount of uses an emoji must have to be displayed.');
       }
 
@@ -51,7 +51,7 @@ module.exports.run = (client, message, args) => {
       return message.channel.send(msg, { split: true });
     case 'l':
     case 'less':
-      if (Number.isNaN(num1) || num1 <= 0) {
+      if (Number.isNaN(num1) || num1 < 0) {
         return client.error(message.channel, 'Not a Number!', 'You must supply a number for the maximum amount of uses an emoji must have to be displayed.');
       }
 
