@@ -22,6 +22,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       embed.setAuthor(`${message.member.displayName}'s Friend Code`, message.author.displayAvatarURL)
         .setTitle('Successfully set your friend code!')
+        .setColor('#e4000f')
         .setDescription(`**${code}**`);
 
       return message.channel.send(embed);
