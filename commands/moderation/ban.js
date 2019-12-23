@@ -30,9 +30,10 @@ module.exports.run = async (client, message, args, level) => {
   const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided';
 
   // Bans the member
-  await member.ban(reason).catch((error) => client.error(message.channel, 'Ban Failed!', `I've failed to ban this member! Error: ${error}`));
-  // If ban is successful, display this
-  return client.success(message.channel, 'Ban Successful!', `I've successfully banned **${member.tag}**!`);
+  return member.ban(reason).then(() => {
+    // If ban is successful, display this
+    client.success(message.channel, 'Ban Successful!', `I've successfully banned **${member.user.tag}**!`);
+  }).catch((error) => client.error(message.channel, 'Ban Failed!', `I've failed to ban this member! Error: ${error}`));
 };
 
 module.exports.conf = {
