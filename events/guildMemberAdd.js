@@ -7,7 +7,7 @@ module.exports = async (client, member) => {
 
   // If raidJoins has 10 members in it, that means we had 10 joins in less than 10 seconds
   // and we need to active Raid Mode.
-  if (!client.raidMode && client.raidJoins.length >= 10) {
+  if (!client.raidMode && client.raidJoins.length >= client.config.raidJoinCount) {
     // Enable Raid Mode
     client.raidMode = true;
     // Save @everyone role and staff/actionlog channels here for ease of use.
@@ -108,7 +108,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
   if (!client.raidMode) {
     setTimeout(() => {
       if (!client.raidMode) client.raidJoins.shift();
-    }, 10000);
+    }, client.config.raidJoinsPerSecond * 1000);
   } else {
     // We're in Raid Mode, don't make a fancy member join embed.
     return;

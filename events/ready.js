@@ -65,7 +65,7 @@ module.exports = (client) => {
               return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttp://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'Netherlands Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
             case 1377451009:
               // @AnimalCrossing
-              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttps://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'United States Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
+              return client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttp://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username: 'United States Animal Crossing', avatarURL: `${tweet.user.profile_image_url_https}` });
             default:
               // The tweet wasn't actually from the followed users, so toss it
           }
