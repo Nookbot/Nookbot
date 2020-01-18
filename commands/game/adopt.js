@@ -14,7 +14,7 @@ module.exports.run = (client, message, args) => {
       }
 
       villager = findBest(args.slice(1).join(' '), client.villagerDB.keyArray()).bestMatch;
-      if (villager.rating > 0.5) {
+      if (villager.rating > 0.1) {
         // Remove user ID of author from the list of adopters for the given villager if they are on the list already
         if (client.villagerDB.getProp(villager.target, 'adopters').includes(message.author.id)) {
           client.villagerDB.removeFrom(villager.target, 'adopters', message.author.id);
@@ -32,7 +32,7 @@ module.exports.run = (client, message, args) => {
       }
 
       villager = findBest(args.slice(1).join(' '), client.villagerDB.keyArray()).bestMatch;
-      if (villager.rating > 0.5) {
+      if (villager.rating > 0.1) {
         const vilAdopters = client.villagerDB.get(villager.target).adopters.filter((m) => message.guild.members.has(m));
         // Clear the list of members that are no longer on the server
         client.villagerDB.set(villager.target, vilAdopters, 'adopters');
@@ -56,7 +56,7 @@ module.exports.run = (client, message, args) => {
       }
 
       villager = findBest(args.join(' '), client.villagerDB.keyArray()).bestMatch;
-      if (villager.rating > 0.5) {
+      if (villager.rating > 0.1) {
         const vilAdopters = client.villagerDB.get(villager.target).adopters;
         if (!vilAdopters.includes(message.author.id)) {
           // Add them to the list
@@ -73,7 +73,7 @@ module.exports.conf = {
   guildOnly: true,
   aliases: ['adopt', 'ad'],
   permLevel: 'Verified',
-  cooldown: 30,
+  cooldown: 0,
 };
 
 module.exports.help = {
