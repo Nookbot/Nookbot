@@ -119,7 +119,7 @@ This message updates every 5 seconds, and you should wait to decide until the co
   if (storedMember.roles.length !== 0) {
     storedMember.roles.forEach((r) => {
       const role = member.guild.roles.get(r);
-      if (!role.managed && role.id != member.guild.id) {
+      if (!role.managed && role.id !== member.guild.id) {
         member.addRole(role);
       }
     });
