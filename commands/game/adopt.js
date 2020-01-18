@@ -33,7 +33,7 @@ module.exports.run = (client, message, args) => {
 
       villager = findBest(args.slice(1).join(' '), client.villagerDB.keyArray()).bestMatch;
       if (villager.rating > 0.5) {
-        const vilAdopters = client.villagerDB.get(villager.target).adopters.filter((m) => message.guild.members.includes(m));
+        const vilAdopters = client.villagerDB.get(villager.target).adopters.filter((m) => message.guild.members.has(m));
         // Clear the list of members that are no longer on the server
         client.villagerDB.set(villager.target, vilAdopters, 'adopters');
 
@@ -63,7 +63,7 @@ module.exports.run = (client, message, args) => {
           client.villagerDB.pushIn(villager.target, 'adopters', message.author.id);
           return client.success(message.channel, 'Added to the List!', `Your name was added to the list of members that wish to adopt **${villager.target}**, and you will be pinged when someone offers them for adoption!\n**Remember**: It is up to whoever is offering the villager who they give the villager to, and being first to respond or first on the list doesn't mean you will be given the villager.`);
         }
-        return client.error(message.channel, 'Already on the List!', `Your name was already on the list to adopt **${villager.target}**`);
+        return client.error(message.channel, 'Already on the List!', `Your name was already on the list to adopt **${villager.target}**!`);
       }
       return client.error(message.channel, 'Incorrect Villager Name!', 'Could not find a villager with that name!');
   }
