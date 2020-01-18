@@ -24,12 +24,19 @@ const config = {
     music: 'channelID',
   },
 
-  // UserDB Settings
+  // UserDB
   userDBDefaults: {
     friendcode: '',
     roles: [],
     nicknames: [],
     usernames: [],
+  },
+
+  // VillagerDB 
+  villagerDBDefaults: {
+    birthday: Date,
+    adopters: [],
+    // Other villager related info perhaps for the wiki command to pull from, or the calender
   },
 
   // Bot Perms and Stuff
