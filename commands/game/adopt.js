@@ -43,7 +43,7 @@ module.exports.run = (client, message, args) => {
 
         let msg = `The following members are looking to adopt **${villager.target}**:\nPosition - Member - Friend Code`;
         vilAdopters.forEach((memID, i) => {
-          msg += `\n#${i + 1} - @${memID} - ${client.userDB.ensure(memID, client.config.userDBDefaults).friendcode || 'Ask'}`;
+          msg += `\n#${i + 1} - <@${memID}> - ${client.userDB.ensure(memID, client.config.userDBDefaults).friendcode || 'Ask'}`;
         });
         msg += '\nYou are ultimately responsible for how to choose someone to adopt your villager, whether it be first to respond, first on the list, by random, or your pick.';
         return message.channel.send(msg);
