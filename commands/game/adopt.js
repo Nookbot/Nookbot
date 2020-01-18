@@ -18,9 +18,9 @@ module.exports.run = (client, message, args) => {
         // Remove user ID of author from the list of adopters for the given villager if they are on the list already
         if (client.villagerDB.getProp(villager.target, 'adopters').includes(message.author.id)) {
           client.villagerDB.removeFrom(villager.target, 'adopters', message.author.id);
-          return client.success(message.channel, 'Removed from the List!', `Your name was removed from the list of members that wish to adopt ${villager.target}!`);
+          return client.success(message.channel, 'Removed from the List!', `Your name was removed from the list of members that wish to adopt **${villager.target}**!`);
         }
-        return client.error(message.channel, 'Not on the List!', `You were not on the list to adopt ${villager.target}!`);
+        return client.error(message.channel, 'Not on the List!', `You were not on the list to adopt **${villager.target}**!`);
       }
       return client.error(message.channel, 'Incorrect Villager Name!', 'Could not find a villager with that name!');
     case 'offer':
@@ -38,10 +38,10 @@ module.exports.run = (client, message, args) => {
         client.villagerDB.set(villager.target, vilAdopters, 'adopters');
 
         if (vilAdopters.length === 0) {
-          return client.error(message.channel, 'No one on the List!', `Nobody is currently wishing to adopt ${villager.target}, but thank you for offering!`);
+          return client.error(message.channel, 'No one on the List!', `Nobody is currently wishing to adopt **${villager.target}**, but thank you for offering!`);
         }
 
-        let msg = `The following members are looking to adopt ${villager.target}:\nPosition - Member - Friend Code`;
+        let msg = `The following members are looking to adopt **${villager.target}**:\nPosition - Member - Friend Code`;
         vilAdopters.forEach((memID, i) => {
           msg += `\n#${i + 1} - @${memID} - ${client.userDB.ensure(memID, client.config.userDBDefaults).friendcode || 'Ask'}`;
         });
@@ -61,9 +61,9 @@ module.exports.run = (client, message, args) => {
         if (!vilAdopters.includes(message.author.id)) {
           // Add them to the list
           vilAdopters.push(message.author.id);
-          return client.success(message.channel, 'Added to the List!', `Your name was added to the list of members that wish to adopt ${villager.target}, and you will be pinged when someone offers them for adoption!\n**Remember**: It is up to whoever is offering the villager who they give the villager to, and being first to respond or first on the list doesn't mean you will be given the villager.`);
+          return client.success(message.channel, 'Added to the List!', `Your name was added to the list of members that wish to adopt **${villager.target}**, and you will be pinged when someone offers them for adoption!\n**Remember**: It is up to whoever is offering the villager who they give the villager to, and being first to respond or first on the list doesn't mean you will be given the villager.`);
         }
-        return client.error(message.channel, 'Already on the List!', `Your name was already on the list to adopt ${villager.target}`);
+        return client.error(message.channel, 'Already on the List!', `Your name was already on the list to adopt **${villager.target}**`);
       }
       return client.error(message.channel, 'Incorrect Villager Name!', 'Could not find a villager with that name!');
   }
