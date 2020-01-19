@@ -2,7 +2,29 @@ const { findBestMatch: findBest } = require('string-similarity');
 
 module.exports.run = (client, message, args) => {
   let villager;
+  let msg;
+  let first;
   switch (args[0]) {
+    case 'list':
+    case 'l':
+    case 'show':
+      msg = 'You are on the list to adopt the following villagers:\n';
+      first = true;
+      client.villagerDB.map((v, k) => ({ name: k, adopters: v.adopters })).forEach((v) => {
+        if (v.adopters.includes(message.author.id)) {
+          if (first) {
+            msg += v.name;
+          } else {
+            first = false;
+            msg += `, ${v.name}`;
+          }
+        }
+      });
+
+      if (!first) {
+        return message.channel.send(msg, { split: true });
+      }
+      return client.error(message.channel, 'Not Signed Up!', 'You are not signed up to adopt any villagers!\nYou can sign up to adopt any villager by using the `.adopt <villager name>` command.');
     case 'delete':
     case 'del':
     case 'd':
@@ -41,12 +63,12 @@ module.exports.run = (client, message, args) => {
           return client.error(message.channel, 'No one on the List!', `Nobody is currently wishing to adopt **${villager.target}**, but thank you for offering!`);
         }
 
-        let msg = `The following members are looking to adopt **${villager.target}**:\nPosition - Member - Friend Code`;
+        msg = `The following members are looking to adopt **${villager.target}**:\nPosition - Member - Friend Code`;
         vilAdopters.forEach((memID, i) => {
           msg += `\n#${i + 1} - <@${memID}> - ${client.userDB.ensure(memID, client.config.userDBDefaults).friendcode || 'Ask'}`;
         });
         msg += '\nYou are ultimately responsible for how to choose someone to adopt your villager, whether it be first to respond, first on the list, by random, or your pick.';
-        return message.channel.send(msg);
+        return message.channel.send(msg, { split: true });
       }
       return client.error(message.channel, 'Incorrect Villager Name!', 'Could not find a villager with that name!');
     default:
@@ -71,15 +93,14 @@ module.exports.run = (client, message, args) => {
 
 module.exports.conf = {
   guildOnly: true,
-  aliases: ['adopt', 'ad'],
+  aliases: ['ad'],
   permLevel: 'Verified',
-  cooldown: 0,
 };
 
 module.exports.help = {
   name: 'adopt',
   category: 'game',
   description: 'Allows members to be notified when a user puts a specific villager up for adoption',
-  usage: 'adopt <offer|delete> <villager name>',
-  details: '<villager name> => Signup to be pinged when the villager you specifiy is placed up for adoption.\n<offer> => Ping all the members that are asking for the villager you specifiy.\n<delete> => Remove yourself from the list of members to be pinged when the villager you specifiy is placed up for adoption.',
+  usage: 'adopt <offer|delete|list> <villager name>',
+  details: '<villager name> => Signup to be pinged when the villager you specifiy is placed up for adoption.\n<offer> => Ping all the members that are asking for the villager you specifiy.\n<delete> => Remove yourself from the list of members to be pinged when the villager you specifiy is placed up for adoption.\n<list> => Lists all of the villagers that you have signed up to adopt.',
 };

@@ -9,8 +9,10 @@ module.exports = async (client, oldMessage, newMessage) => {
   }
 
   // Description value length limit for embeds is 1024
-  const oldMsg = oldMessage.content.length > 499 ? `${oldMessage.content.slice(0, 496)}...` : oldMessage.content;
-  const newMsg = newMessage.content.length > 499 ? `${newMessage.content.slice(0, 496)}...` : newMessage.content;
+  let oldDemark = oldMessage.content.replace(/(\*|~|_|>|`)/g, '\\$1');
+  let newDemark = newMessage.content.replace(/(\*|~|_|>|`)/g, '\\$1');
+  const oldMsg = oldDemark.length > 499 ? `${oldDemark.slice(0, 496)}...` : oldDemark;
+  const newMsg = newDemark.length > 499 ? `${newDemark.slice(0, 496)}...` : newDemark;
 
   const embed = new Discord.RichEmbed()
     .setColor('#00e5ff')
