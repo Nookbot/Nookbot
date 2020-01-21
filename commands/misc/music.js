@@ -8,7 +8,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
   // Secret update command to redownload the update, only Tristan can use
   // Tristan's UserID
   if (args[0] === 'update') {
-    if (message.author.id === '170307091628556289') {
+    if (message.author.id === '170307091628556289' || message.author.id === '403103000630919169') {
       return ytpl('PLmJ4dQSfFie-81me0jlzewxPIxKuO2-sI', { limit: 0 }, (err, playlistObj) => {
         if (err) {
           console.error(err);

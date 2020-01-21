@@ -14,13 +14,14 @@ module.exports.run = (client, message, args) => {
         if (v.adopters.includes(message.author.id)) {
           if (first) {
             msg += v.name;
-          } else {
             first = false;
+          } else {
             msg += `, ${v.name}`;
           }
         }
       });
 
+      msg += '.';
       if (!first) {
         return message.channel.send(msg, { split: true });
       }
