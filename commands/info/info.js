@@ -13,6 +13,10 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   switch (args[0]) {
     case 'bot': {
+      if (level < 8) {
+        return client.error(message.channel, 'Not Allowed!', 'You are not allowed to show bot information!');
+      }
+
       const uptime = client.humanTimeBetween(client.uptime, 0);
 
       embed.setTitle('Bot Information')
@@ -35,6 +39,11 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'user': {
       // Setting the member to the mentioned user, if no mentioned user, falls back to author
       const member = message.mentions.members.first() || message.guild.members.get(args[1]) || client.searchMember(args.slice(1).join(' ')) || message.member;
+
+      // Block everyone but mods or higher from using this command to show other users info.
+      if (member !== message.member && level < 2) {
+        return client.error(message.channel, 'Not Allowed!', 'You are not allowed to show user information on other users!');
+      }
 
       const roles = member.roles.filter((r) => r.id !== message.guild.id).map((r) => r.name).join(', ') || 'No Roles';
       const roleSize = member.roles.filter((r) => r.id !== message.guild.id).size;
