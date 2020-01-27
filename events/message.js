@@ -25,6 +25,26 @@ module.exports = async (client, message) => {
     await message.guild.fetchMember(message.author);
   }
 
+  // Anti Mention Spam
+  if (message.mentions.members.size > 10) {
+    // They mentioned more than 10 members, automute them for 10 mintues.
+    if (message.member) {
+      // Mute
+      message.member.addRole('495854925054607381', 'Mention Spam');
+      // Delete Message
+      message.delete();
+      // Schedule unmute
+      setTimeout(() => (message.member.removeRole('495854925054607381', 'Unmuted after 10 mintues for Mention Spam')), 600000);
+      // Notify mods so they may ban if it was a raider.
+      message.guild.channels.get(client.getSettings(message.guild).staffChat).send(`**Mass Mention Attempt!**
+<@&495865346591293443> <@&494448231036747777>
+The member **${message.author.tag}** just mentioned ${message.mentions.members.size} members and was automatically muted for 10 minutes!
+They have been a member of the server for ${client.humanTimeBetween(Date.now(), message.member.joinedTimestamp)}.
+If you believe this member is a mention spammer bot, please ban them with the command:
+\`.ban ${message.author.id} Raid Mention Spammer\``);
+    }
+  }
+
   const settings = client.getSettings(message.guild);
 
   // Ignore messages not starting with the prefix
