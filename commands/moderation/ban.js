@@ -1,7 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // Setting member to first member memntioned
-  let member = message.mentions.members.first() || message.guild.members.get(args[0]);
+  const user = message.mentions.users.first() || client.fetchUser(args[0]);
+  let member = message.guild.fetchMember(user);
 
   if (!member) {
     const searchedMember = client.searchMember(args[0]);
