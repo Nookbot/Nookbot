@@ -217,7 +217,7 @@ module.exports = (client) => {
     client.songQueue.stopping = false;
   };
 
-  client.raidModeActivate = (guild) => {
+  client.raidModeActivate = async (guild) => {
     // Enable Raid Mode
     client.raidMode = true;
     // Save @everyone role and staff/actionlog channels here for ease of use.
