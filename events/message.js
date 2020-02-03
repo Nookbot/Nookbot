@@ -26,7 +26,7 @@ module.exports = async (client, message) => {
   }
 
   // Anti Mention Spam
-  if (message.mentions.members.size > 10) {
+  if (message.mentions.members && message.mentions.members.size > 10) {
     // They mentioned more than 10 members, automute them for 10 mintues.
     if (message.member) {
       // Mute
