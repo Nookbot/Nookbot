@@ -1,12 +1,11 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  const initMsg = `Hello **${message.author.username}!** You've initiated Mod Mail communication! I'll direct your next message to the staff channel so go ahead, I'm listening!`;
-  const dmCh = await message.author.createDM();
-
   // #staff-discussion but the name might change so the id is best
   const staffCh = client.guilds.first().channels.get('588480202338861107');
 
   if (args.length === 0) {
+    const initMsg = `Hello **${message.author.username}!** You've initiated Mod Mail communication! I'll direct your next message to the staff channel so go ahead, I'm listening!`;
+    const dmCh = await message.author.createDM();
     if (message.guild) {
       message.delete().catch((err) => console.error(err));
       dmCh.send(initMsg)
@@ -22,7 +21,8 @@ module.exports.run = async (client, message, args, level) => {
     const filter = (m) => !m.author.bot;
     await dmCh.awaitMessages(filter, { max: 1, time: 60000, errors: ['time'] })
       .then(async (collected) => {
-        await staffCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}`, { split: true });
+        const attachments = collected.first().attachments.map((a) => a.url).join('\n');
+        await staffCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}${attachments ? '\n**Attachments**:\n' + attachments : ''}`, { split: true });
         await client.success(dmCh, 'Sent!', 'Pete has delivered your message safely to the Town Hall!');
       })
       .catch(() => {
