@@ -21,22 +21,20 @@ module.exports.run = async (client, message, args, level) => {
     const filter = (m) => !m.author.bot;
     await dmCh.awaitMessages(filter, { max: 1, time: 60000, errors: ['time'] })
       .then(async (collected) => {
-        const attachments = collected.first().attachments.map((a) => a.url).join('\n');
-        await staffCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}${attachments ? `\n**Attachments**:\n${attachments}` : ''}`, { split: true });
+        const attachments = collected.first().attachments.map((a) => a.url);
+        await staffCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}`, { split: true, files: attachments });
         await client.success(dmCh, 'Sent!', 'Pete has delivered your message safely to the Town Hall!');
       })
       .catch(() => {
         client.error(dmCh, "Time's Up!", "Time has expired! You'll have to run the command again if you want to send a message to the staff!");
       });
   } else {
-    let attachments = '';
+    const attachments = message.attachments.map((a) => a.url);
+    await staffCh.send(`**${message.author.tag}** (${message.author}) : ${args.join(' ')}`, { split: true, files: attachments });
     // Remove the message from the guild chat as it may contain sensitive information.
     if (message.guild) {
       message.delete().catch((err) => console.error(err));
-    } else {
-      attachments = message.attachments.map((a) => a.url).join('\n');
     }
-    await staffCh.send(`**${message.author.tag}** (${message.author}) : ${args.join(' ')}${attachments ? `\n**Attachments**:\n${attachments}` : ''}`, { split: true });
     await client.success(message.channel, 'Sent!', 'Pete has delivered your message safely to the Town Hall!');
   }
 };
