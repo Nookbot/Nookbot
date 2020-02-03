@@ -1,4 +1,4 @@
-module.exports.run = (client, message, args) => {
+module.exports.run = (client, message) => {
   // Check if raid mode is active, then activate raid mode
   if (!client.raidMode) {
     client.raidModeActivate(message.guild);

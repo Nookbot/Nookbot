@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const Discord = require('discord.js');
 const moment = require('moment');
 const { compareTwoStrings: distance } = require('string-similarity');
 

@@ -33,8 +33,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField('Created On', moment(client.user.createdAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
         .addField('Uptime', uptime, true);
 
-      message.channel.send(embed);
-      break;
+      return message.channel.send(embed);
     }
     case 'user': {
       // Setting the member to the mentioned user, if no mentioned user, falls back to author
@@ -69,8 +68,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField(`Roles (${roleSize})`, roles, true)
         .addField('Status', activity, true);
 
-      message.channel.send(embed);
-      break;
+      return message.channel.send(embed);
     }
     case 'server':
       embed.setTitle('Server Information')
@@ -82,10 +80,9 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField('Created On', moment(message.guild.createdAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
         .addField('Member Count', message.guild.memberCount, true);
 
-      message.channel.send(embed);
-      break;
+      return message.channel.send(embed);
     default:
-      client.error(message.channel, 'Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`bot\`, \`server\`, or \`user\`! For further details, use \`${client.getSettings(message.guild).prefix}help info\`!`);
+      return client.error(message.channel, 'Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`bot\`, \`server\`, or \`user\`! For further details, use \`${client.getSettings(message.guild).prefix}help info\`!`);
   }
 };
 
