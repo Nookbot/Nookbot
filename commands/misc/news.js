@@ -1,5 +1,5 @@
 module.exports.run = async (client, message, args) => {
-  const channel = message.guild.channels.get('629468250601816097');
+  const channel = message.guild.channels.get('588783352463622144');
   const attachments = message.attachments.map((a) => a.url);
   let role;
   switch (args[0]) {
