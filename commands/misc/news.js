@@ -1,32 +1,28 @@
 module.exports.run = async (client, message, args) => {
+  const channel = message.guild.channels.get('629468250601816097');
+  const attachments = message.attachments.map((a) => a.url);
+  let role;
   switch (args[0]) {
     case 'game':
-    case 'g': {
-      const attachments = message.attachments.map((a) => a.url);
-      await message.guild.roles.find('588955307817041946').edit({ mentionable: true });
-      await message.guild.channels.find('629468250601816097').send(`${args.slice(1).join(' ')}\n<@&588955307817041946>`, { files: attachments });
-      await message.guild.roles.find('588955307817041946').edit({ mentionable: false });
+    case 'g':
+      role = message.guild.roles.get('588955307817041946');
       break;
-    }
     case 'server':
-    case 's': {
-      const attachments = message.attachments.map((a) => a.url);
-      await message.guild.roles.find('588955864677744642').edit({ mentionable: true });
-      await message.guild.channels.find('629468250601816097').send(`${args.slice(1).join(' ')}\n<@&588955864677744642>`, { files: attachments });
-      await message.guild.roles.find('588955864677744642').edit({ mentionable: false });
+    case 's':
+      role = message.guild.roles.get('588955864677744642');
       break;
-    }
     case 'event':
-    case 'e': {
-      const attachments = message.attachments.map((a) => a.url);
-      await message.guild.roles.find('588955576562614273').edit({ mentionable: true });
-      await message.guild.channels.find('629468250601816097').send(`${args.slice(1).join(' ')}\n<@&588955576562614273>`, { files: attachments });
-      await message.guild.roles.find('588955576562614273').edit({ mentionable: false });
+    case 'e':
+      role = message.guild.roles.get('588955576562614273');
       break;
-    }
     default:
-      break;
+      client.error(message.channel, 'Invalid News Role!', 'You must select a valid news role to ping such as \`game\`, \`server\`, or \`event\`.');
+      return;
   }
+  await role.edit({ mentionable: true });
+  await channel.send(`${args.slice(1).join(' ')}\n<@&${role.id}>`, { files: attachments });
+  await role.edit({ mentionable: false });
+  return;
 };
 
 module.exports.conf = {
