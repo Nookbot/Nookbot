@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  // Setting member to first member memntioned
-  let member = message.mentions.members.first() || message.guild.members.get(args[0]);
+  // Setting member to first member mentioned
+  let member = message.mentions.members.first();
 
   if (!member) {
     const searchedMember = client.searchMember(args[0]);
@@ -16,23 +16,13 @@ module.exports.run = async (client, message, args, level) => {
     }
   }
 
-  // If no member mentioned, display this message
-  if (!member) {
-    return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
-  }
-
-  // If member can't be banned, display this
-  if (!member.bannable) {
-    return client.error(message.channel, 'Member Not Bannable!', 'I cannot ban this user! Do they have a higher role? Do I have ban permissions? Are you trying to ban the owner?');
-  }
-
   // Sets reason shown in audit logs
   const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided';
 
   // Bans the member
-  return member.ban(reason).then(() => {
+  return message.guild.ban(member, { reason }).then((memberBanned) => {
     // If ban is successful, display this
-    client.success(message.channel, 'Ban Successful!', `I've successfully banned **${member.user.tag}**!`);
+    client.success(message.channel, 'Ban Successful!', `I've successfully banned **${memberBanned.user.tag}**!`);
   }).catch((error) => client.error(message.channel, 'Ban Failed!', `I've failed to ban this member! Error: ${error}`));
 };
 
