@@ -22,7 +22,7 @@ module.exports.run = async (client, message, args, level) => {
   // Bans the member
   return message.guild.ban(member, reason).then((memberBanned) => {
     // If ban is successful, display this
-    client.success(message.channel, 'Ban Successful!', `I've successfully banned **${memberBanned.user.tag}**!`);
+    client.success(message.channel, 'Ban Successful!', `I've successfully banned **${memberBanned.guild ? memberBanned.user.tag : `${memberBanned.username}#${memberBanned.discriminator}`}**!`);
   }).catch((error) => client.error(message.channel, 'Ban Failed!', `I've failed to ban this member! ${error}`));
 };
 
