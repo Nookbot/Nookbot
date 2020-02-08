@@ -117,7 +117,7 @@ module.exports = (client) => {
     const timeDif = moment.duration(moment([2020, 2, 20]).diff(moment().add(14, 'hours').startOf('minute')));
 
     const times = [
-      timeDif.asDays(),
+      Math.floor(timeDif.asDays()),
       timeDif.hours(),
       timeDif.minutes(),
     ];
