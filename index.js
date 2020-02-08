@@ -4,7 +4,7 @@
 const Discord = require('discord.js');
 const Enmap = require('enmap');
 const fs = require('fs');
-const Twitter = require('twitter');
+const Twitter = require('twitter-lite');
 
 const client = new Discord.Client({ messageCacheMaxSize: 500, disabledEvents: ['TYPING_START'] });
 const config = require('./config');

@@ -132,6 +132,7 @@ module.exports.conf = {
   aliases: ['character', 'char', 'villager', 'vil', 'item'],
   permLevel: 'User',
   args: 1,
+  blockedChannels: ['538938170822230026'],
 };
 
 module.exports.help = {

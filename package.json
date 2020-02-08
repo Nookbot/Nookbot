@@ -30,9 +30,9 @@
     "ping": "^0.2.2",
     "request": "^2.88.0",
     "string-similarity": "^3.0.0",
-    "twitter": "^1.7.1",
+    "twitter-lite": "^0.9.4",
     "ytdl-core": "^1.0.3",
-    "ytpl": "^0.1.18"
+    "ytpl": "github:NotArandomGUY/node-ytpl#master"
   },
   "devDependencies": {
     "eslint": "^6.7.2",

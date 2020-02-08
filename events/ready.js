@@ -17,27 +17,16 @@ module.exports = (client) => {
 
     setInterval(() => client.user.setActivity(`ACNH with ${guild.memberCount} users!`), 30000);
 
-    const timeUntilFirstPost = moment().add(1, 'd').startOf('day').diff(moment());
-
-    const channel = guild.channels.get('494376688877174785');
-
-    setTimeout(() => {
-      client.countdown(channel);
-
-      setInterval(() => {
-        client.countdown(channel);
-      }, 3600000 * 24);
-    }, timeUntilFirstPost);
-
     // Save the current collection of guild invites.
     client.guilds.first().fetchInvites().then((guildInvites) => {
       client.invites = guildInvites;
     });
 
     try {
-      client.twitter.stream('statuses/filter', { follow: client.config.followedTwitterUsers.join(',') }, (stream) => {
+      client.twitter.stream('statuses/filter', { follow: client.config.followedTwitterUsers.join(',') })
+        .on('start', (response) => console.log(`Started Twitter Feed Stream: ${response}`))
         // eslint-disable-next-line consistent-return
-        stream.on('data', (tweet) => {
+        .on('data', (tweet) => {
           switch (tweet.user.id) {
             case 853812637:
               // Tristan
@@ -69,12 +58,9 @@ module.exports = (client) => {
             default:
               // The tweet wasn't actually from the followed users, so toss it
           }
-        });
-
-        stream.on('error', (err) => {
-          console.error(err);
-        });
-      });
+        })
+        .on('error', (error) => console.error(error))
+        .on('end', (response) => console.log(`Ended Twitter Feed Stream: ${response}`));
     } catch (err) {
       // The stream function returned an error
       console.error(err);

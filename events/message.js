@@ -77,6 +77,10 @@ If you believe this member is a mention spammer bot, please ban them with the co
     return client.error(message.channel, 'Command Not Available in DMs!', 'This command is unavailable in DMs. Please use it in a server!');
   }
 
+  if (cmd.conf.blockedChannels && cmd.conf.blockedChannels.includes(message.channel.id)) {
+    return client.error(message.channel, 'Command Not Available in this Channel!', 'You will have to use this command in the <#549858839994826753> channel!');
+  }
+
   // eslint-disable-next-line prefer-destructuring
   message.author.permLevel = level[1];
 
