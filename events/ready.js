@@ -27,6 +27,9 @@ module.exports = (client) => {
         .on('start', (response) => console.log(`Started Twitter Feed Stream: ${response}`))
         // eslint-disable-next-line consistent-return
         .on('data', (tweet) => {
+          if (!tweet.user) {
+            return;
+          }
           switch (tweet.user.id) {
             case 853812637:
               // Tristan
