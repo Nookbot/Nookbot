@@ -1,7 +1,10 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // Setting member to first member mentioned
-  let member = message.mentions.members.first() || parseInt(args[0], 10) ? await client.fetchUser(args[0]) : undefined;
+  let member = message.mentions.members.first()
+  if (!member) {
+    member = parseInt(args[0], 10) ? await client.fetchUser(args[0]) : undefined;
+  }
 
   if (!member) {
     const searchedMember = client.searchMember(args[0]);
@@ -22,12 +25,9 @@ module.exports.run = async (client, message, args, level) => {
   try {
     const dmChannel = await member.createDM();
     await dmChannel.send(`You have been banned from the AC:NH server for the following reason:
-                          **${reason}**
-                          If you wish to appeal this ban, use the \`.modmail <message>\` command to answer these questions:
-                          1. What was the reason for your ban?
-                          2. Why do you want to be unbanned?
-                          3. How will you change so you will not get in trouble in the server again?
-                          4. Is there anything you would like to add or would like for the staff to know?`);
+**${reason}**
+If you wish to appeal this ban, fill out this Google Form:
+<https://forms.gle/jcoP8kd3My31x3Gu6>`);
   } catch (e) {
     client.error(client.getSettings(message.guild).staffChat, 'Failed to Send DM to Member!', "I've failed to send a dm to the most recent member banned. They most likely had dms off.");
   }
