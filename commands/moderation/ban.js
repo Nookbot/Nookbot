@@ -19,8 +19,21 @@ module.exports.run = async (client, message, args, level) => {
   // Sets reason shown in audit logs
   const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided';
 
+  try {
+    const dmChannel = await member.createDM();
+    await dmChannel.send(`You have been banned from the AC:NH server for the following reason:
+                          **${reason}**
+                          If you wish to appeal this ban, use the \`.modmail <message>\` command to answer these questions:
+                          1. What was the reason for your ban?
+                          2. Why do you want to be unbanned?
+                          3. How will you change so you will not get in trouble in the server again?
+                          4. Is there anything you would like to add or would like for the staff to know?`);
+  } catch (e) {
+    client.error(client.getSettings(message.guild).staffChat, 'Failed to Send DM to Member!', "I've failed to send a dm to the most recent member banned. They most likely had dms off.");
+  }
+
   // Bans the member
-  return message.guild.ban(member, reason).then((memberBanned) => {
+  return message.guild.ban(member.id ? member.id : member, reason).then((memberBanned) => {
     // If ban is successful, display this
     client.success(message.channel, 'Ban Successful!', `I've successfully banned **${memberBanned.guild ? memberBanned.user.tag : `${memberBanned.username}#${memberBanned.discriminator}`}**!`);
   }).catch((error) => client.error(message.channel, 'Ban Failed!', `I've failed to ban this member! ${error}`));
