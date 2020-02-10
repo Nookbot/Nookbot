@@ -48,4 +48,5 @@ module.exports = {
   online: '🟢',
   redX: '❌',
   warning: '⚠',
+  gameDie: '🎲',
 };
