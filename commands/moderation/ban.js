@@ -19,8 +19,13 @@ module.exports.run = async (client, message, args, level) => {
     }
   }
 
+  // If no user mentioned, display this
+  if (!member) {
+    return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
+  }
+
   // Sets reason shown in audit logs
-  const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided';
+  const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided.';
 
   try {
     const dmChannel = await member.createDM();
@@ -29,7 +34,7 @@ module.exports.run = async (client, message, args, level) => {
 If you wish to appeal this ban, fill out this Google Form:
 <https://forms.gle/jcoP8kd3My31x3Gu6>`);
   } catch (e) {
-    client.error(client.getSettings(message.guild).staffChat, 'Failed to Send DM to Member!', "I've failed to send a dm to the most recent member banned. They most likely had dms off.");
+    client.error(message.guild.channels.get(client.getSettings(message.guild).staffChat), 'Failed to Send DM to Member!', "I've failed to send a dm to the most recent member banned. They most likely had dms off.");
   }
 
   // Bans the member
