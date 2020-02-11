@@ -9,7 +9,6 @@ module.exports.conf = {
   guildOnly: true,
   aliases: ['rm'],
   permLevel: 'Mod',
-  args: 1,
 };
 
 module.exports.help = {
