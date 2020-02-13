@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = (client, message, args, level) => {
-  const inputNumber = parseInt(args.join(' '), 10);
+  const inputNumber = parseInt(args[0], 10);
 
   if (!inputNumber) {
     return client.error(message.channel, 'Invalid Number!', 'Please provide a valid number for the max range!');
@@ -15,6 +15,7 @@ module.exports.conf = {
   guildOnly: false,
   aliases: [],
   permLevel: 'User',
+  args: 1,
 };
 
 module.exports.help = {
