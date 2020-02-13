@@ -1,7 +1,7 @@
 module.exports.run = async (client, message, args, level, Discord) => {
   let member = message.mentions.members.first();
   if (!member) {
-    member = parseInt(args[0], 10) ? await client.fetchUser(args[0]) : undefined;
+    member = parseInt(args[0], 10) ? await client.fetchMember(args[0]) : undefined;
   }
 
   if (!member) {
@@ -47,7 +47,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     // Ban
     dmMsg = `You have been banned from the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction points** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to appeal your ban, fill out this Google Form:
 <https://forms.gle/jcoP8kd3My31x3Gu6>`;
     action = 'Ban';
@@ -56,7 +56,7 @@ If you wish to appeal your ban, fill out this Google Form:
     // Mute 12 hours
     dmMsg = `You have been temporarily muted for 12 hours in the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction points** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
     action = '12 Hour Mute';
     mute = 720;
@@ -64,7 +64,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     // Mute 1 hour
     dmMsg = `You have been temporarily muted for 1 hour in the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction points** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
     action = '1 Hour Mute';
     mute = 60;
@@ -72,7 +72,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     // Mute 30 minutes
     dmMsg = `You have been temporarily muted for 30 minutes in the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction points** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
     action = '30 Minute Mute';
     mute = 30;
@@ -80,7 +80,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     // Mute 10 minutes
     dmMsg = `You have been temporarily muted for 10 minutes in the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction points** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
     action = '10 Minute Mute';
     mute = 10;
@@ -88,7 +88,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     // Give warning
     dmMsg = `You have been warned in the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction points** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your warning, please use the \`.modmail <message>\` command in this DM.`;
     action = 'Warn';
   }
@@ -134,6 +134,9 @@ If you wish to contact the moderators about your warning, please use the \`.modm
       });
     }, mute * 60000);
   }
+
+  // Notify in channel
+  client.success(message.channel, 'Infraction Given!', `**${member.user.tag}** was given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}!**`)
 
   // Send mod-log embed
   const embed = new Discord.RichEmbed()
