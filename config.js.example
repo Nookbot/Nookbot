@@ -30,6 +30,7 @@ const config = {
     roles: [],
     nicknames: [],
     usernames: [],
+    infractions: [],
   },
 
   // VillagerDB 

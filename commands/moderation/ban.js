@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // Setting member to first member mentioned
-  let member = message.mentions.members.first()
+  let member = message.mentions.members.first();
   if (!member) {
     member = parseInt(args[0], 10) ? await client.fetchUser(args[0]) : undefined;
   }
@@ -31,7 +31,7 @@ module.exports.run = async (client, message, args, level) => {
     const dmChannel = await member.createDM();
     await dmChannel.send(`You have been banned from the AC:NH server for the following reason:
 **${reason}**
-If you wish to appeal this ban, fill out this Google Form:
+If you wish to appeal your ban, fill out this Google Form:
 <https://forms.gle/jcoP8kd3My31x3Gu6>`);
   } catch (e) {
     client.error(message.guild.channels.get(client.getSettings(message.guild).staffChat), 'Failed to Send DM to Member!', "I've failed to send a dm to the most recent member banned. They most likely had dms off.");
