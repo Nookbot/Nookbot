@@ -1,7 +1,7 @@
 module.exports.run = async (client, message, args, level, Discord) => {
   let member = message.mentions.members.first();
   if (!member) {
-    member = parseInt(args[0], 10) ? await client.fetchMember(args[0]) : undefined;
+    member = parseInt(args[0], 10) ? await message.guild.fetchMember(args[0]) : undefined;
   }
 
   if (!member) {
