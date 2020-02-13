@@ -46,32 +46,6 @@ module.exports.run = (client, message, args) => {
         return client.error(message.channel, 'Not on the List!', `You were not on the list to adopt **${villager.target}**!`);
       }
       return client.error(message.channel, 'Incorrect Villager Name!', 'Could not find a villager with that name!');
-    case 'offer':
-    case 'place':
-    case 'orphan':
-      if (args.length === 1) {
-        // No villager name was given
-        return client.error(message.channel, 'No Villager Name Given!', 'You must supply a villager name to be placed up for adoption!');
-      }
-
-      villager = findBest(args.slice(1).join(' '), client.villagerDB.keyArray()).bestMatch;
-      if (villager.rating > 0.1) {
-        const vilAdopters = client.villagerDB.get(villager.target).adopters.filter((m) => message.guild.members.has(m));
-        // Clear the list of members that are no longer on the server
-        client.villagerDB.set(villager.target, vilAdopters, 'adopters');
-
-        if (vilAdopters.length === 0) {
-          return client.error(message.channel, 'No one on the List!', `Nobody is currently wishing to adopt **${villager.target}**, but thank you for offering!`);
-        }
-
-        msg = `The following members are looking to adopt **${villager.target}**:\nPosition - Member - Friend Code`;
-        vilAdopters.forEach((memID, i) => {
-          msg += `\n#${i + 1} - <@${memID}> - ${client.userDB.ensure(memID, client.config.userDBDefaults).friendcode || 'Ask'}`;
-        });
-        msg += '\nYou are ultimately responsible for how to choose someone to adopt your villager, whether it be first to respond, first on the list, by random, or your pick.';
-        return message.channel.send(msg, { split: true });
-      }
-      return client.error(message.channel, 'Incorrect Villager Name!', 'Could not find a villager with that name!');
     default:
       if (args.length === 0) {
         // No villager name was given
