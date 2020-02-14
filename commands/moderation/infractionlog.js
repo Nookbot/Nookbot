@@ -30,10 +30,10 @@ module.exports.run = async (client, message, args, level) => {
   infractions.forEach((i) => {
     if ((i.points * 604800000) + i.date > time) {
       curPoints += i.points;
-      curMsg += `\n• Case ${i.case} (${moment.utc(i.time).format('DD MMM YY HH:mm')} UTC) ${i.points} point${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+      curMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} point${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
     } else {
       expPoints += i.points;
-      expMsg += `\n• Case ${i.case} (${moment.utc(i.time).format('DD MMM YY HH:mm')} UTC) ${i.points} point${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+      expMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} point${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
     }
   });
 
