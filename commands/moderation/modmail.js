@@ -1,5 +1,27 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
+  if (message.channel.id === '588480202338861107') {
+    // This was sent in the staff channel, so they are trying to reply to modmail.
+    let member = message.mentions.members.first();
+    if (!member) {
+      member = parseInt(args[0], 10) ? await client.fetchUser(args[0]) : undefined;
+    }
+
+    if (!member) {
+      client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
+      return;
+    }
+
+    try {
+      const dmCh = await member.createDM();
+      const attachments = message.attachments.map((a) => a.url);
+      await dmCh.send(`__**Mod Mail Response**__\n**${message.author.tag}** (${message.author.id}) : ${args.join(' ')}`, { split: true, files: attachments });
+      return;
+    } catch (err) {
+      client.error(message.channel, 'Unable to DM that Member!', 'The user must have their DMs closed or is otherwise unavailable.');
+      return;
+    }
+  }
   // #staff-discussion but the name might change so the id is best
   const staffCh = client.guilds.first().channels.get('588480202338861107');
 
