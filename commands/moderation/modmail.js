@@ -1,6 +1,9 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  if (message.channel.id === '588480202338861107') {
+  // #staff-discussion but the name might change so the id is best
+  const staffCh = client.guilds.first().channels.get('588480202338861107');
+
+  if (message.channel === staffCh) {
     // This was sent in the staff channel, so they are trying to reply to modmail.
     let member = message.mentions.members.first();
     if (!member) {
@@ -15,15 +18,15 @@ module.exports.run = async (client, message, args, level) => {
     try {
       const dmCh = await member.createDM();
       const attachments = message.attachments.map((a) => a.url);
+
       await dmCh.send(`__**Mod Mail Response**__\n**${message.author.tag}** (${message.author.id}) : ${args.slice(1).join(' ')}`, { split: true, files: attachments });
+      client.success(staffCh, 'Mod Mail Response Sent!', `I've successfully sent your response to **${member.user.tag}**!`);
       return;
     } catch (err) {
       client.error(message.channel, 'Unable to DM that Member!', 'The user must have their DMs closed or is otherwise unavailable.');
       return;
     }
   }
-  // #staff-discussion but the name might change so the id is best
-  const staffCh = client.guilds.first().channels.get('588480202338861107');
 
   if (args.length === 0) {
     const initMsg = `Hello **${message.author.username}!** You've initiated Mod Mail communication! I'll direct your next message to the staff channel so go ahead, I'm listening!`;
