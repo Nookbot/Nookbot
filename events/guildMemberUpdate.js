@@ -7,8 +7,8 @@ module.exports = async (client, oldMember, newMember) => {
       .setTimestamp()
       .setColor('#00e5ff')
       .setFooter(`ID: ${newMember.id}`)
-      .addField('**Nickname Update**', `**Before:**${oldMember.nickname.replace(/(\*|~|_|`|<|\|)/g, '\\$1') || oldMember.user.username.replace(/(\*|~|_|`|<|\|)/g, '\\$1')}
-**+After:**${newMember.nickname.replace(/(\*|~|_|`|<|\|)/g, '\\$1') || newMember.user.username.replace(/(\*|~|_|`|<|\|)/g, '\\$1')}`);
+      .addField('**Nickname Update**', `**Before:**${oldMember.nickname ? oldMember.nickname.replace(/(\*|~|_|`|<|\|)/g, '\\$1') : oldMember.user.username.replace(/(\*|~|_|`|<|\|)/g, '\\$1')}
+**+After:**${newMember.nickname ? newMember.nickname.replace(/(\*|~|_|`|<|\|)/g, '\\$1') : newMember.user.username.replace(/(\*|~|_|`|<|\|)/g, '\\$1')}`);
 
     client.userDB.ensure(newMember.id, client.config.userDBDefaults);
     client.userDB.push(newMember.id, { timestamp: Date.now(), nickname: newMember.nickname || newMember.user.username }, 'nicknames');

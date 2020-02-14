@@ -125,13 +125,17 @@ If you wish to contact the moderators about your warning, please use the \`.modm
     });
   } else if (mute) {
     try {
+      // Update unmuteTime on userDB
+      client.userDB.set(member.id, (mute * 60000) + time, 'unmuteTime');
       const guildMember = await message.guild.fetchMember(member);
       await guildMember.addRole('495854925054607381', reason);
       // Schedule unmute
       setTimeout(() => {
-        guildMember.removeRole('495854925054607381', `Scheduled unmute after ${mute} minutes.`).catch((err) => {
-          client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}`);
-        });
+        if ((client.userDB.get(member.id, 'unmuteTime') || 0) < Date.now()) {
+          guildMember.removeRole('495854925054607381', `Scheduled unmute after ${mute} minutes.`).catch((err) => {
+            client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}`);
+          });
+        }
       }, mute * 60000);
     } catch (err) {
       client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Mute Failed!', `I've failed to mute this member! ${err}`);
