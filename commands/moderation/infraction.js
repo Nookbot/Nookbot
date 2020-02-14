@@ -1,7 +1,7 @@
 module.exports.run = async (client, message, args, level, Discord) => {
   let member = message.mentions.members.first();
   if (!member) {
-    member = parseInt(args[0], 10) ? await message.guild.fetchMember(args[0]) : undefined;
+    member = parseInt(args[0], 10) ? await client.fetchUser(args[0]) : undefined;
   }
 
   if (!member) {
@@ -120,27 +120,30 @@ If you wish to contact the moderators about your warning, please use the \`.modm
 
   // Perform the required action
   if (ban) {
-    member.ban({ reason }).catch((err) => {
+    await message.guild.ban(member, { reason }).catch((err) => {
       client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Ban Failed!', `I've failed to ban this member! ${err}`);
     });
   } else if (mute) {
-    member.addRole('495854925054607381', reason).catch((err) => {
+    try {
+      const guildMember = await message.guild.fetchMember(member);
+      await guildMember.addRole('495854925054607381', reason);
+      // Schedule unmute
+      setTimeout(() => {
+        guildMember.removeRole('495854925054607381', `Scheduled unmute after ${mute} minutes.`).catch((err) => {
+          client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}`);
+        });
+      }, mute * 60000);
+    } catch (err) {
       client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Mute Failed!', `I've failed to mute this member! ${err}`);
-    });
-    // Schedule unmute
-    setTimeout(() => {
-      member.removeRole('495854925054607381', `Scheduled unmute after ${mute} minutes.`).catch((err) => {
-        client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}`);
-      });
-    }, mute * 60000);
+    }
   }
 
   // Notify in channel
-  client.success(message.channel, 'Infraction Given!', `**${member.user.tag}** was given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}!**`)
+  client.success(message.channel, 'Infraction Given!', `**${member.guild ? member.user.tag : member.tag || member}** was given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}!**`);
 
   // Send mod-log embed
   const embed = new Discord.RichEmbed()
-    .setAuthor(`Case ${caseNum} | ${action} | ${member.user.tag}`, member.user.displayAvatarURL)
+    .setAuthor(`Case ${caseNum} | ${action} | ${member.guild ? member.user.tag : member.tag || member}`, member.guild ? member.user.displayAvatarURL : member.displayAvatarURL)
     .setColor((mute || ban) ? '#ff9292' : '#fada5e')
     .setDescription(`Reason: ${reason}`)
     .addField('User', `<@${member.id}>`, true)

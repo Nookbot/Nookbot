@@ -76,6 +76,6 @@ module.exports.help = {
   name: 'adopt',
   category: 'game',
   description: 'Allows members to be notified when a user puts a specific villager up for adoption',
-  usage: 'adopt <offer|delete|list> <villager name>',
-  details: '<villager name> => Signup to be pinged when the villager you specifiy is placed up for adoption.\n<offer> => Ping all the members that are asking for the villager you specifiy.\n<delete> => Remove yourself from the list of members to be pinged when the villager you specifiy is placed up for adoption.\n<list> => Lists all of the villagers that you have signed up to adopt.',
+  usage: 'adopt <delete|list> <villager name>',
+  details: '<villager name> => Signup to be pinged when the villager you specifiy is placed up for adoption.\n<delete> => Remove yourself from the list of members to be pinged when the villager you specifiy is placed up for adoption.\n<list> => Lists all of the villagers that you have signed up to adopt.',
 };

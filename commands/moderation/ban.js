@@ -38,9 +38,9 @@ If you wish to appeal your ban, fill out this Google Form:
   }
 
   // Bans the member
-  return message.guild.ban(member.id ? member.id : member, reason).then((memberBanned) => {
+  return message.guild.ban(member, reason).then((memberBanned) => {
     // If ban is successful, display this
-    client.success(message.channel, 'Ban Successful!', `I've successfully banned **${memberBanned.guild ? memberBanned.user.tag : `${memberBanned.username}#${memberBanned.discriminator}`}**!`);
+    client.success(message.channel, 'Ban Successful!', `I've successfully banned **${memberBanned.guild ? memberBanned.user.tag : `${memberBanned.username}#${memberBanned.discriminator}` || memberBanned}**!`);
   }).catch((error) => client.error(message.channel, 'Ban Failed!', `I've failed to ban this member! ${error}`));
 };
 
