@@ -15,7 +15,7 @@ module.exports.run = async (client, message, args, level) => {
     try {
       const dmCh = await member.createDM();
       const attachments = message.attachments.map((a) => a.url);
-      await dmCh.send(`__**Mod Mail Response**__\n**${message.author.tag}** (${message.author.id}) : ${args.join(' ')}`, { split: true, files: attachments });
+      await dmCh.send(`__**Mod Mail Response**__\n**${message.author.tag}** (${message.author.id}) : ${args.slice(1).join(' ')}`, { split: true, files: attachments });
       return;
     } catch (err) {
       client.error(message.channel, 'Unable to DM that Member!', 'The user must have their DMs closed or is otherwise unavailable.');
