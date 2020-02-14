@@ -38,10 +38,10 @@ module.exports.run = async (client, message, args, level) => {
   });
 
   if (curMsg) {
-    msg += `**Current infractions (${curPoints} total):**${curMsg}`;
+    msg += `\n**Current infractions (${curPoints} total):**${curMsg}`;
   }
   if (expMsg) {
-    msg += `**Expired infractions (${expPoints} total):**${expMsg}`;
+    msg += `\n**Expired infractions (${expPoints} total):**${expMsg}`;
   }
 
   // Where to send message
