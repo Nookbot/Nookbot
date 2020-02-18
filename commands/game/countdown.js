@@ -53,5 +53,6 @@ module.exports.help = {
   name: 'countdown',
   category: 'game',
   description: "Gets the current countdown from AC:NH's release",
-  usage: 'countdown',
+  usage: 'countdown <timezone>',
+  details: '<timezone> => The timezone to get the countdown for. Ex - EST, GMT, PST, etc.',
 };
