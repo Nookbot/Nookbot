@@ -1,6 +1,46 @@
+const moment = require('moment');
+
+const timezones = require('../../src/timezones.json');
+
 // eslint-disable-next-line no-unused-vars
 module.exports.run = (client, message, args, level) => {
-  client.countdown(message.channel);
+  const tz = args[0] ? args[0].toUpperCase() : 'LINT';
+  const offset = timezones[tz];
+
+  if (!offset) {
+    return client.error(message.channel, 'Invalid Timezone!', `The following timezones are available to view the countdown: \`${Object.keys(timezones).join('\` \`')}\``);
+  }
+
+  const timeDif = moment.duration(moment([2020, 2, 20]).diff(moment().add(offset, 'hours').startOf('minute')));
+
+  const times = [
+    Math.floor(timeDif.asDays()),
+    timeDif.hours(),
+    timeDif.minutes(),
+  ];
+
+  const units = ['day', 'hour', 'minute'];
+
+  // Grab the top 3 units of time that aren't 0
+  let outTimes = '';
+  let c = 0;
+  for (let t = 0; t < units.length; t++) {
+    if (times[t] > 0) {
+      outTimes += `${c === 1 ? '|' : ''}${c === 2 ? '=' : ''}${times[t]} ${units[t]}${times[t] === 1 ? '' : 's'}`;
+      c += 1;
+      if (c === 3) {
+        break;
+      }
+    }
+  }
+
+  if (outTimes.includes('=')) {
+    outTimes = outTimes.replace('|', ', ').replace('=', ', and ');
+  } else {
+    outTimes = outTimes.replace('|', ' and ');
+  }
+
+  return message.channel.send(`**Animal Crossing: New Horizons** releases in **${outTimes}**! (UTC${offset >= 0 ? '+' : ''}${offset})`);
 };
 
 module.exports.conf = {
