@@ -6,7 +6,13 @@ module.exports.run = async (client, message, args, level) => {
     // Mods can see other's infractions
     member = message.mentions.members.first();
     if (!member) {
-      member = parseInt(args[0], 10) ? await client.fetchUser(args[0]) : undefined;
+      if (parseInt(args[0], 10)) {
+        try {
+          member = await client.fetchUser(args[0]);
+        } catch (err) {
+          // Don't need to send a message here
+        }
+      }
     }
     if (!member) {
       member = client.searchMember(args[0]);

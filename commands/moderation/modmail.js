@@ -1,13 +1,19 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  // #staff-discussion but the name might change so the id is best
-  const staffCh = client.guilds.first().channels.get('588480202338861107');
+  // #mod-mail but the name might change so the id is best
+  const modmailCh = client.guilds.first().channels.get('679053765030182931');
 
-  if (message.channel === staffCh) {
+  if (message.channel === modmailCh) {
     // This was sent in the staff channel, so they are trying to reply to modmail.
     let member = message.mentions.members.first();
     if (!member) {
-      member = parseInt(args[0], 10) ? await client.fetchUser(args[0]) : undefined;
+      if (parseInt(args[0], 10)) {
+        try {
+          member = await client.fetchUser(args[0]);
+        } catch (err) {
+          // Don't need to send a message here
+        }
+      }
     }
 
     if (!member) {
@@ -20,7 +26,7 @@ module.exports.run = async (client, message, args, level) => {
       const attachments = message.attachments.map((a) => a.url);
 
       await dmCh.send(`__**Mod Mail Response**__\n**${message.author.tag}** (${message.author.id}) : ${args.slice(1).join(' ')}`, { split: true, files: attachments });
-      client.success(staffCh, 'Mod Mail Response Sent!', `I've successfully sent your response to **${member.guild ? member.user.tag : member.tag || member}**!`);
+      client.success(modmailCh, 'Mod Mail Response Sent!', `I've successfully sent your response to **${member.guild ? member.user.tag : member.tag || member}**!`);
       return;
     } catch (err) {
       client.error(message.channel, 'Unable to DM that Member!', 'The user must have their DMs closed or is otherwise unavailable.');
@@ -47,7 +53,7 @@ module.exports.run = async (client, message, args, level) => {
     await dmCh.awaitMessages(filter, { max: 1, time: 180000, errors: ['time'] })
       .then(async (collected) => {
         const attachments = collected.first().attachments.map((a) => a.url);
-        await staffCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}`, { split: true, files: attachments });
+        await modmailCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}`, { split: true, files: attachments });
         await client.success(dmCh, 'Sent!', 'Pete has delivered your message safely to the Town Hall!');
       })
       .catch(() => {
@@ -55,7 +61,7 @@ module.exports.run = async (client, message, args, level) => {
       });
   } else {
     const attachments = message.attachments.map((a) => a.url);
-    await staffCh.send(`**${message.author.tag}** (${message.author}) : ${args.join(' ')}`, { split: true, files: attachments });
+    await modmailCh.send(`**${message.author.tag}** (${message.author}) : ${args.join(' ')}`, { split: true, files: attachments });
     // Remove the message from the guild chat as it may contain sensitive information.
     if (message.guild) {
       message.delete().catch((err) => console.error(err));
