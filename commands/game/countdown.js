@@ -7,7 +7,7 @@ module.exports.run = (client, message, args, level) => {
   const tz = args[0] ? args[0].toUpperCase() : 'LINT';
   const offset = timezones[tz];
 
-  if (!offset) {
+  if (offset === undefined) {
     return client.error(message.channel, 'Invalid Timezone!', `The following timezones are available to view the countdown: \`${Object.keys(timezones).join('\` \`')}\``);
   }
 
