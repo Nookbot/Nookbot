@@ -8,7 +8,7 @@ module.exports.run = (client, message, args, level) => {
   const offset = timezones[tz];
 
   if (offset === undefined) {
-    return client.error(message.channel, 'Invalid Timezone!', `The following timezones are available to view the countdown: \`${Object.keys(timezones).join('\` \`')}\``);
+    return client.error(message.channel, 'Invalid Timezone!', `The following timezones are available to view the countdown: \`${Object.keys(timezones).join('\`, \`')}\``);
   }
 
   const timeDif = moment.duration(moment([2020, 2, 20]).diff(moment().add(offset, 'hours').startOf('minute')));
