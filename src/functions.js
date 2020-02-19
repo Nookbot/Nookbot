@@ -113,39 +113,6 @@ module.exports = (client) => {
     return ((str || '').match(new RegExp(regexp, 'g')) || []).length;
   };
 
-  client.countdown = (channel) => {
-    const timeDif = moment.duration(moment([2020, 2, 20]).diff(moment().add(14, 'hours').startOf('minute')));
-
-    const times = [
-      Math.floor(timeDif.asDays()),
-      timeDif.hours(),
-      timeDif.minutes(),
-    ];
-
-    const units = ['day', 'hour', 'minute'];
-
-    // Grab the top 3 units of time that aren't 0
-    let outTimes = '';
-    let c = 0;
-    for (let t = 0; t < units.length; t++) {
-      if (times[t] > 0) {
-        outTimes += `${c === 1 ? '|' : ''}${c === 2 ? '=' : ''}${times[t]} ${units[t]}${times[t] === 1 ? '' : 's'}`;
-        c += 1;
-        if (c === 3) {
-          break;
-        }
-      }
-    }
-
-    if (outTimes.includes('=')) {
-      outTimes = outTimes.replace('|', ', ').replace('=', ', and ');
-    } else {
-      outTimes = outTimes.replace('|', ' and ');
-    }
-
-    return channel.send(`**Animal Crossing: New Horizons** releases in **${outTimes}**! (UTC+14)`);
-  };
-
   client.reactPrompt = async (message, question, opt) => {
     if (!opt) {
       const confirm = await message.channel.send(question);
