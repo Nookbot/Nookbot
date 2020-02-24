@@ -30,7 +30,7 @@ module.exports.conf = {
   guildOnly: true,
   aliases: ['orphan'],
   permLevel: 'Verified',
-  cooldown: 1800000, // 30 minutes
+  cooldown: 1800, // 30 minutes
 };
 
 module.exports.help = {
