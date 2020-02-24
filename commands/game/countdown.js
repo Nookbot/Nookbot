@@ -5,10 +5,10 @@ const timezones = require('../../src/timezones.json');
 // eslint-disable-next-line no-unused-vars
 module.exports.run = (client, message, args, level) => {
   const tz = args[0] ? args[0].toUpperCase() : 'LINT';
-  const offset = timezones[tz];
+  let offset = timezones[tz];
 
   if (offset === undefined) {
-    return client.error(message.channel, 'Invalid Timezone!', `The following timezones are available to view the countdown: \`${Object.keys(timezones).join('\`, \`')}\``);
+    offset = 14;
   }
 
   const timeDif = moment.duration(moment([2020, 2, 20]).diff(moment().add(offset, 'hours').startOf('minute')));

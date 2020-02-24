@@ -102,16 +102,18 @@ If you believe this member is a mention spammer bot, please ban them with the co
   const cooldownAmount = (cmd.conf.cooldown || 0) * 1000;
 
   if (timestamps.has(message.author.id)) {
-    const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+    if (level[1] < 2) {
+      const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
 
-    if (now < expirationTime) {
-      let timeLeft = (expirationTime - now) / 1000;
-      let time = 'second(s)';
-      if (cmd.conf.cooldown > 60) {
-        timeLeft = (expirationTime - now) / 60000;
-        time = 'minute(s)';
+      if (now < expirationTime) {
+        let timeLeft = (expirationTime - now) / 1000;
+        let time = 'second(s)';
+        if (cmd.conf.cooldown > 60) {
+          timeLeft = (expirationTime - now) / 60000;
+          time = 'minute(s)';
+        }
+        return client.error(message.channel, 'Woah There Bucko!', `Please wait **${timeLeft.toFixed(2)} more ${time}** before reusing the \`${cmd.help.name}\` command!`);
       }
-      return client.error(message.channel, 'Woah There Bucko!', `Please wait **${timeLeft.toFixed(2)} more ${time}** before reusing the \`${cmd.help.name}\` command!`);
     }
   }
 
