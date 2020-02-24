@@ -13,12 +13,12 @@ module.exports.run = async (client, message, args, level, Discord) => {
   if (!member) {
     const searchedMember = client.searchMember(args[0]);
     if (searchedMember) {
-      const decision = await client.reactPrompt(message, `Would you like to give \`${searchedMember.user.tag}\` an infraction?`);
+      const decision = await client.reactPrompt(message, `Would you like to give \`${searchedMember.user.tag}\` a bee sting?`);
       if (decision) {
         member = searchedMember;
       } else {
         message.delete().catch((err) => console.error(err));
-        return client.error(message.channel, 'Infraction Not Given!', 'The prompt timed out, or you selected no.');
+        return client.error(message.channel, 'Bee Sting Not Given!', 'The prompt timed out, or you selected no.');
       }
     }
   }
@@ -31,7 +31,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
   const newPoints = parseInt(args[1], 10);
 
   if (!newPoints) {
-    return client.error(message.channel, 'Invalid Number!', 'Please provide a valid number for the points to give!');
+    return client.error(message.channel, 'Invalid Number!', 'Please provide a valid number for the stings to give!');
   }
 
   const reason = args[2] ? args.slice(2).join(' ') : 'No reason given.';
@@ -53,7 +53,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     // Ban
     dmMsg = `You have been banned from the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to appeal your ban, fill out this Google Form:
 <https://forms.gle/jcoP8kd3My31x3Gu6>`;
     action = 'Ban';
@@ -62,7 +62,7 @@ If you wish to appeal your ban, fill out this Google Form:
     // Mute 12 hours
     dmMsg = `You have been temporarily muted for 12 hours in the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
     action = '12 Hour Mute';
     mute = 720;
@@ -70,7 +70,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     // Mute 1 hour
     dmMsg = `You have been temporarily muted for 1 hour in the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
     action = '1 Hour Mute';
     mute = 60;
@@ -78,7 +78,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     // Mute 30 minutes
     dmMsg = `You have been temporarily muted for 30 minutes in the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
     action = '30 Minute Mute';
     mute = 30;
@@ -86,7 +86,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     // Mute 10 minutes
     dmMsg = `You have been temporarily muted for 10 minutes in the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
     action = '10 Minute Mute';
     mute = 10;
@@ -94,7 +94,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     // Give warning
     dmMsg = `You have been warned in the AC:NH server for the following reason:
 **${reason}**
-You were given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your warning, please use the \`.modmail <message>\` command in this DM.`;
     action = 'Warn';
   }
@@ -139,7 +139,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
       setTimeout(() => {
         if ((client.userDB.get(member.id, 'unmuteTime') || 0) < Date.now()) {
           guildMember.removeRole('495854925054607381', `Scheduled unmute after ${mute} minutes.`).catch((err) => {
-            client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}`);
+            client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}\nID: ${member.id}`);
           });
         }
       }, mute * 60000);
@@ -149,7 +149,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
   }
 
   // Notify in channel
-  client.success(message.channel, 'Infraction Given!', `**${member.guild ? member.user.tag : member.tag || member}** was given **${newPoints} infraction point${newPoints === 1 ? '' : 's'}!**`);
+  client.success(message.channel, 'Infraction Given!', `**${member.guild ? member.user.tag : member.tag || member}** was given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}!**`);
 
   // Send mod-log embed
   const embed = new Discord.RichEmbed()
@@ -158,9 +158,9 @@ If you wish to contact the moderators about your warning, please use the \`.modm
     .setDescription(`Reason: ${reason}`)
     .addField('User', `<@${member.id}>`, true)
     .addField('Moderator', `<@${message.author.id}>`, true)
-    .addField('Points Given', newPoints, true)
+    .addField('Stings Given', newPoints, true)
     .addField('DM Sent?', dmSent ? client.emoji.checkMark : client.emoji.redX, true)
-    .addField('Total Points', curPoints + newPoints, true)
+    .addField('Total Stings', curPoints + newPoints, true)
     .setFooter(`ID: ${member.id}`)
     .setTimestamp();
   return message.guild.channels.get(client.getSettings(message.guild).modLog).send(embed);
@@ -168,15 +168,15 @@ If you wish to contact the moderators about your warning, please use the \`.modm
 
 module.exports.conf = {
   guildOnly: true,
-  aliases: ['inf', 'infractions', 'points', 'pts'],
+  aliases: ['bee', 'bs', 'sting'],
   permLevel: 'Mod',
   args: 2,
 };
 
 module.exports.help = {
-  name: 'infraction',
+  name: 'beesting',
   category: 'moderation',
-  description: 'Manage infractions on server members.',
-  usage: 'infraction <@member> <points> <reason>',
-  details: '<@member> The member to give an infraction.\n<points> => The number of points to give the member.\n<reason> => The reason for giving the member the infraction.',
+  description: 'Manage bee stings on server members.',
+  usage: 'beesting <@member> <stings> <reason>',
+  details: '<@member> The member to give a bee sting.\n<stings> => The number of stings to give the member.\n<reason> => The reason for giving the member the bee sting.',
 };

@@ -27,7 +27,7 @@ module.exports.run = async (client, message, args, level) => {
   }
 
   const { infractions } = client.userDB.ensure(member.id, client.config.userDBDefaults);
-  let msg = `__**${member.guild ? member.user.tag : `${member.username}#${member.discriminator}`}'s Infractions**__`;
+  let msg = `__**${member.guild ? member.user.tag : `${member.username}#${member.discriminator}`}'s Bee Stings**__`;
   let expPoints = 0;
   let expMsg = '';
   let curPoints = 0;
@@ -36,18 +36,18 @@ module.exports.run = async (client, message, args, level) => {
   infractions.forEach((i) => {
     if ((i.points * 604800000) + i.date > time) {
       curPoints += i.points;
-      curMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} point${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+      curMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
     } else {
       expPoints += i.points;
-      expMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} point${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+      expMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
     }
   });
 
   if (curMsg) {
-    msg += `\n**Current infractions (${curPoints} total):**${curMsg}`;
+    msg += `\n**Current bee stings (${curPoints} total):**${curMsg}`;
   }
   if (expMsg) {
-    msg += `\n**Expired infractions (${expPoints} total):**${expMsg}`;
+    msg += `\n**Expired bee stings (${expPoints} total):**${expMsg}`;
   }
 
   // Where to send message
@@ -56,7 +56,7 @@ module.exports.run = async (client, message, args, level) => {
       return message.channel.send(msg, { split: true });
     }
     // No infractions
-    return message.channel.send(`${member.guild ? member.user.tag : `${member.username}#${member.discriminator}`} doesn't have any infractions!`);
+    return message.channel.send(`${member.guild ? member.user.tag : `${member.username}#${member.discriminator}`} doesn't have any bee stings!`);
   }
   // Try to send DM
   try {
@@ -64,28 +64,28 @@ module.exports.run = async (client, message, args, level) => {
     if (curMsg || expMsg) {
       return await dmChannel.send(msg, { split: true });
     }
-    return await dmChannel.send('You do not have any infractions!');
+    return await dmChannel.send('You do not have any bee stings!');
   } catch (e) {
     // Send basic version in channel
     if (curMsg || expMsg) {
-      return message.channel.send(`I was unable to send a detailed list of your infractions to your direct messages, so here is some basic info:
-**Current infractions**: ${curPoints} point${curPoints === 1 ? '' : 's'}
-**Expired infractions**: ${expPoints} point${expPoints === 1 ? '' : 's'}`);
+      return message.channel.send(`I was unable to send a detailed list of your bee stings to your direct messages, so here is some basic info:
+**Current bee stings**: ${curPoints} sting${curPoints === 1 ? '' : 's'}
+**Expired bee stings**: ${expPoints} sting${expPoints === 1 ? '' : 's'}`);
     }
-    return message.channel.send('You do not have any infractions!');
+    return message.channel.send('You do not have any bee stings!');
   }
 };
 
 module.exports.conf = {
   guildOnly: false,
-  aliases: ['inflog', 'infractionslog', 'pointslog', 'ptslog'],
+  aliases: ['beelog', 'bslog', 'stinglog'],
   permLevel: 'User',
 };
 
 module.exports.help = {
-  name: 'infractionlog',
+  name: 'beestinglog',
   category: 'moderation',
-  description: 'Shows a list of infractions given to a member',
-  usage: 'infraction <@member>',
-  details: '<@member> The member to list infractions for.',
+  description: 'Shows a list of bee stings given to a member',
+  usage: 'beestinglog <@member>',
+  details: '<@member> The member to list bee stings for.',
 };
