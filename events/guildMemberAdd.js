@@ -25,9 +25,9 @@ module.exports = async (client, member) => {
   const storedMember = client.userDB.ensure(member.id, client.config.userDBDefaults);
   if (storedMember.roles.length !== 0) {
     storedMember.roles.forEach((r) => {
-      const role = member.guild.roles.get(r);
+      const role = member.guild.roles.cache.get(r);
       if (!role.managed && role.id !== member.guild.id) {
-        member.addRole(role);
+        member.roles.add(role);
       }
     });
     client.userDB.setProp(member.id, 'roles', []);
@@ -60,23 +60,23 @@ module.exports = async (client, member) => {
     // If invite isn't valid, that most likely means the vanity URL was used so default to it.
   if (invite) {
     // Inviter
-    const inviter = client.users.get(invite.inviter.id);
+    const inviter = client.users.cache.get(invite.inviter.id);
     inviteField = `${invite.code} from ${inviter.tag} (${inviter.id}) with ${invite.uses}`;
   } else {
     // Vanity URL was used
     inviteField = 'Vanity URL';
   }
 
-  const embed = new Discord.RichEmbed()
-    .setAuthor(member.user.tag, member.user.displayAvatarURL)
+  const embed = new Discord.MessageEmbed()
+    .setAuthor(member.user.tag, member.user.displayAvatarURL())
     .setColor('#1de9b6')
     .setTimestamp()
     .setFooter(`ID: ${member.id}`)
-    .setThumbnail(member.user.displayAvatarURL)
+    .setThumbnail(member.user.displayAvatarURL())
     .addField('**Member Joined**', `<@${member.id}>`, true)
     .addField('**Join Position**', member.guild.memberCount, true)
     .addField('**Account Age**', accountAge, true)
     .addField('**Invite Used**', inviteField, true);
 
-  member.guild.channels.get(client.getSettings(member.guild).actionLog).send(embed);
+  member.guild.channels.cache.get(client.getSettings(member.guild).actionLog).send(embed);
 };

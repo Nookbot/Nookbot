@@ -33,7 +33,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
   }
 
   // The music commands must be used in voice text
-  const { voiceChannel } = message.member;
+  const voiceChannel = message.member && message.member.voice.channel;
   if (!voiceChannel || voiceChannel.id !== client.getSettings(message.guild).music || client.getSettings(message.guild).musicText !== message.channel.id) {
     return client.error(message.channel, 'Command Unavailable!', `To use this command, you must use the <#${client.getSettings(message.guild).musicText}> channel and currently be in the music channel.`);
   }
@@ -41,7 +41,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
   // Helper function to update the music bot info
   const updateInfo = async (updateTitle, updateDesc) => {
     // Prepare the embed
-    const embed = new Discord.RichEmbed()
+    const embed = new Discord.MessageEmbed()
       .setTitle('__**•• DJ Nookbot ••**__')
       .setDescription(`Played: ${client.songQueue.played} song${client.songQueue.played !== 1 ? 's' : ''} | Total Time: ${client.humanTimeBetween(0, client.songQueue.timePlayed * 1000) || '0 seconds'}
 Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX} | Shuffle Mode: ${client.songQueue.shuffle ? client.emoji.checkMark : client.emoji.redX}`)
@@ -131,12 +131,12 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
         // Defining a play function so it can call itself recursively
         const play = async (song) => {
           // If a song wasn't given leave voice channel, or if the connection has been destroyed
-          if (!song || !client.songQueue.connection || (client.songQueue.connection.dispatcher && client.songQueue.connection.dispatcher.destroyed)) {
+          if (!song || !client.songQueue.connection) {
             client.clearSongQueue();
             return;
           }
 
-          client.songQueue.connection.playStream(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }))
+          client.songQueue.connection.play(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }), { volume: false })
             .once('end', (reason) => {
               if (!client.songQueue.stopping && client.songQueue.connection) {
                 if (reason !== 'skip') {
@@ -144,10 +144,6 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
                   client.songQueue.timePlayed += client.songQueue.songs[0].timeNum;
                 }
                 client.songQueue.songs.shift();
-                // This was the fix for huge wait times between songs
-                client.songQueue.connection.player.streamingData.pausedTime = 0;
-                // This was the fix for the memory leak when skipping and starting new songs
-                client.songQueue.connection.player.prism.transcoder.ffmpeg.processes = [];
                 // If the queue is empty and shuffle mode is on, pick a random song and add it to the queue
                 if (client.songQueue.songs.length === 0 && client.songQueue.shuffle) {
                   infoFromID(client.playlist.randomKey()).then((i) => {
@@ -199,7 +195,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
       // Check if a song is currently playing to pause
       if (client.songQueue.playing) {
         client.songQueue.playing = false;
-        client.songQueue.connection.dispatcher.pause();
+        client.songQueue.connection.dispatcher.pause(true);
         return updateInfo('Song Paused!', 'The current song was paused! Resume it with \`.music play\`.');
       }
 

@@ -2,8 +2,8 @@ const Discord = require('discord.js');
 
 module.exports = async (client, oldMember, newMember) => {
   if (oldMember.nickname !== newMember.nickname) {
-    const embed = new Discord.RichEmbed()
-      .setAuthor(newMember.user.tag, newMember.user.displayAvatarURL)
+    const embed = new Discord.MessageEmbed()
+      .setAuthor(newMember.user.tag, newMember.user.displayAvatarURL())
       .setTimestamp()
       .setColor('#00e5ff')
       .setFooter(`ID: ${newMember.id}`)
@@ -13,6 +13,6 @@ module.exports = async (client, oldMember, newMember) => {
     client.userDB.ensure(newMember.id, client.config.userDBDefaults);
     client.userDB.push(newMember.id, { timestamp: Date.now(), nickname: newMember.nickname || newMember.user.username }, 'nicknames');
 
-    oldMember.guild.channels.get(client.getSettings(client.guilds.first()).actionLog).send(embed);
+    oldMember.guild.channels.cache.get(client.getSettings(client.guilds.cache.first()).actionLog).send(embed);
   }
 };

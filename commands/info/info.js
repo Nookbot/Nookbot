@@ -5,11 +5,11 @@ module.exports.run = async (client, message, args, level, Discord) => {
   const owner = await client.fetchOwner();
 
   // embed
-  const embed = new Discord.RichEmbed()
-    .setAuthor(message.author.tag, message.author.displayAvatarURL)
+  const embed = new Discord.MessageEmbed()
+    .setAuthor(message.author.tag, message.author.displayAvatarURL())
     .setColor('#4199c2')
     .setTimestamp()
-    .setFooter('Nookbot', client.user.displayAvatarURL);
+    .setFooter('Nookbot', client.user.displayAvatarURL());
 
   switch (args[0]) {
     case 'bot': {
@@ -20,13 +20,13 @@ module.exports.run = async (client, message, args, level, Discord) => {
       const uptime = client.humanTimeBetween(client.uptime, 0);
 
       embed.setTitle('Bot Information')
-        .setThumbnail(client.user.displayAvatarURL)
+        .setThumbnail(client.user.displayAvatarURL())
         .addField('Bot Name', client.user.username, true)
         .addField('Bot ID', client.user.id, true)
         .addField('Bot Owner', owner.tag, true)
         .addField('Bot Version', client.version, true)
-        .addField('Online Users', client.users.size, true)
-        .addField('Server Count', client.guilds.size, true)
+        .addField('Online Users', client.users.cache.size, true)
+        .addField('Server Count', client.guilds.cache.size, true)
         .addField('Discord.js Version', `v${version}`, true)
         .addField('Mem Usage', `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
         .addField('Node.js Version', `${process.version}`, true)
@@ -37,15 +37,15 @@ module.exports.run = async (client, message, args, level, Discord) => {
     }
     case 'user': {
       // Setting the member to the mentioned user, if no mentioned user, falls back to author
-      const member = message.mentions.members.first() || message.guild.members.get(args[1]) || client.searchMember(args.slice(1).join(' ')) || message.member;
+      const member = message.mentions.members.cache.first() || message.guild.members.cache.get(args[1]) || client.searchMember(args.slice(1).join(' ')) || message.member;
 
       // Block everyone but mods or higher from using this command to show other users info.
       if (member !== message.member && level < 2) {
         return client.error(message.channel, 'Not Allowed!', 'You are not allowed to show user information on other users!');
       }
 
-      const roles = member.roles.filter((r) => r.id !== message.guild.id).map((r) => r.name).join(', ') || 'No Roles';
-      const roleSize = member.roles.filter((r) => r.id !== message.guild.id).size;
+      const roles = member.roles.cache.filter((r) => r.id !== message.guild.id).map((r) => r.name).join(', ') || 'No Roles';
+      const roleSize = member.roles.cache.filter((r) => r.id !== message.guild.id).size;
 
       let activity = member.presence.status;
 
@@ -59,7 +59,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         activity = `${client.emoji.offline} Offline/Invisible`;
       }
 
-      embed.setAuthor(member.user.tag, member.user.displayAvatarURL)
+      embed.setAuthor(member.user.tag, member.user.displayAvatarURL())
         .setTitle(`${member.displayName}\'s Info`)
         .addField('ID', member.user.id, true)
         .addField('Nickname', member.displayName, true)
@@ -73,7 +73,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'server':
       embed.setTitle('Server Information')
         .setTimestamp()
-        .setThumbnail(message.guild.iconURL.replace('.jpg', '.gif'))
+        .setThumbnail(message.guild.iconURL({ format: 'gif', dynamic: true }))
         .addField('Server Name', message.guild.name, true)
         .addField('Server ID', message.guild.id, true)
         .addField('Server Owner', `${message.guild.owner.user.tag} (${message.guild.owner.user.id})`, true)

@@ -60,9 +60,9 @@ const config = {
       name: 'Verified',
       check: (client, message) => {
         if (message.guild) {
-          const verifiedRole = message.guild.roles.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).verifiedRole.toLowerCase());
+          const verifiedRole = message.guild.roles.cache.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).verifiedRole.toLowerCase());
 
-          if (verifiedRole && message.member.roles.has(verifiedRole.id)) {
+          if (verifiedRole && message.member.roles.cache.has(verifiedRole.id)) {
             return true;
           }
         }
@@ -74,9 +74,9 @@ const config = {
       name: 'Mod',
       check: (client, message) => {
         if (message.guild) {
-          const modRole = message.guild.roles.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).modRole.toLowerCase());
+          const modRole = message.guild.roles.cache.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).modRole.toLowerCase());
 
-          if (modRole && message.member.roles.has(modRole.id)) {
+          if (modRole && message.member.roles.cache.has(modRole.id)) {
             return true;
           }
         }
@@ -88,9 +88,9 @@ const config = {
       name: 'Admin',
       check: (client, message) => {
         if (message.guild) {
-          const adminRole = message.guild.roles.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).adminRole.toLowerCase());
+          const adminRole = message.guild.roles.cache.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).adminRole.toLowerCase());
 
-          if ((adminRole && message.member.roles.has(adminRole.id)) || message.member.hasPermission('ADMINISTRATOR')) {
+          if ((adminRole && message.member.roles.cache.has(adminRole.id)) || message.member.hasPermission('ADMINISTRATOR')) {
             return true;
           }
         }

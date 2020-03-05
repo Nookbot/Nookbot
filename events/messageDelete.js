@@ -10,9 +10,9 @@ module.exports = async (client, message) => {
   // Description value length limit for embeds is 1024
   const msg = message.content.length > 1024 ? `${message.content.slice(0, 1021)}...` : message.content;
 
-  const embed = new Discord.RichEmbed()
+  const embed = new Discord.MessageEmbed()
     .setColor('#ff9292')
-    .setAuthor(message.author.tag, message.author.displayAvatarURL)
+    .setAuthor(message.author.tag, message.author.displayAvatarURL())
     .setDescription(`[Jump to message in](https://discordapp.com/channels/${message.guild.id}/${message.channel.id} 'Jump') <#${message.channel.id}>`)
     .setTimestamp()
     .setFooter(`ID: ${message.author.id}`);
@@ -33,5 +33,5 @@ module.exports = async (client, message) => {
       embed.addField('**Attachments Deleted**', attachList.slice(1));
     }
   }
-  message.guild.channels.get(client.getSettings(message.guild).actionLog).send(embed);
+  message.guild.channels.cache.get(client.getSettings(message.guild).actionLog).send(embed);
 };

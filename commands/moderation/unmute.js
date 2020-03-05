@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // Sets the role to the Muted role
-  const role = message.guild.roles.find((r) => r.name === 'Muted');
+  const role = message.guild.roles.cache.find((r) => r.name === 'Muted');
 
   // Sets the member to the user mentioned
-  let member = message.mentions.members.first() || message.guild.members.get(args[0]);
+  let member = message.mentions.members.cache.first() || message.guild.members.cache.get(args[0]);
 
   if (!member) {
     const searchedMember = client.searchMember(args[0]);
@@ -25,7 +25,7 @@ module.exports.run = async (client, message, args, level) => {
   }
 
   // Removes the role from the member and deletes the message that initiated the command
-  member.removeRole(role).catch((err) => console.error(err));
+  member.roles.remove(role).catch((err) => console.error(err));
   message.delete().catch((err) => console.error(err));
   return message.channel.send(`Successfully unmuted ${member}!`).catch((err) => console.error(err));
 };

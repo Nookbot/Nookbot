@@ -8,7 +8,7 @@ module.exports.run = (client, message, args) => {
 
   const villager = findBest(args.join(' '), client.villagerDB.keyArray()).bestMatch;
   if (villager.rating > 0.1) {
-    const vilAdopters = client.villagerDB.get(villager.target).adopters.filter((m) => message.guild.members.has(m));
+    const vilAdopters = client.villagerDB.get(villager.target).adopters.filter((m) => message.guild.members.cache.has(m));
     // Clear the list of members that are no longer on the server
     client.villagerDB.set(villager.target, vilAdopters, 'adopters');
 

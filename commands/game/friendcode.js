@@ -3,7 +3,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
   let code;
   let fc;
   let member;
-  const embed = new Discord.RichEmbed();
+  const embed = new Discord.MessageEmbed();
   switch (args[0]) {
     case 'set':
     case 'add':
@@ -20,7 +20,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       code = `SW-${code.slice(0, 4)}-${code.slice(4, 8)}-${code.slice(8, 12)}`;
       client.userDB.set(message.author.id, code, 'friendcode');
 
-      embed.setAuthor(`${message.member.displayName}'s Friend Code`, message.author.displayAvatarURL)
+      embed.setAuthor(`${message.member.displayName}'s Friend Code`, message.author.displayAvatarURL())
         .setTitle('Successfully set your friend code!')
         .setColor('#e4000f')
         .setDescription(`**${code}**`);
@@ -42,7 +42,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
           return client.error(message.channel, 'No Code Found!', 'You have not set a friend code! You can do so by running \`.fc set <code>\`!');
         }
 
-        embed.setAuthor(`${message.member.displayName}'s Friend Code`, message.author.displayAvatarURL)
+        embed.setAuthor(`${message.member.displayName}'s Friend Code`, message.author.displayAvatarURL())
           .setColor('#e4000f')
           .setDescription(`**${fc}**`);
 
@@ -50,7 +50,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       }
 
       // Attempt to find a member using the arguments provided
-      member = message.mentions.members.first() || message.guild.members.get(args[0]) || client.searchMember(args.join(' '));
+      member = message.mentions.members.cache.first() || message.guild.members.cache.get(args[0]) || client.searchMember(args.join(' '));
 
       if (member) {
         fc = client.userDB.ensure(member.user.id, client.config.userDBDefaults).friendcode;
@@ -58,7 +58,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
           return client.error(message.channel, 'No Code Found!', `${member.displayName} has not set their friend code!`);
         }
 
-        embed.setAuthor(`${member.displayName}'s Friend Code`, member.user.displayAvatarURL)
+        embed.setAuthor(`${member.displayName}'s Friend Code`, member.user.displayAvatarURL())
           .setColor('#e4000f')
           .setDescription(`**${fc}**`);
 

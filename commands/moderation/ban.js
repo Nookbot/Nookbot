@@ -1,11 +1,11 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // Setting member to first member mentioned
-  let member = message.mentions.members.first();
+  let member = message.mentions.members.cache.first();
   if (!member) {
     if (parseInt(args[0], 10)) {
       try {
-        member = await client.fetchUser(args[0]);
+        member = await client.users.fetch(args[0]);
       } catch (err) {
         // Don't need to send a message here
       }
@@ -40,11 +40,11 @@ module.exports.run = async (client, message, args, level) => {
 If you wish to appeal your ban, fill out this Google Form:
 <https://forms.gle/jcoP8kd3My31x3Gu6>`);
   } catch (e) {
-    client.error(message.guild.channels.get(client.getSettings(message.guild).staffChat), 'Failed to Send DM to Member!', "I've failed to send a dm to the most recent member banned. They most likely had dms off.");
+    client.error(message.guild.channels.cache.get(client.getSettings(message.guild).staffChat), 'Failed to Send DM to Member!', "I've failed to send a dm to the most recent member banned. They most likely had dms off.");
   }
 
   // Bans the member
-  return message.guild.ban(member, reason).then((memberBanned) => {
+  return message.guild.members.ban(member, { reason }).then((memberBanned) => {
     // If ban is successful, display this
     client.success(message.channel, 'Ban Successful!', `I've successfully banned **${memberBanned.guild ? memberBanned.user.tag : `${memberBanned.username}#${memberBanned.discriminator}` || memberBanned}**!`);
   }).catch((error) => client.error(message.channel, 'Ban Failed!', `I've failed to ban this member! ${error}`));

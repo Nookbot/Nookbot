@@ -1,9 +1,9 @@
 module.exports.run = async (client, message, args, level, Discord) => {
-  let member = message.mentions.members.first();
+  let member = message.mentions.members.cache.first();
   if (!member) {
     if (parseInt(args[0], 10)) {
       try {
-        member = await client.fetchUser(args[0]);
+        member = await client.users.fetch(args[0]);
       } catch (err) {
         // Don't need to send a message here
       }
@@ -126,25 +126,25 @@ If you wish to contact the moderators about your warning, please use the \`.modm
 
   // Perform the required action
   if (ban) {
-    await message.guild.ban(member, { reason }).catch((err) => {
-      client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Ban Failed!', `I've failed to ban this member! ${err}`);
+    await message.guild.members.ban(member, { reason }).catch((err) => {
+      client.error(message.guild.channels.cache.get(client.getSettings(message.guild).modLog), 'Ban Failed!', `I've failed to ban this member! ${err}`);
     });
   } else if (mute) {
     try {
       // Update unmuteTime on userDB
       client.userDB.set(member.id, (mute * 60000) + time, 'unmuteTime');
-      const guildMember = await message.guild.fetchMember(member);
-      await guildMember.addRole('495854925054607381', reason);
+      const guildMember = await message.guild.members.fetch(member);
+      await guildMember.roles.add('495854925054607381', reason);
       // Schedule unmute
       setTimeout(() => {
         if ((client.userDB.get(member.id, 'unmuteTime') || 0) < Date.now()) {
-          guildMember.removeRole('495854925054607381', `Scheduled unmute after ${mute} minutes.`).catch((err) => {
-            client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}\nID: ${member.id}`);
+          guildMember.roles.remove('495854925054607381', `Scheduled unmute after ${mute} minutes.`).catch((err) => {
+            client.error(message.guild.channels.cache.get(client.getSettings(message.guild).modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}\nID: ${member.id}`);
           });
         }
       }, mute * 60000);
     } catch (err) {
-      client.error(message.guild.channels.get(client.getSettings(message.guild).modLog), 'Mute Failed!', `I've failed to mute this member! ${err}`);
+      client.error(message.guild.channels.cache.get(client.getSettings(message.guild).modLog), 'Mute Failed!', `I've failed to mute this member! ${err}`);
     }
   }
 
@@ -152,8 +152,8 @@ If you wish to contact the moderators about your warning, please use the \`.modm
   client.success(message.channel, 'Infraction Given!', `**${member.guild ? member.user.tag : member.tag || member}** was given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}!**`);
 
   // Send mod-log embed
-  const embed = new Discord.RichEmbed()
-    .setAuthor(`Case ${caseNum} | ${action} | ${member.guild ? member.user.tag : member.tag || member}`, member.guild ? member.user.displayAvatarURL : member.displayAvatarURL)
+  const embed = new Discord.MessageEmbed()
+    .setAuthor(`Case ${caseNum} | ${action} | ${member.guild ? member.user.tag : member.tag || member}`, member.guild ? member.user.displayAvatarURL() : member.displayAvatarURL())
     .setColor((mute || ban) ? '#ff9292' : '#fada5e')
     .setDescription(`Reason: ${reason}`)
     .addField('User', `<@${member.id}>`, true)
@@ -163,7 +163,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
     .addField('Total Stings', curPoints + newPoints, true)
     .setFooter(`ID: ${member.id}`)
     .setTimestamp();
-  return message.guild.channels.get(client.getSettings(message.guild).modLog).send(embed);
+  return message.guild.channels.cache.get(client.getSettings(message.guild).modLog).send(embed);
 };
 
 module.exports.conf = {

@@ -7,7 +7,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       else listTags += t;
     });
 
-    const embed = new Discord.RichEmbed()
+    const embed = new Discord.MessageEmbed()
       .setColor('#1de9b6')
       .setTitle(`Tags (${client.tags.count})`)
       .setDescription(listTags.slice(0, 2000) || 'No tags.')

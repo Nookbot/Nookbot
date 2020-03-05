@@ -51,7 +51,7 @@ module.exports = (client) => {
   };
 
   client.fetchOwner = async () => {
-    const owner = await client.fetchUser(client.config.ownerID);
+    const owner = await client.users.fetch(client.config.ownerID);
     return owner;
   };
 
@@ -178,7 +178,7 @@ module.exports = (client) => {
   client.searchMember = (name, threshold = 0.5) => {
     const rated = [];
 
-    client.guilds.first().members.forEach((m) => {
+    client.guilds.cache.first().members.cache.forEach((m) => {
       const score = Math.max(distance(name, m.user.username), distance(name, m.displayName));
       if (score > threshold) {
         rated.push({
@@ -215,8 +215,8 @@ module.exports = (client) => {
     client.raidMode = true;
     // Save @everyone role and staff/actionlog channels here for ease of use.
     const everyone = guild.defaultRole;
-    const staffChat = guild.channels.get(client.getSettings(guild).staffChat);
-    const actionLog = guild.channels.get(client.getSettings(guild).actionLog);
+    const staffChat = guild.channels.cache.get(client.getSettings(guild).staffChat);
+    const actionLog = guild.channels.cache.get(client.getSettings(guild).actionLog);
     // Create a Permissions object with the permissions of the @everyone role, but remove Send Messages.
     const perms = new Discord.Permissions(everyone.permissions).remove('SEND_MESSAGES');
     everyone.setPermissions(perms);
@@ -234,11 +234,11 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
     await client.raidMessage.react(client.emoji.redX);
     // Listen for reactions and log which action was taken and who made the decision.
     const filter = (reaction, user) => [client.emoji.checkMark, client.emoji.redX].includes(reaction.emoji.name)
-        && guild.fetchMember(user).then((m) => m.hasPermission('BAN_MEMBERS')) && !user.bot;
+        && guild.members.fetch(user).then((m) => m.hasPermission('BAN_MEMBERS')) && !user.bot;
     client.raidMessage.awaitReactions(filter, { max: 1 })
       .then(async (collected) => {
         const reaction = collected.first();
-        const modUser = reaction.users.last();
+        const modUser = reaction.users.cache.last();
         if (reaction.emoji.name === client.emoji.checkMark) {
           // A valid user has selected to ban the raid party.
           // Log that the banning is beginning and who approved of the action.

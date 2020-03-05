@@ -112,14 +112,14 @@ module.exports.run = async (client, message, args, level) => {
           color = 'RANDOM';
       }
 
-      const embed = new Discord.RichEmbed()
+      const embed = new Discord.MessageEmbed()
         .setColor(color)
         .setTimestamp()
-        .setAuthor(message.author.tag, message.author.displayAvatarURL)
+        .setAuthor(message.author.tag, message.author.displayAvatarURL())
         .setTitle(name.slice(0, 256))
         .setDescription(`${bio}[Read More](${unescape(nookLink).slice(0, 29)}${unescape(nookLink).slice(29).replace('(', '%28').replace(')', '%29')})`.slice(0, 2048))
         .setImage(image)
-        .setFooter('Info from Nookipedia', client.user.displayAvatarURL);
+        .setFooter('Info from Nookipedia', client.user.displayAvatarURL());
 
       waitingMsg.delete();
       return message.channel.send(embed);

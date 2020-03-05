@@ -6,7 +6,7 @@ module.exports = async (client, messages) => {
     return;
   }
 
-  const embed = new Discord.RichEmbed()
+  const embed = new Discord.MessageEmbed()
     .setColor('#ff9292')
     .setTitle(`${messages.size} Messages Purged in #${messages.first().channel.name}`)
     .setTimestamp();
@@ -31,6 +31,6 @@ module.exports = async (client, messages) => {
     // Update the embed with the latest message and index count
     embed.setDescription(m).setFooter(`[${i + 1}/${msgs.length}]`);
     // Send the embed in the channel.
-    await messages.first().guild.channels.get(client.getSettings(messages.first().guild).actionLog).send(embed);
+    await messages.first().guild.channels.cache.get(client.getSettings(messages.first().guild).actionLog).send(embed);
   });
 };

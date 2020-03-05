@@ -7,7 +7,7 @@ module.exports.run = (client, message, args, level) => {
   const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided';
 
   // Unbans the member
-  return message.guild.unban(userID, reason)
+  return message.guild.members.unban(userID, reason)
     .then((user) => client.success(message.channel, 'Unban Successful!', `I've successfully unbanned **${user.tag}**!`))
     .catch((error) => client.error(message.channel, 'Unban Failed!', `I've failed to unban this user! Error: ${error}`));
 };

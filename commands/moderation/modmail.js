@@ -1,15 +1,15 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // #staff-discussion but the name might change so the id is best
-  const modMailCh = client.guilds.first().channels.get('679053765030182931');
+  const modMailCh = client.guilds.cache.first().channels.cache.get('679053765030182931');
 
   if (message.channel === modMailCh) {
     // This was sent in the staff channel, so they are trying to reply to modmail.
-    let member = message.mentions.members.first();
+    let member = message.mentions.members.cache.first();
     if (!member) {
       if (parseInt(args[0], 10)) {
         try {
-          member = await client.fetchUser(args[0]);
+          member = await client.users.fetch(args[0]);
         } catch (err) {
           // Don't need to send a message here
         }

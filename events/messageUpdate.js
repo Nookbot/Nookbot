@@ -14,13 +14,13 @@ module.exports = async (client, oldMessage, newMessage) => {
   const oldMsg = oldDemark.length > 499 ? `${oldDemark.slice(0, 496)}...` : oldDemark;
   const newMsg = newDemark.length > 499 ? `${newDemark.slice(0, 496)}...` : newDemark;
 
-  const embed = new Discord.RichEmbed()
+  const embed = new Discord.MessageEmbed()
     .setColor('#00e5ff')
-    .setAuthor(newMessage.author.tag, newMessage.author.displayAvatarURL)
+    .setAuthor(newMessage.author.tag, newMessage.author.displayAvatarURL())
     .setDescription(`[Jump to message in](${newMessage.url} 'Jump') <#${newMessage.channel.id}>`)
     .setTimestamp()
     .setFooter(`ID: ${newMessage.author.id}`)
     .addField('**Message Edited**', `**Before:** ${oldMsg}\n**+After:** ${newMsg}`);
 
-  newMessage.guild.channels.get(client.getSettings(newMessage.guild).actionLog).send(embed);
+  newMessage.guild.channels.cache.get(client.getSettings(newMessage.guild).actionLog).send(embed);
 };

@@ -1,7 +1,7 @@
 const moment = require('moment');
 
 module.exports.run = async (client, message, args, level, Discord) => {
-  const member = message.mentions.members.first() || message.guild.members.get(args[0]) || client.searchMember(args.join(' ')) || message.member;
+  const member = message.mentions.members.cache.first() || message.guild.members.cache.get(args[0]) || client.searchMember(args.join(' ')) || message.member;
 
   const nickArray = [];
   client.userDB.ensure(member.id, client.config.userDBDefaults).nicknames.forEach((n) => {
@@ -10,7 +10,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   let currentPage = 1;
   const maxPage = Math.ceil(nickArray.length / 15) || 1;
-  const embed = new Discord.RichEmbed()
+  const embed = new Discord.MessageEmbed()
     .setTitle(`Past nicknames of ${member.user.tag}`)
     .setDescription(`\`\`\`${nickArray.slice(0, 15).join('\n') || 'No stored nicknames.'}\`\`\``)
     .setFooter(`Page ${currentPage}/${maxPage}`)
