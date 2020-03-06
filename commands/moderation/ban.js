@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // Setting member to first member mentioned
-  let member = message.mentions.members.cache.first();
+  let member = message.mentions.members.first();
   if (!member) {
     if (parseInt(args[0], 10)) {
       try {

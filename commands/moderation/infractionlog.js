@@ -4,7 +4,7 @@ module.exports.run = async (client, message, args, level) => {
   let member;
   if (args.length > 0 && level >= 2) {
     // Mods can see other's infractions
-    member = message.mentions.members.cache.first();
+    member = message.mentions.members.first();
     if (!member) {
       if (parseInt(args[0], 10)) {
         try {

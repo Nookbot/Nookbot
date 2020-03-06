@@ -50,7 +50,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       }
 
       // Attempt to find a member using the arguments provided
-      member = message.mentions.members.cache.first() || message.guild.members.cache.get(args[0]) || client.searchMember(args.join(' '));
+      member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || client.searchMember(args.join(' '));
 
       if (member) {
         fc = client.userDB.ensure(member.user.id, client.config.userDBDefaults).friendcode;

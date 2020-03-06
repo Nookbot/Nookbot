@@ -37,7 +37,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     }
     case 'user': {
       // Setting the member to the mentioned user, if no mentioned user, falls back to author
-      const member = message.mentions.members.cache.first() || message.guild.members.cache.get(args[1]) || client.searchMember(args.slice(1).join(' ')) || message.member;
+      const member = message.mentions.members.first() || message.guild.members.cache.get(args[1]) || client.searchMember(args.slice(1).join(' ')) || message.member;
 
       // Block everyone but mods or higher from using this command to show other users info.
       if (member !== message.member && level < 2) {

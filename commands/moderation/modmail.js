@@ -5,7 +5,7 @@ module.exports.run = async (client, message, args, level) => {
 
   if (message.channel === modMailCh) {
     // This was sent in the staff channel, so they are trying to reply to modmail.
-    let member = message.mentions.members.cache.first();
+    let member = message.mentions.members.first();
     if (!member) {
       if (parseInt(args[0], 10)) {
         try {

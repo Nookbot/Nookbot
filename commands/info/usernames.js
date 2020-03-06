@@ -1,7 +1,7 @@
 const moment = require('moment');
 
 module.exports.run = async (client, message, args, level, Discord) => {
-  const member = message.mentions.members.cache.first() || message.guild.members.cache.get(args[0]) || client.searchMember(args.join(' ')) || message.member;
+  const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || client.searchMember(args.join(' ')) || message.member;
 
   const userArray = [];
   client.userDB.ensure(member.id, client.config.userDBDefaults).usernames.forEach((u) => {

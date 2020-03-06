@@ -4,7 +4,7 @@ module.exports.run = async (client, message, args, level) => {
   const role = message.guild.roles.cache.find((r) => r.name === 'Muted');
 
   // Sets the member to the user mentioned
-  let member = message.mentions.members.cache.first() || message.guild.members.cache.get(args[0]);
+  let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
 
   if (!member) {
     const searchedMember = client.searchMember(args[0]);

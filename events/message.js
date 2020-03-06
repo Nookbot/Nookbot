@@ -26,7 +26,7 @@ module.exports = async (client, message) => {
   }
 
   // Anti Mention Spam
-  if (message.mentions.members && message.mentions.members.cache.size > 10) {
+  if (message.mentions.members && message.mentions.members.size > 10) {
     // They mentioned more than 10 members, automute them for 10 mintues.
     if (message.member) {
       // Mute
@@ -38,7 +38,7 @@ module.exports = async (client, message) => {
       // Notify mods so they may ban if it was a raider.
       message.guild.channels.cache.get(client.getSettings(message.guild).staffChat).send(`**Mass Mention Attempt!**
 <@&495865346591293443> <@&494448231036747777>
-The member **${message.author.tag}** just mentioned ${message.mentions.members.cache.size} members and was automatically muted for 10 minutes!
+The member **${message.author.tag}** just mentioned ${message.mentions.members.size} members and was automatically muted for 10 minutes!
 They have been a member of the server for ${client.humanTimeBetween(Date.now(), message.member.joinedTimestamp)}.
 If you believe this member is a mention spammer bot, please ban them with the command:
 \`.ban ${message.author.id} Raid Mention Spammer\``);
