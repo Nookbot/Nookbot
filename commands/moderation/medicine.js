@@ -8,7 +8,7 @@ module.exports.run = async (client, message, args) => {
   if (client.infractionDB.has(caseNum.toString())) {
     const userID = client.infractionDB.get(caseNum);
     // Remove the caseNum => userID entry in infractionDB
-    client.infractionDB.delete(caseNum);
+    client.infractionDB.delete(caseNum.toString());
     // Remove the infraction from the user
     const infs = client.userDB.get(userID, 'infractions');
     const infRemoved = infs.filter((inf) => inf.case === caseNum)[0];

@@ -25,8 +25,8 @@ module.exports = async (client, message) => {
     let attachList = '';
 
     message.attachments.forEach((value) => {
-      const fileSize = value.filesize > 1048576 ? `${(value.filesize / 1048576).toFixed(2)} MB` : `${(value.filesize / 1024).toFixed(2)} KB`;
-      attachList += `\n${value.filename} | ${fileSize}`;
+      const fileSize = value.size > 1048576 ? `${(value.size / 1048576).toFixed(2)} MB` : `${(value.size / 1024).toFixed(2)} KB`;
+      attachList += `\n${value.name} | ${fileSize}`;
     });
 
     if (attachList.length !== 0) {
