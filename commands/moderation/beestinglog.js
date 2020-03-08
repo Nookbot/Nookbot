@@ -34,12 +34,15 @@ module.exports.run = async (client, message, args, level) => {
   let curMsg = '';
   const time = Date.now();
   infractions.forEach((i) => {
-    if ((i.points * 604800000) + i.date > time) {
-      curPoints += i.points;
-      curMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
-    } else {
-      expPoints += i.points;
-      expMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+    // Only allow mods to see zero point stings, called notes, on a user
+    if (i.points > 0 || level >= 2) {
+      if ((i.points * 604800000) + i.date > time) {
+        curPoints += i.points;
+        curMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+      } else {
+        expPoints += i.points;
+        expMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+      }
     }
   });
 

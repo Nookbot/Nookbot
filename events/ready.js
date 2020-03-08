@@ -1,5 +1,3 @@
-const moment = require('moment');
-
 module.exports = (client) => {
   // Setting activity
   if (!client.firstReady) {

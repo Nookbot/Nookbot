@@ -315,9 +315,8 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
 
   client.startTwitterFeed = () => {
     client.twitter.stream('statuses/filter', { follow: client.config.followedTwitterUsers.join(',') })
-      .on('start', (response) => {
-        console.log(`Started Twitter Feed Stream: ${response}`);
-        console.log(response);
+      .on('start', () => {
+        console.log('Started Twitter Feed Stream');
       })
       .on('data', (tweet) => {
         if (!tweet.user) {
@@ -365,9 +364,8 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
         }
       })
       .on('error', (error) => console.error(error))
-      .on('end', (response) => {
-        console.log(`Ended Twitter Feed Stream: ${response}`);
-        console.log(response);
+      .on('end', () => {
+        console.log('Ended Twitter Feed Stream');
         // Wait 10 seconds, then restart the twitter feed
         setTimeout(() => {
           client.startTwitterFeed();

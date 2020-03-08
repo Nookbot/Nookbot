@@ -30,7 +30,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   const newPoints = parseInt(args[1], 10);
 
-  if (!newPoints) {
+  if (newPoints >= 0) {
     return client.error(message.channel, 'Invalid Number!', 'Please provide a valid number for the stings to give!');
   }
 
@@ -49,7 +49,10 @@ module.exports.run = async (client, message, args, level, Discord) => {
   let action;
   let mute = 0;
   let ban = false;
-  if (newPoints + curPoints >= 25) {
+  if (newPoints === 0) {
+    // Make a note
+    action = 'Note';
+  } else if (newPoints + curPoints >= 25) {
     // Ban
     dmMsg = `You have been banned from the AC:NH server for the following reason:
 **${reason}**
@@ -99,14 +102,16 @@ If you wish to contact the moderators about your warning, please use the \`.modm
     action = 'Warn';
   }
 
-  // Try to send DM
   let dmSent = false;
-  try {
-    const dmChannel = await member.createDM();
-    await dmChannel.send(dmMsg);
-    dmSent = true;
-  } catch (e) {
-    // Nothing to do here
+  if (newPoints > 0) {
+    // Try to send DM
+    try {
+      const dmChannel = await member.createDM();
+      await dmChannel.send(dmMsg);
+      dmSent = true;
+    } catch (e) {
+      // Nothing to do here
+    }
   }
 
   // Create infraction in the infractionDB to get case number
@@ -149,7 +154,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
   }
 
   // Notify in channel
-  client.success(message.channel, 'Infraction Given!', `**${member.guild ? member.user.tag : member.tag || member}** was given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}!**`);
+  client.success(message.channel, 'Bee Sting Given!', `**${member.guild ? member.user.tag : member.tag || member}** was given **${newPoints}** bee sting${newPoints === 1 ? '' : 's'}!`);
 
   // Send mod-log embed
   const embed = new Discord.MessageEmbed()
@@ -159,7 +164,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
     .addField('User', `<@${member.id}>`, true)
     .addField('Moderator', `<@${message.author.id}>`, true)
     .addField('Stings Given', newPoints, true)
-    .addField('DM Sent?', dmSent ? client.emoji.checkMark : client.emoji.redX, true)
+    .addField('DM Sent?', dmSent ? `${client.emoji.checkMark} Yes` : `${client.emoji.redX} No`, true)
     .addField('Total Stings', curPoints + newPoints, true)
     .setFooter(`ID: ${member.id}`)
     .setTimestamp();

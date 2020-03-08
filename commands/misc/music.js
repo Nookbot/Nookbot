@@ -137,7 +137,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
           }
 
           client.songQueue.connection.play(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }), { volume: false })
-            .once('end', (reason) => {
+            .once('finish', (reason) => {
               if (!client.songQueue.stopping && client.songQueue.connection) {
                 if (reason !== 'skip') {
                   client.songQueue.played += 1;
