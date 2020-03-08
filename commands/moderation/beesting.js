@@ -30,7 +30,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   const newPoints = parseInt(args[1], 10);
 
-  if (newPoints >= 0) {
+  if (!(newPoints >= 0)) {
     return client.error(message.channel, 'Invalid Number!', 'Please provide a valid number for the stings to give!');
   }
 

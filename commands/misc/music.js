@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 
-const ytdl = require('ytdl-core');
+const ytdl = require('ytdl-core-discord');
 const ytpl = require('ytpl');
 const { findBestMatch: findBest } = require('string-similarity');
 
@@ -136,7 +136,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
             return;
           }
 
-          client.songQueue.connection.play(ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }), { volume: false })
+          client.songQueue.connection.play(await ytdl(song.url, { quality: 'highestaudio', highWaterMark: 4194304 }), { type: 'opus', volume: false, bitrate: 'auto' })
             .once('finish', (reason) => {
               if (!client.songQueue.stopping && client.songQueue.connection) {
                 if (reason !== 'skip') {

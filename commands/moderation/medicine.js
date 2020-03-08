@@ -5,7 +5,7 @@ module.exports.run = async (client, message, args) => {
     return client.error(message.channel, 'Invalid Number!', 'Please provide a valid case number to apply medicine to!');
   }
 
-  if (client.infractionDB.has(caseNum)) {
+  if (client.infractionDB.has(caseNum.toString())) {
     const userID = client.infractionDB.get(caseNum);
     // Remove the caseNum => userID entry in infractionDB
     client.infractionDB.delete(caseNum);
