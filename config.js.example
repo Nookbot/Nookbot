@@ -1,22 +1,52 @@
 /* eslint-disable max-len */
 const config = {
   token: '',
+  twitterAPIKey: '',
+  twitterAPISecret: '',
+  twitterAccessToken: '',
+  twitterAccessTokenSecret: '',
+  followedTwitterUsers: [],
+
+  // Webhooks
+  twitterHookID: '',
+  twitterHookToken: '',
 
   // Settings
   defaultSettings: {
     prefix: '.',
-    verifiedRole: 'Verified',
-    modRole: 'Moderator',
-    adminRole: 'Admin',
+    verifiedRole: 'Islander',
+    modRole: 'Nooklings (mod)',
+    adminRole: 'Tom Nook (admin)',
+    staffChat: 'channelID',
+    actionLog: 'channelID',
+    modLog: 'channelID',
+    musicText: 'channelID',
+    music: 'channelID',
   },
 
+  // UserDB
+  userDBDefaults: {
+    friendcode: '',
+    roles: [],
+    nicknames: [],
+    usernames: [],
+    infractions: [],
+    unmuteTime: 0,
+  },
+
+  // VillagerDB 
+  villagerDBDefaults: {
+    birthday: Date,
+    adopters: [],
+    // Other villager related info perhaps for the wiki command to pull from, or the calender
+  },
 
   // Bot Perms and Stuff
-  ownerID: '392398406552780800',
+  ownerID: 'userID',
 
-  admins: [],
+  admins: ['userID', 'userID'],
 
-  support: [],
+  support: ['userID', 'userID'],
 
   // Guild Perms and Stuff
   permLevels: [
@@ -29,10 +59,12 @@ const config = {
       level: 1,
       name: 'Verified',
       check: (client, message) => {
-        const verifiedRole = message.guild.roles.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).verifiedRole.toLowerCase());
+        if (message.guild) {
+          const verifiedRole = message.guild.roles.cache.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).verifiedRole.toLowerCase());
 
-        if (verifiedRole && message.member.roles.has(verifiedRole.id)) {
-          return true;
+          if (verifiedRole && message.member.roles.cache.has(verifiedRole.id)) {
+            return true;
+          }
         }
         return false;
       },
@@ -41,10 +73,12 @@ const config = {
       level: 2,
       name: 'Mod',
       check: (client, message) => {
-        const modRole = message.guild.roles.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).modRole.toLowerCase());
+        if (message.guild) {
+          const modRole = message.guild.roles.cache.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).modRole.toLowerCase());
 
-        if (modRole && message.member.roles.has(modRole.id)) {
-          return true;
+          if (modRole && message.member.roles.cache.has(modRole.id)) {
+            return true;
+          }
         }
         return false;
       },
@@ -53,10 +87,12 @@ const config = {
       level: 3,
       name: 'Admin',
       check: (client, message) => {
-        const adminRole = message.guild.roles.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).adminRole.toLowerCase());
+        if (message.guild) {
+          const adminRole = message.guild.roles.cache.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).adminRole.toLowerCase());
 
-        if ((adminRole && message.member.roles.has(adminRole.id)) || message.member.hasPermission('ADMINISTRATOR')) {
-          return true;
+          if ((adminRole && message.member.roles.cache.has(adminRole.id)) || message.member.hasPermission('ADMINISTRATOR')) {
+            return true;
+          }
         }
         return false;
       },
@@ -64,14 +100,11 @@ const config = {
     {
       level: 4,
       name: 'Server Owner',
-      // eslint-disable-next-line consistent-return
       check: (client, message) => {
-        if (message.channel.type === 'text') {
-          if (message.author.id === message.guild.ownerID) {
-            return true;
-          }
-          return false;
+        if (message.guild && message.author.id === message.guild.ownerID) {
+          return true;
         }
+        return false;
       },
     },
     {

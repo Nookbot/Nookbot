@@ -4,8 +4,9 @@
 const Discord = require('discord.js');
 const Enmap = require('enmap');
 const fs = require('fs');
+const Twitter = require('twitter-lite');
 
-const client = new Discord.Client();
+const client = new Discord.Client({ messageCacheMaxSize: 500, disabledEvents: ['TYPING_START'] });
 const config = require('./config');
 const { version } = require('./package.json');
 const emoji = require('./src/emoji');
@@ -69,6 +70,47 @@ for (let i = 0; i < config.permLevels.length; i++) {
   client.levelCache[thislvl.name] = thislvl.level;
 }
 
-Object.assign(client, Enmap.multi(['settings', 'enabledCmds'], { ensureProps: true }));
+client.firstReady = false;
 
-client.login(config.token);
+client.invites = {};
+
+// Raid Mode
+client.raidMode = false;
+client.raidBanning = false;
+client.raidJoins = [];
+client.raidMessage = null;
+client.raidMembersPrinted = 0;
+
+// Music Feature
+client.songQueue = {
+  infoMessage: null,
+  voiceChannel: null,
+  connection: null,
+  songs: [],
+  playing: false,
+  shuffle: true,
+  stopping: false,
+  played: 0,
+  timePlayed: 0,
+  lastUpdateTitle: '',
+  lastUpdateDesc: '',
+};
+
+// Twitter object for listening for tweets
+client.twitter = new Twitter({
+  consumer_key: client.config.twitterAPIKey,
+  consumer_secret: client.config.twitterAPISecret,
+  access_token_key: client.config.twitterAccessToken,
+  access_token_secret: client.config.twitterAccessTokenSecret,
+});
+
+// Start up the twitter webhook listener
+client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, client.config.twitterHookToken);
+
+Object.assign(client, Enmap.multi(['settings', 'enabledCmds', 'userDB', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'infractionDB'], { ensureProps: true }));
+
+client.login(config.token).catch(() => {
+  const interval = setInterval(() => {
+    client.login(config.token).then(clearInterval(interval));
+  }, 5000);
+});

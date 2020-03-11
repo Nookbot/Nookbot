@@ -3,8 +3,8 @@
 module.exports.run = async (client, message, args, level, Discord) => {
   const code = args.join(' ');
 
-  const codeEmbed = new Discord.RichEmbed()
-    .setAuthor('Eval', message.author.displayAvatarURL)
+  const codeEmbed = new Discord.MessageEmbed()
+    .setAuthor('Eval', message.author.displayAvatarURL())
     .addField('Input', `\`\`\`js\n${code}\`\`\``);
 
   try {
