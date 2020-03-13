@@ -136,7 +136,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       const msg = [];
       if (island.islandName) {
-        msg.push(`Island Name: ${island.islandname}`);
+        msg.push(`Island Name: ${island.islandName}`);
       }
       if (island.fruit) {
         msg.push(`Fruit: ${island.fruit}`);
