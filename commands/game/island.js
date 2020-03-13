@@ -141,14 +141,14 @@ module.exports.run = async (client, message, args, level, Discord) => {
       if (island.fruit) {
         msg.push(`Fruit: **${island.fruit}**`);
       }
-      if (island.characterName) {
-        msg.push(`Character Name: **${island.characterName}**`);
-      }
       if (island.hemisphere) {
         msg.push(`Hemisphere: **${island.hemisphere}**`);
       }
+      if (island.characterName) {
+        msg.push(`Character Name: **${island.characterName}**`);
+      }
       if (island.profileName) {
-        msg.push(`Profile Name: **${island.profileName}**`);
+        msg.push(`Switch Profile Name: **${island.profileName}**`);
       }
       if (friendcode) {
         msg.push(`Friend Code: **${friendcode}**`);
