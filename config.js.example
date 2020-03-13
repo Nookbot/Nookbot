@@ -27,6 +27,13 @@ const config = {
   // UserDB
   userDBDefaults: {
     friendcode: '',
+    island: {
+      islandName: '',
+      fruit: '',
+      characterName: '',
+      hemisphere: '',
+      profileName: '',
+    },
     roles: [],
     nicknames: [],
     usernames: [],
