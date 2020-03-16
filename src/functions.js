@@ -217,9 +217,19 @@ module.exports = (client) => {
     const everyone = guild.roles.everyone;
     const staffChat = guild.channels.cache.get(client.getSettings(guild).staffChat);
     const actionLog = guild.channels.cache.get(client.getSettings(guild).actionLog);
+
+    const generalChat = guild.channels.cache.get('538938170822230026');
+    const acnhChat = guild.channels.cache.get('494376688877174785');
+    const raidMsg = "**Raid Ongoing**!\nWe're sorry to inconvenience everyone, but we've restricted all message sending capabilities due to a suspected raid. Don't worry though, you'll be back to chatting about your favorite game in no time, yes yes!";
+    const noMoreRaidMsg = "**Raid Mode Has Been Lifted**!\nWe've determined that it's safe to lift raid mode precautions and allow everyone to send messages again! Channels should open up again immediately, yes yes!";
+
+    await generalChat.send(raidMsg);
+    await acnhChat.send(raidMsg);
+
     // Create a Permissions object with the permissions of the @everyone role, but remove Send Messages.
     const perms = new Discord.Permissions(everyone.permissions).remove('SEND_MESSAGES');
     everyone.setPermissions(perms);
+
     // Send message to staff with prompts
     client.raidMessage = await staffChat.send(`**##### RAID MODE ACTIVATED #####**
 <@&495865346591293443> <@&494448231036747777>
@@ -263,6 +273,9 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
               client.raidJoins = [];
               client.raidMessage = null;
               client.raidMembersPrinted = 0;
+
+              generalChat.send(noMoreRaidMsg);
+              acnhChat.send(noMoreRaidMsg);
               // Allow users to send messages again.
               perms.add('SEND_MESSAGES');
               everyone.setPermissions(perms);
@@ -278,6 +291,9 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
           client.raidMessage = null;
           client.raidMembersPrinted = 0;
           // Allow users to send messages again.
+          generalChat.send(noMoreRaidMsg);
+          acnhChat.send(noMoreRaidMsg);
+
           perms.add('SEND_MESSAGES');
           everyone.setPermissions(perms);
         }

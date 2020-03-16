@@ -136,22 +136,22 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       const msg = [];
       if (island.islandName) {
-        msg.push(`Island Name: ${island.islandName}`);
+        msg.push(`Island Name: **${island.islandName}**`);
       }
       if (island.fruit) {
-        msg.push(`Fruit: ${island.fruit}`);
-      }
-      if (island.characterName) {
-        msg.push(`Character Name: ${island.characterName}`);
+        msg.push(`Fruit: **${island.fruit}**`);
       }
       if (island.hemisphere) {
-        msg.push(`Hemisphere: ${island.hemisphere}`);
+        msg.push(`Hemisphere: **${island.hemisphere}**`);
+      }
+      if (island.characterName) {
+        msg.push(`Character Name: **${island.characterName}**`);
       }
       if (island.profileName) {
-        msg.push(`Profile Name: ${island.profileName}`);
+        msg.push(`Switch Profile Name: **${island.profileName}**`);
       }
       if (friendcode) {
-        msg.push(`Friend Code: ${friendcode}`);
+        msg.push(`Friend Code: **${friendcode}**`);
       }
 
       if (msg.length === 0) {
@@ -164,7 +164,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       const embed = new Discord.MessageEmbed()
         .setAuthor(`${member.displayName}'s Island`, member.user.displayAvatarURL())
         .setColor('#0ba47d')
-        .setDescription(`**${msg.join('\n')}**`);
+        .setDescription(`${msg.join('\n')}`);
 
       return message.channel.send(embed);
     }
