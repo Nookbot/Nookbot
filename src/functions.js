@@ -214,7 +214,7 @@ module.exports = (client) => {
     // Enable Raid Mode
     client.raidMode = true;
     // Save @everyone role and staff/actionlog channels here for ease of use.
-    const everyone = guild.defaultRole;
+    const everyone = guild.roles.everyone;
     const staffChat = guild.channels.cache.get(client.getSettings(guild).staffChat);
     const actionLog = guild.channels.cache.get(client.getSettings(guild).actionLog);
     // Create a Permissions object with the permissions of the @everyone role, but remove Send Messages.
