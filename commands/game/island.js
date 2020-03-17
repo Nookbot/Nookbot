@@ -95,7 +95,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'profile':
     case 'pn':
     case 'switchname':
-    case 'sn':
+    case 'sn': {
       if (args.length === 1) {
         return client.error(message.channel, 'No Switch Profile Name Given!', 'Please supply the name of your Switch profile!');
       }
@@ -108,6 +108,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       client.userDB.set(message.author.id, name, 'island.profileName');
 
       return client.success(message.channel, 'Successfully set your Switch profile name!', `Profile Name: **${name}**`);
+    }
     case 'friendcode':
     case 'fc':
     case 'code': {
