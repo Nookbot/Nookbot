@@ -38,10 +38,10 @@ module.exports.run = async (client, message, args, level) => {
     if (i.points > 0 || level >= 2) {
       if ((i.points * 604800000) + i.date > time) {
         curPoints += i.points;
-        curMsg += `\n• Case ${i.case} -${level >= 2 ? `Moderator: ${client.users.fetch(i.moderator).tag} -` : ''} (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+        curMsg += `\n• Case ${i.case} -${level >= 2 ? ` Mod: ${client.users.cache.get(i.moderator).tag} -` : ''} (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
       } else {
         expPoints += i.points;
-        expMsg += `\n• Case ${i.case} -${level >= 2 ? `Moderator: ${client.users.fetch(i.moderator).tag} -` : ''} (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+        expMsg += `\n• Case ${i.case} -${level >= 2 ? ` Mod: ${client.users.cache.get(i.moderator).tag} -` : ''} (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
       }
     }
   });
