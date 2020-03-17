@@ -4,17 +4,6 @@ const moment = require('moment');
 const { compareTwoStrings: distance } = require('string-similarity');
 
 module.exports = (client) => {
-  client.getSettings = (guild) => {
-    client.settings.ensure('default', client.config.defaultSettings);
-
-    if (!guild) {
-      return client.settings.get('default');
-    }
-
-    const guildConf = client.settings.get(guild.id) || {};
-    return ({ ...client.settings.get('default'), ...guildConf });
-  };
-
   client.permLevel = (message) => {
     let permName = 'User';
     let permlvl = 0;
@@ -215,8 +204,8 @@ module.exports = (client) => {
     client.raidMode = true;
     // Save @everyone role and staff/actionlog channels here for ease of use.
     const everyone = guild.roles.everyone;
-    const staffChat = guild.channels.cache.get(client.getSettings(guild).staffChat);
-    const joinLeaveLog = guild.channels.cache.get(client.getSettings(guild).joinLeaveLog);
+    const staffChat = guild.channels.cache.get(client.config.staffChat);
+    const joinLeaveLog = guild.channels.cache.get(client.config.joinLeaveLog);
 
     const generalChat = guild.channels.cache.get('538938170822230026');
     const acnhChat = guild.channels.cache.get('494376688877174785');

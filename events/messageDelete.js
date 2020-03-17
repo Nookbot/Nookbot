@@ -33,5 +33,5 @@ module.exports = async (client, message) => {
       embed.addField('**Attachments Deleted**', attachList.slice(1));
     }
   }
-  message.guild.channels.cache.get(client.getSettings(message.guild).actionLog).send(embed);
+  message.guild.channels.cache.get(client.config.actionLog).send(embed);
 };

@@ -82,7 +82,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       return message.channel.send(embed);
     default:
-      return client.error(message.channel, 'Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`bot\`, \`server\`, or \`user\`! For further details, use \`${client.getSettings(message.guild).prefix}help info\`!`);
+      return client.error(message.channel, 'Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`bot\`, \`server\`, or \`user\`! For further details, use \`${client.config.prefix}help info\`!`);
   }
 };
 

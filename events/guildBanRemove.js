@@ -10,5 +10,5 @@ module.exports = async (client, guild, user) => {
     .setTitle('**Member Unbanned**')
     .setDescription(user.id);
 
-  guild.channels.cache.get(client.getSettings(guild).modLog).send(embed);
+  guild.channels.cache.get(client.config.modLog).send(embed);
 };

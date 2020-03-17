@@ -34,8 +34,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   // The music commands must be used in voice text
   const voiceChannel = message.member && message.member.voice.channel;
-  if (!voiceChannel || voiceChannel.id !== client.getSettings(message.guild).music || client.getSettings(message.guild).musicText !== message.channel.id) {
-    return client.error(message.channel, 'Command Unavailable!', `To use this command, you must use the <#${client.getSettings(message.guild).musicText}> channel and currently be in the music channel.`);
+  if (!voiceChannel || voiceChannel.id !== client.config.music || client.config.musicText !== message.channel.id) {
+    return client.error(message.channel, 'Command Unavailable!', `To use this command, you must use the <#${client.config.musicText}> channel and currently be in the music channel.`);
   }
 
   // Helper function to update the music bot info
