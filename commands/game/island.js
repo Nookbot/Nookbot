@@ -5,18 +5,20 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'island':
     case 'in':
     case 'townname':
-    case 'tn':
+    case 'tn': {
       if (args.length === 1) {
         return client.error(message.channel, 'No Island Name Given!', 'Please supply the name of your island!');
       }
 
-      if (args[1].length > 10) {
+      const name = args.slice(1).join(' ');
+      if (name.length > 10) {
         return client.error(message.channel, 'Invalid Island Name!', 'Island names cannot be longer than 10 characters!');
       }
 
-      client.userDB.set(message.author.id, args[1], 'island.islandName');
+      client.userDB.set(message.author.id, name, 'island.islandName');
 
-      return client.success(message.channel, 'Successfully set the name of your island!', `Island Name: **${args[1]}**`);
+      return client.success(message.channel, 'Successfully set the name of your island!', `Island Name: **${name}**`);
+    }
     case 'fruit':
     case 'fr':
     case 'f': {
@@ -47,22 +49,25 @@ module.exports.run = async (client, message, args, level, Discord) => {
     }
     case 'charactername':
     case 'character':
+    case 'charname':
     case 'cn':
     case 'villagername':
     case 'vn':
-    case 'islandername':
+    case 'islandername': {
       if (args.length === 1) {
         return client.error(message.channel, 'No Character Name Given!', 'Please supply the name of your character!');
       }
 
       // Assuming villager names ar capped to 10 characters
-      if (args[1].length > 10) {
+      const name = args.slice(1).join(' ');
+      if (name.length > 10) {
         return client.error(message.channel, 'Invalid Character Name!', 'Character names cannot be longer than 10 characters!');
       }
 
-      client.userDB.set(message.author.id, args[1], 'island.characterName');
+      client.userDB.set(message.author.id, name, 'island.characterName');
 
-      return client.success(message.channel, "Successfully set your character's name!", `Character Name: **${args[1]}**`);
+      return client.success(message.channel, "Successfully set your character's name!", `Character Name: **${name}**`);
+    }
     case 'hemisphere':
     case 'hem':
     case 'hm':
@@ -95,13 +100,14 @@ module.exports.run = async (client, message, args, level, Discord) => {
         return client.error(message.channel, 'No Switch Profile Name Given!', 'Please supply the name of your Switch profile!');
       }
 
-      if (args[1].length > 10) {
+      const name = args.slice(1).join(' ');
+      if (name.length > 10) {
         return client.error(message.channel, 'Invalid Switch Profile Name!', 'Switch profile names cannot be longer than 10 characters!');
       }
 
-      client.userDB.set(message.author.id, args[1], 'island.profileName');
+      client.userDB.set(message.author.id, name, 'island.profileName');
 
-      return client.success(message.channel, 'Successfully set your Switch profile name!', `Profile Name: **${args[1]}**`);
+      return client.success(message.channel, 'Successfully set your Switch profile name!', `Profile Name: **${name}**`);
     case 'friendcode':
     case 'fc':
     case 'code': {
@@ -135,6 +141,15 @@ module.exports.run = async (client, message, args, level, Discord) => {
       const { friendcode, island } = client.userDB.ensure(member.id, client.config.userDBDefaults);
 
       const msg = [];
+      if (friendcode) {
+        msg.push(`Friend Code: **${friendcode}**`);
+      }
+      if (island.profileName) {
+        msg.push(`Switch Profile Name: **${island.profileName}**`);
+      }
+      if (island.characterName) {
+        msg.push(`Character Name: **${island.characterName}**`);
+      }
       if (island.islandName) {
         msg.push(`Island Name: **${island.islandName}**`);
       }
@@ -143,15 +158,6 @@ module.exports.run = async (client, message, args, level, Discord) => {
       }
       if (island.hemisphere) {
         msg.push(`Hemisphere: **${island.hemisphere}**`);
-      }
-      if (island.characterName) {
-        msg.push(`Character Name: **${island.characterName}**`);
-      }
-      if (island.profileName) {
-        msg.push(`Switch Profile Name: **${island.profileName}**`);
-      }
-      if (friendcode) {
-        msg.push(`Friend Code: **${friendcode}**`);
       }
 
       if (msg.length === 0) {

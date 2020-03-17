@@ -216,7 +216,7 @@ module.exports = (client) => {
     // Save @everyone role and staff/actionlog channels here for ease of use.
     const everyone = guild.roles.everyone;
     const staffChat = guild.channels.cache.get(client.getSettings(guild).staffChat);
-    const actionLog = guild.channels.cache.get(client.getSettings(guild).actionLog);
+    const joinLeaveLog = guild.channels.cache.get(client.getSettings(guild).joinLeaveLog);
 
     const generalChat = guild.channels.cache.get('538938170822230026');
     const acnhChat = guild.channels.cache.get('494376688877174785');
@@ -234,7 +234,7 @@ module.exports = (client) => {
     client.raidMessage = await staffChat.send(`**##### RAID MODE ACTIVATED #####**
 <@&495865346591293443> <@&494448231036747777>
 
-A list of members that joined in the raid is being updated in <#630581732453908493>.
+A list of members that joined in the raid is being updated in <#689260556460359762>.
 This message updates every 5 seconds, and you should wait to decide until the count stops increasing.
 
 If you would like to remove any of the members from the list, use the \`.raidremove <ID>\` command.
@@ -263,7 +263,7 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
             } else {
               // We've finished banning, annouce that raid mode is ending.
               staffChat.send('Finished banning all raid members. Raid Mode is deactivated.');
-              actionLog.send(`The above ${client.raidMembersPrinted} members have been banned.`);
+              joinLeaveLog.send(`The above ${client.raidMembersPrinted} members have been banned.`);
               // Reset all raid variables
               client.raidMode = false;
               // Deactivate Raid Banning after a few seconds to allow for other events generated to finish
@@ -309,7 +309,7 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
         client.raidMessage.edit(`**##### RAID MODE ACTIVATED #####**
 <@&495865346591293443> <@&494448231036747777>
 
-A list of members that joined in the raid is being updated in <#630581732453908493>.
+A list of members that joined in the raid is being updated in <#689260556460359762>.
 This message updates every 5 seconds, and you should wait to decide until the count stops increasing.
 
 If you would like to remove any of the members from the list, use the \`.raidremove <ID>\` command.
@@ -322,7 +322,7 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
           newMembers.forEach((mem) => {
             msg += `\n${mem.user.tag} (${mem.id})`;
           });
-          actionLog.send(msg, { split: true });
+          joinLeaveLog.send(msg, { split: true });
           msg = '';
         }
       }
