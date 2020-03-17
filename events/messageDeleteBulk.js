@@ -31,6 +31,6 @@ module.exports = async (client, messages) => {
     // Update the embed with the latest message and index count
     embed.setDescription(m).setFooter(`[${i + 1}/${msgs.length}]`);
     // Send the embed in the channel.
-    await messages.first().guild.channels.cache.get(client.getSettings(messages.first().guild).actionLog).send(embed);
+    await messages.first().guild.channels.cache.get(client.config.actionLog).send(embed);
   });
 };

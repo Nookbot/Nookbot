@@ -36,7 +36,7 @@ module.exports = async (client, message) => {
       // Schedule unmute
       setTimeout(() => (message.member.roles.remove('495854925054607381', 'Unmuted after 10 mintues for Mention Spam')), 600000);
       // Notify mods so they may ban if it was a raider.
-      message.guild.channels.cache.get(client.getSettings(message.guild).staffChat).send(`**Mass Mention Attempt!**
+      message.guild.channels.cache.get(client.config.staffChat).send(`**Mass Mention Attempt!**
 <@&495865346591293443> <@&494448231036747777>
 The member **${message.author.tag}** just mentioned ${message.mentions.members.size} members and was automatically muted for 10 minutes!
 They have been a member of the server for ${client.humanTimeBetween(Date.now(), message.member.joinedTimestamp)}.
@@ -45,17 +45,15 @@ If you believe this member is a mention spammer bot, please ban them with the co
     }
   }
 
-  const settings = client.getSettings(message.guild);
-
   // Ignore messages not starting with the prefix
-  if (message.content.indexOf(settings.prefix) !== 0) {
+  if (message.content.indexOf(client.config.prefix) !== 0) {
     return;
   }
 
   const level = client.permLevel(message);
 
   // Our standard argument/command name definition.
-  const args = message.content.slice(settings.prefix.length).trim().split(/ +/g);
+  const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
 
   // Grab the command data and aliases from the client.commands Enmap
@@ -90,7 +88,7 @@ If you believe this member is a mention spammer bot, please ban them with the co
   }
 
   if (cmd.conf.args && (cmd.conf.args > args.length)) {
-    return client.error(message.channel, 'Invalid Arguments!', `The proper usage for this command is \`${settings.prefix}${cmd.help.usage}\`! For more information, please see the help command by using \`${settings.prefix}help ${cmd.help.name}\`!`);
+    return client.error(message.channel, 'Invalid Arguments!', `The proper usage for this command is \`${client.config.prefix}${cmd.help.usage}\`! For more information, please see the help command by using \`${client.config.prefix}help ${cmd.help.name}\`!`);
   }
 
   if (!cooldowns.has(cmd.help.name)) {

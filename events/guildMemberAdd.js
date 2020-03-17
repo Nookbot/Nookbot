@@ -78,5 +78,5 @@ module.exports = async (client, member) => {
     .addField('**Account Age**', accountAge, true)
     .addField('**Invite Used**', inviteField, true);
 
-  member.guild.channels.cache.get(client.getSettings(member.guild).actionLog).send(embed);
+  member.guild.channels.cache.get(client.config.joinLeaveLog).send(embed);
 };

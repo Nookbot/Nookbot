@@ -19,6 +19,7 @@ const config = {
     adminRole: 'Tom Nook (admin)',
     staffChat: 'channelID',
     actionLog: 'channelID',
+    joinLeaveLog: 'channelID',
     modLog: 'channelID',
     musicText: 'channelID',
     music: 'channelID',

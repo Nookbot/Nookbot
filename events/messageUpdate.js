@@ -22,5 +22,5 @@ module.exports = async (client, oldMessage, newMessage) => {
     .setFooter(`ID: ${newMessage.author.id}`)
     .addField('**Message Edited**', `**Before:** ${oldMsg}\n**+After:** ${newMsg}`);
 
-  newMessage.guild.channels.cache.get(client.getSettings(newMessage.guild).actionLog).send(embed);
+  newMessage.guild.channels.cache.get(client.config.actionLog).send(embed);
 };
