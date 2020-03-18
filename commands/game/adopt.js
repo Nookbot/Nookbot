@@ -1,7 +1,7 @@
 const { findBestMatch: findBest } = require('string-similarity');
 
 module.exports.run = (client, message, args) => {
-  switch (args[0]) {
+  switch (args[0] && args[0].toLowerCase()) {
     case 'list':
     case 'l':
     case 'show': {

@@ -1,6 +1,6 @@
 // eslint-disable-next-line consistent-return
 module.exports.run = async (client, message, args, level, Discord) => {
-  switch (args[0].toLowerCase()) {
+  switch (args[0] && args[0].toLowerCase()) {
     case 'islandname':
     case 'island':
     case 'in':
