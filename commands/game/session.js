@@ -1,6 +1,6 @@
 module.exports.run = (client, message, args) => {
   if (message.channel.id !== client.config.sesReqText) {
-    client.error(message.channel, `Command Not Available in this Channel!', 'You will have to use this command in the <#${client.config.sesReqText}> channel!`);
+    client.error(message.channel, 'Command Not Available in this Channel!', `You will have to use this command in the <#${client.config.sesReqText}> channel!`);
     return;
   }
 
@@ -24,7 +24,7 @@ module.exports.run = (client, message, args) => {
       userLimit: size,
       parent: client.config.sesCategory,
       position: lastNum,
-      reason: 'Auto-created by session command.',
+      reason: '[Auto] Created by session command.',
     }).then((sessionChannel) => {
       // Create sessionDB entry
       client.sessionDB.set(sessionChannel.id, lastNum);
@@ -34,6 +34,7 @@ module.exports.run = (client, message, args) => {
       setTimeout(() => {
         if (sessionChannel.members.size === 0 && !sessionChannel.deleted && sessionChannel.deletable) {
           sessionChannel.delete('[Auto] No one joined this session channel.');
+          client.sessionDB.delete(sessionChannel.id);
         }
       }, 60000);
     }).catch((error) => {
