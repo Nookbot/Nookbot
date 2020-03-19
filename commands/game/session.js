@@ -4,7 +4,8 @@ module.exports.run = (client, message, args) => {
     return;
   }
 
-  const size = Math.min(8, parseInt(args[0], 10) || 8);
+  // Number between 2 and 8
+  const size = Math.max(Math.min(8, parseInt(args[0], 10) || 8), 2);
 
   if (message.guild.channels.cache.size < 300) {
     const sessionNumArr = client.sessionDB.array().sort((a, b) => a - b);
