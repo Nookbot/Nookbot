@@ -19,6 +19,18 @@ module.exports.run = (client, message, args, level) => {
     timeDif.minutes(),
   ];
 
+  let gameOut = false;
+  for (let i = 0; i < times.length; i++) {
+    if (times[i] < 0) {
+      gameOut = true;
+      break;
+    }
+  }
+
+  if (gameOut) {
+    return message.channel.send(`**Animal Crossing: New Horizons** has been released! (UTC${offset >= 0 ? '+' : ''})`);
+  }
+
   const units = ['day', 'hour', 'minute'];
 
   // Grab the top 3 units of time that aren't 0
