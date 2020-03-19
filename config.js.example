@@ -12,18 +12,18 @@ const config = {
   twitterHookToken: '',
 
   // Settings
-  defaultSettings: {
-    prefix: '.',
-    verifiedRole: 'Islander',
-    modRole: 'Nooklings (mod)',
-    adminRole: 'Tom Nook (admin)',
-    staffChat: 'channelID',
-    actionLog: 'channelID',
-    joinLeaveLog: 'channelID',
-    modLog: 'channelID',
-    musicText: 'channelID',
-    music: 'channelID',
-  },
+  prefix: '.',
+  verifiedRole: 'Islander',
+  modRole: 'Nooklings (mod)',
+  adminRole: 'Tom Nook (admin)',
+  staffChat: 'channelID',
+  actionLog: 'channelID',
+  joinLeaveLog: 'channelID',
+  modLog: 'channelID',
+  musicText: 'channelID',
+  music: 'channelID',
+  sesReqText: 'channelID',
+  sesCategory: 'channelID',
 
   // UserDB
   userDBDefaults: {

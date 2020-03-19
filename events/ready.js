@@ -20,6 +20,21 @@ module.exports = (client) => {
       client.invites = guildInvites;
     });
 
+    // Clear any session channels from the server if they have no members
+    client.sessionDB.keyArray().forEach((sesID) => {
+      const sessionChannel = client.channels.cache.get(sesID);
+      if (sessionChannel && sessionChannel.members.size === 0
+          && !sessionChannel.deleted && sessionChannel.deletable) {
+        // Session is empty, delete the channel and database entry
+        sessionChannel.delete('[Auto] Purged empty session channels on ready event.').then((delChannel) => {
+          // Delete sessionDB entry
+          client.sessionDB.delete(delChannel.id);
+        }).catch((error) => {
+          console.error(error);
+        });
+      }
+    });
+
     try {
       client.startTwitterFeed();
     } catch (err) {
