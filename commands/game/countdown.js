@@ -13,23 +13,15 @@ module.exports.run = (client, message, args, level) => {
 
   const timeDif = moment.duration(moment([2020, 2, 20]).diff(moment().add(offset, 'hours').startOf('minute')));
 
+  if (timeDif < 0) {
+    return message.channel.send(`**Animal Crossing: New Horizons** has been released! (UTC${offset >= 0 ? '+' : ''})`);
+  }
+
   const times = [
     Math.floor(timeDif.asDays()),
     timeDif.hours(),
     timeDif.minutes(),
   ];
-
-  let gameOut = false;
-  for (let i = 0; i < times.length; i++) {
-    if (times[i] < 0) {
-      gameOut = true;
-      break;
-    }
-  }
-
-  if (gameOut) {
-    return message.channel.send(`**Animal Crossing: New Horizons** has been released! (UTC${offset >= 0 ? '+' : ''})`);
-  }
 
   const units = ['day', 'hour', 'minute'];
 
