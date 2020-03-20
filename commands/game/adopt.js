@@ -50,7 +50,7 @@ module.exports.run = (client, message, args) => {
         if (!vilAdopters.includes(message.author.id)) {
           // Add them to the list
           client.villagerDB.pushIn(villager.target, 'adopters', message.author.id);
-          return client.success(message.channel, 'Added to the List!', `Your name was added to the list of members that wish to adopt **${villager.target}**, and you will be pinged when someone offers them for adoption!\n**Remember**: It is up to whoever is offering the villager who they give the villager to, and being first to respond or first on the list doesn't mean you will be given the villager.`);
+          return client.success(message.channel, 'Added to the List!', `You will be pinged when someone offers **${villager.target}** for adoption!`);
         }
         return client.error(message.channel, 'Already on the List!', `Your name was already on the list to adopt **${villager.target}**!`);
       }
