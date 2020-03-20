@@ -16,7 +16,7 @@ module.exports.run = async (client, message, args) => {
       return client.error(message.channel, 'No One On The List!', `Nobody is currently wishing to adopt **${villager.target}**, but thank you for offering!`);
     }
 
-    const decision = await client.reactPrompt(message, `You are about to ping **${vilAdopters.length}** members of this server that wish to adopt **${villager.target}**.\n\n**WARNING: IF YOU CHOOSE TO PING AND DO NOT GIVE SOMEONE THE VILLAGER, YOU WILL BE GIVEN TEN STINGS!**\n\nDo you wish to ping **${vilAdopters.length}**?`);
+    const decision = await client.reactPrompt(message, `You are about to ping **${vilAdopters.length}** members of this server that wish to adopt **${villager.target}**.\n\n**WARNING: IF YOU CHOOSE TO PING AND DO NOT GIVE SOMEONE THE VILLAGER, YOU WILL BE GIVEN TEN STINGS!**\n\nDo you wish to ping **${vilAdopters.length}** members?`);
     if (decision) {
       let msg = `The following members are looking to adopt **${villager.target}**:\nPosition - Member - Friend Code`;
       vilAdopters.forEach((memID, i) => {
