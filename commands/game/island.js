@@ -132,7 +132,46 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'rm':
     case 'del':
     case 'clear':
-    case 'clr': {
+    case 'clr':
+    case 'mod': {
+      let memberID;
+      if (args[0].toLowerCase() === 'mod' && level >= 2) {
+        // If the mod subcommand is used, grab the next arguement as a member
+        let member = message.mentions.members.first();
+        if (!member) {
+          if (parseInt(args[1], 10)) {
+            try {
+              member = await client.users.fetch(args[1]);
+            } catch (err) {
+              // Don't need to send a message here
+            }
+          }
+        }
+
+        if (!member) {
+          const searchedMember = client.searchMember(args[1]);
+          if (searchedMember) {
+            const decision = await client.reactPrompt(message, `Would you like to moderate \`${searchedMember.user.tag}\`'s island settings?`);
+            if (decision) {
+              member = searchedMember;
+            } else {
+              message.delete().catch((err) => console.error(err));
+              return client.error(message.channel, 'Island Settings Not Moderated!', 'The prompt timed out, or you selected no.');
+            }
+          }
+        }
+
+        if (!member) {
+          return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server to moderate their island settings!');
+        }
+
+        memberID = member.id;
+      }
+
+      if (!memberID) {
+        memberID = message.author.id;
+      }
+      
       if (args.length === 1) {
         return client.error(message.channel, 'No Value To Remove!', 'Please supply the value you would like to remove! (islandname/fruit/charactername/hemisphere/profilename/friendcode)');
       }

@@ -203,7 +203,7 @@ module.exports = (client) => {
     // Enable Raid Mode
     client.raidMode = true;
     // Save @everyone role and staff/actionlog channels here for ease of use.
-    const { everyone } = guild.roles.everyone;
+    const { everyone } = guild.roles;
     const staffChat = guild.channels.cache.get(client.config.staffChat);
     const joinLeaveLog = guild.channels.cache.get(client.config.joinLeaveLog);
 
