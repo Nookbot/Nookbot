@@ -32,9 +32,19 @@ module.exports = async (client, message) => {
       // Mute
       message.member.roles.add('495854925054607381', 'Mention Spam');
       // Delete Message
-      message.delete();
+      if (!message.deleted) {
+        message.delete();
+      }
       // Schedule unmute
-      setTimeout(() => (message.member.roles.remove('495854925054607381', 'Unmuted after 10 mintues for Mention Spam')), 600000);
+      setTimeout(() => {
+        try {
+          message.member.roles.remove('495854925054607381', 'Unmuted after 10 mintues for Mention Spam');
+        } catch (error) {
+          // Couldn't unmute, oh well
+          console.error('Failed to unmute after Anit Mention Spam');
+          console.error(error);
+        }
+      }, 600000);
       // Notify mods so they may ban if it was a raider.
       message.guild.channels.cache.get(client.config.staffChat).send(`**Mass Mention Attempt!**
 <@&495865346591293443> <@&494448231036747777>
