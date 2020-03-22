@@ -81,7 +81,7 @@ module.exports.run = async (client, message, args, level) => {
 
 module.exports.conf = {
   guildOnly: false,
-  aliases: ['beelog', 'bslog', 'stinglog'],
+  aliases: ['beelog', 'bslog', 'stinglog', 'bl'],
   permLevel: 'User',
 };
 
