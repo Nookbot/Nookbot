@@ -25,6 +25,9 @@ const config = {
   sesReqText: 'channelID',
   sesCategory: 'channelID',
 
+  // Image-Only channels
+  imageOnlyChannels: ['channelID'],
+
   // UserDB
   userDBDefaults: {
     friendcode: '',

@@ -55,6 +55,14 @@ If you believe this member is a mention spammer bot, please ban them with the co
     }
   }
 
+  // Delete non-image containing messages from pattern channels
+  if (message.guild && client.config.imageOnlyChannels.includes(message.channel.id)
+      && message.attachments.size === 0  && !(/https?:\/\//i.test(message.content)) && client.permLevel(message)[1] < 2) {
+    // Message is in the guild's image only channels, without an image or link in it, and is not a mod's message, so delete
+    if (!message.deleted && message.deletable) message.delete();
+    return;
+  }
+
   // Ignore messages not starting with the prefix
   if (message.content.indexOf(client.config.prefix) !== 0) {
     return;

@@ -24,7 +24,7 @@ module.exports.run = (client, message, args) => {
       bitrate: 384000,
       userLimit: size,
       parent: client.config.sesCategory,
-      position: lastNum,
+      position: lastNum + 1,
       reason: '[Auto] Created by session command.',
     }).then((sessionChannel) => {
       // Create sessionDB entry
