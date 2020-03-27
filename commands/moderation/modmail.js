@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // #staff-discussion but the name might change so the id is best
-  const modMailCh = client.guilds.cache.first().channels.cache.get('679053765030182931');
+  const modMailCh = client.guilds.cache.first().channels.cache.get(client.config.modMail);
 
   if (message.channel === modMailCh) {
     // This was sent in the staff channel, so they are trying to reply to modmail.
@@ -54,7 +54,7 @@ module.exports.run = async (client, message, args, level) => {
       .then(async (collected) => {
         const attachments = collected.first().attachments.map((a) => a.url);
         await modMailCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}`, { split: true, files: attachments });
-        await client.success(dmCh, 'Sent!', 'Pete has delivered your message safely to the Town Hall!');
+        await client.success(dmCh, 'Sent!', 'Orville has successfully sent your postcard to Resident Services!');
       })
       .catch(() => {
         client.error(dmCh, "Time's Up!", "Time has expired! You'll have to run the command again if you want to send a message to the staff!");
@@ -66,7 +66,7 @@ module.exports.run = async (client, message, args, level) => {
     if (message.guild) {
       message.delete().catch((err) => console.error(err));
     }
-    await client.success(message.channel, 'Sent!', 'Pete has delivered your message safely to the Town Hall!');
+    await client.success(message.channel, 'Sent!', 'Orville has successfully sent your postcard to Resident Services!');
   }
 };
 

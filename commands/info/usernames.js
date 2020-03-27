@@ -37,7 +37,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     });
     collector.on('end', () => {
       embed.setFooter('No longer listening to reactions.');
-      infoMessage.clearReactions();
+      infoMessage.reactions.removeAll();
       infoMessage.edit(embed);
     });
   }

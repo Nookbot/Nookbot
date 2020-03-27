@@ -287,7 +287,7 @@ module.exports.conf = {
   guildOnly: true,
   aliases: ['is'],
   permLevel: 'User',
-  blockedChannels: ['538938170822230026'],
+  blockedChannels: ['538938170822230026', '661330633510879274'],
 };
 
 module.exports.help = {
