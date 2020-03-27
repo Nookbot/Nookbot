@@ -1,7 +1,37 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  // #staff-discussion but the name might change so the id is best
   const modMailCh = client.guilds.cache.first().channels.cache.get(client.config.reportMail);
+
+  if (message.channel.id === client.config.reportMail) {
+    // This was sent in the staff channel, so they are trying to reply to the report.
+    let member = message.mentions.members.first();
+    if (!member) {
+      if (parseInt(args[0], 10)) {
+        try {
+          member = await client.users.fetch(args[0]);
+        } catch (err) {
+          // Don't need to send a message here
+        }
+      }
+    }
+
+    if (!member) {
+      client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
+      return;
+    }
+
+    try {
+      const dmCh = await member.createDM();
+      const attachments = message.attachments.map((a) => a.url);
+
+      await dmCh.send(`__**Report Response**__\n**${message.author.tag}** (${message.author.id}) : ${args.slice(1).join(' ')}`, { split: true, files: attachments });
+      client.success(modMailCh, 'Report Response Sent!', `I've successfully sent your response to **${member.guild ? member.user.tag : member.tag || member}**!`);
+      return;
+    } catch (err) {
+      client.error(message.channel, 'Unable to DM that Member!', 'The user must have their DMs closed or is otherwise unavailable.');
+      return;
+    }
+  }
 
   if (args.length === 0) {
     const initMsg = `Hello **${message.author.username}!** You've initiated Report communication! I'll direct your next message to the staff channel so go ahead, I'm listening!`;

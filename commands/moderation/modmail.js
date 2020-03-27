@@ -1,9 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  // #staff-discussion but the name might change so the id is best
   const modMailCh = client.guilds.cache.first().channels.cache.get(client.config.modMail);
 
-  if (message.channel.id === client.config.modMail || message.channel.id === client.config.reportMail) {
+  if (message.channel.id === client.config.modMail) {
     // This was sent in the staff channel, so they are trying to reply to modmail.
     let member = message.mentions.members.first();
     if (!member) {
