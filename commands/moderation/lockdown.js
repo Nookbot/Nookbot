@@ -1,5 +1,6 @@
 module.exports.run = (client, message, args, level, Discord) => {
-  const everyone = message.guild.roles.everyone;
+  const { everyone } = message.guild.roles;
+  const guild = client.guilds.cache.first();
   const perms = new Discord.Permissions(everyone.permissions).remove('SEND_MESSAGES');
   everyone.setPermissions(perms)
     .then(() => {
