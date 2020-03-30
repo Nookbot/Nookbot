@@ -1,5 +1,6 @@
 const schedule = require('node-schedule');
 const db = require('../src/calendar/database.json');
+const moment = require('moment');
 
 module.exports = (client) => {
   // Setting activity
@@ -46,8 +47,8 @@ module.exports = (client) => {
     }
 
     // Implementated from code provided by plump#6345
-    schedule.scheduleJob('0 0 * * *', () => {
-      const date = new Date();
+    schedule.scheduleJob('0 15 * * *', () => {
+      const date = moment().add(1, 'd');
       const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
       const replaceLast = (x, y, z) => {
@@ -65,7 +66,7 @@ module.exports = (client) => {
         return a.join('');
       };
 
-      const todayDate = `${date.getMonth()}/${date.getUTCDate()}`;
+      const todayDate = `${date.month()}/${date.date()}`;
       let todayList;
       let numOfVils = 0;
       let image;
@@ -86,7 +87,7 @@ module.exports = (client) => {
         return; // no birthdays today end code.
       }
 
-      guild.channels.get('690235951628288023').send(`**__•• ${months[date.getMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()} ••__**\n• ${replaceLast(`${todayList.slice(0, -2)}\'s birthday${numOfVils > 1 ? 's' : ''}!`, ',', ', and')}`, { files: [image] });
+      guild.channels.get('690235951628288023').send(`**__•• ${months[date.month()]} ${date.date()}, ${date.year()} ••__**\n• ${replaceLast(`${todayList.slice(0, -2)}\'s birthday${numOfVils > 1 ? 's' : ''}!`, ',', ', and')}`, { files: [image] });
     });
 
     // Logging a ready message on first boot
