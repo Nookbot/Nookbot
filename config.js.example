@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 const config = {
   token: '',
+
+  // Twitter
   twitterAPIKey: '',
   twitterAPISecret: '',
   twitterAccessToken: '',
@@ -11,12 +13,18 @@ const config = {
   twitterHookID: '',
   twitterHookToken: '',
 
+  // Raid Settings
+  raidJoinsPerSecond: 10,
+  raidJoinCount: 10,
+
   // Settings
   prefix: '.',
   verifiedRole: 'Islander',
   modRole: 'Nooklings (mod)',
   adminRole: 'Tom Nook (admin)',
   staffChat: 'channelID',
+  modMail: 'channelID',
+  reportMail: 'channelID',
   actionLog: 'channelID',
   joinLeaveLog: 'channelID',
   modLog: 'channelID',
@@ -45,17 +53,14 @@ const config = {
     unmuteTime: 0,
   },
 
-  // VillagerDB 
-  villagerDBDefaults: {
-    birthday: Date,
-    adopters: [],
-    // Other villager related info perhaps for the wiki command to pull from, or the calender
-  },
-
   // Bot Perms and Stuff
   ownerID: 'userID',
 
   admins: ['userID', 'userID'],
+
+  ignoreMember: ['userID'],
+
+  ignoreChannel: ['channelID'],
 
   support: ['userID', 'userID'],
 
