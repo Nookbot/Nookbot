@@ -32,6 +32,7 @@ const config = {
   music: 'channelID',
   sesReqText: 'channelID',
   sesCategory: 'channelID',
+  calendar: 'channelID',
 
   // Image-Only channels
   imageOnlyChannels: ['channelID'],
