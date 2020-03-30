@@ -26,7 +26,7 @@ module.exports.run = async (client, message, args) => {
       const msg = `The following members are looking to adopt **${villager.target}**:\nPosition - Member - Friend Code\n${msgArr.join('\n')}${extra !== 0 ? `\nAnd **${extra}** other${extra === 1 ? '' : 's'} not pinged due to the limit of 10 pinged members.` : ''}\nYou are ultimately responsible for how to choose someone to adopt your villager, whether it be first to respond, first on the list, by random, or your pick.`;
       return message.channel.send(msg, { split: true });
     }
-    return client.error(message.channel, 'Members Not Pinged!', `You either chose to not ping the ${vilAdopters.length > 10 ? `10 (+${vilAdopters.length - 10} not pinged)` : `${vilAdopters.length}`}** members wishing to adopt **${villager.target}**, or the react prompt timed out.`);
+    return client.error(message.channel, 'Members Not Pinged!', `You either chose to not ping the **${vilAdopters.length > 10 ? `10 (+${vilAdopters.length - 10} not pinged)` : `${vilAdopters.length}`}** members wishing to adopt **${villager.target}**, or the react prompt timed out.`);
   }
   return client.error(message.channel, 'Incorrect Villager Name!', 'Could not find a villager with that name!');
 };
