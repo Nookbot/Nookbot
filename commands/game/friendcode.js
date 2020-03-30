@@ -80,7 +80,14 @@ module.exports.conf = {
   guildOnly: true,
   aliases: ['fc'],
   permLevel: 'User',
-  blockedChannels: ['538938170822230026'],
+  blockedChannels: [
+    '538938170822230026',
+    '494376688877174785',
+    '661330633510879274',
+    '651611409272274954',
+    '494467780293427200',
+    '669696796024504341',
+  ],
 };
 
 module.exports.help = {

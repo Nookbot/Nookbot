@@ -57,7 +57,7 @@ If you believe this member is a mention spammer bot, please ban them with the co
 
   // Delete non-image containing messages from pattern channels
   if (message.guild && client.config.imageOnlyChannels.includes(message.channel.id)
-      && message.attachments.size === 0  && !(/https?:\/\//i.test(message.content)) && client.permLevel(message)[1] < 2) {
+      && message.attachments.size === 0 && !(/https?:\/\//i.test(message.content)) && client.permLevel(message)[1] < 2) {
     // Message is in the guild's image only channels, without an image or link in it, and is not a mod's message, so delete
     if (!message.deleted && message.deletable) message.delete();
     return;
@@ -83,18 +83,20 @@ If you believe this member is a mention spammer bot, please ban them with the co
     return;
   }
 
-  if (enabledCmds.enabled === false) {
-    if (level[1] < 2) {
-      return client.error(message.channel, 'Command Disabled!', 'This command is currently disabled!');
-    }
+  if (enabledCmds.enabled === false && level[1] < 2) {
+    return client.error(message.channel, 'Command Disabled!', 'This command is currently disabled!');
   }
 
   if (!message.guild && cmd.conf.guildOnly) {
     return client.error(message.channel, 'Command Not Available in DMs!', 'This command is unavailable in DMs. Please use it in a server!');
   }
 
-  if (cmd.conf.blockedChannels && cmd.conf.blockedChannels.includes(message.channel.id)) {
+  if (cmd.conf.blockedChannels && cmd.conf.blockedChannels.includes(message.channel.id) && level[1] < 2) {
     return client.error(message.channel, 'Command Not Available in this Channel!', 'You will have to use this command in the <#549858839994826753> channel!');
+  }
+
+  if (cmd.conf.allowedChannels && !cmd.conf.allowedChannels.includes(message.channel.id) && level[1] < 2) {
+    return client.error(message.channel, 'Command Not Available in this Channel!', `You will have to use this command in one of the allowed channels: ${cmd.conf.allowedChannels.map((ch) => `<#${ch}>`).join(', ')}.`);
   }
 
   // eslint-disable-next-line prefer-destructuring
