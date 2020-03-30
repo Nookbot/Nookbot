@@ -66,7 +66,7 @@ module.exports = (client) => {
         return a.join('');
       };
 
-      const todayDate = `${date.month()}/${date.date()}`;
+      const todayDate = `${date.month() + 1}/${date.date()}`;
       let todayList;
       let numOfVils = 0;
       let image;
