@@ -87,7 +87,7 @@ module.exports = (client) => {
         return; // no birthdays today end code.
       }
 
-      guild.channels.get('690235951628288023').send(`**__•• ${months[date.month()]} ${date.date()}, ${date.year()} ••__**\n• ${replaceLast(`${todayList.slice(0, -2)}\'s birthday${numOfVils > 1 ? 's' : ''}!`, ',', ', and')}`, { files: [image] });
+      guild.channels.get('690235951628288023').send(`**__•• ${months[date.month()]} ${date.date()}, ${date.year()} ••__**\n• ${replaceLast(`${todayList.slice(0, -2)}\'s birthday${numOfVils > 1 ? 's' : ''}!`, ',', ' and')}`, { files: [image] });
     });
 
     // Logging a ready message on first boot
