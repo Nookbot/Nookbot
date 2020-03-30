@@ -18,7 +18,6 @@ module.exports.run = async (client, message, args) => {
 
     const decision = await client.reactPrompt(message, `You are about to ping ${vilAdopters.length > 10 ? `**10 (+${vilAdopters - 10} not pinged)** members` : `**${vilAdopters.length}** members`} of this server that wish to adopt **${villager.target}**.\n\n**WARNING: IF YOU CHOOSE TO PING AND DO NOT GIVE SOMEONE THE VILLAGER, YOU WILL BE GIVEN TEN STINGS!**\n\n**ONLY USE THIS COMMAND IF THE VILLAGER YOU ARE OFFERING IS IN BOXES MOVING OUT!**\n\nDo you wish to ping **${vilAdopters.length}** members?`);
     if (decision) {
-      let msg = `The following members are looking to adopt **${villager.target}**:\nPosition - Member - Friend Code`;
       const msgArr = [];
       vilAdopters.slice(0, 10).forEach((memID, i) => {
         msgArr.push(`#${i + 1} - <@${memID}> - ${client.userDB.ensure(memID, client.config.userDBDefaults).friendcode || 'Ask'}`);

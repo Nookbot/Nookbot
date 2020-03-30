@@ -24,6 +24,11 @@ module.exports.run = async (client, message, args, level) => {
     return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
   }
 
+  // Kick and mute/deafen member if in voice
+  if (member.voice.channel) {
+    member.voice.kick();
+  }
+
   // Adds the role to the member and deletes the message that initiated the command
   member.roles.add(role).catch((err) => console.error(err));
   message.delete().catch((err) => console.error(err));

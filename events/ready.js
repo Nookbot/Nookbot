@@ -1,3 +1,6 @@
+const schedule = require('node-schedule');
+const db = require('../src/calendar/database.json');
+
 module.exports = (client) => {
   // Setting activity
   if (!client.firstReady) {
@@ -41,6 +44,50 @@ module.exports = (client) => {
       // The stream function returned an error
       console.error(err);
     }
+
+    // Implementated from code provided by plump#6345
+    schedule.scheduleJob('0 0 * * *', () => {
+      const date = new Date();
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+      const replaceLast = (x, y, z) => {
+        const a = x.split('');
+        const { length } = y;
+        if (x.lastIndexOf(y) !== -1) {
+          for (let i = x.lastIndexOf(y); i < x.lastIndexOf(y) + length; i++) {
+            if (i === x.lastIndexOf(y)) {
+              a[i] = z;
+            } else {
+              delete a[i];
+            }
+          }
+        }
+        return a.join('');
+      };
+
+      const todayDate = `${date.getMonth()}/${date.getUTCDate()}`;
+      let todayList;
+      let numOfVils = 0;
+      let image;
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const name in db) {
+        if (db[name].birthday === todayDate) {
+          numOfVils += 1;
+          image = `./villagers/${db[name].photoLink}`;
+          todayList = `${todayList}**${name}**, `;
+          if (numOfVils > 1) {
+            image = `./villagers/shared/${todayList.replace(/\*|,| /g, '')}.png`;
+          }
+        }
+      }
+
+      if (todayList === undefined) {
+        return; // no birthdays today end code.
+      }
+
+      guild.channels.get('690235951628288023').send(`**__•• ${months[date.getMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()} ••__**\n${replaceLast(`${todayList.slice(0, -2)}\'s birthday${numOfVils > 1 ? 's' : ''}!`, ',', ' and')}`, { files: [image] });
+    });
 
     // Logging a ready message on first boot
     console.log(`Ready to follow orders sir, with ${guild.memberCount} users, in ${guild.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`);
