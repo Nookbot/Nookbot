@@ -1,6 +1,6 @@
 const schedule = require('node-schedule');
-const db = require('../src/calendar/database.json');
 const moment = require('moment');
+const db = require('../src/calendar/database.json');
 
 module.exports = (client) => {
   // Setting activity
