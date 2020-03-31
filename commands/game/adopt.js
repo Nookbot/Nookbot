@@ -26,7 +26,7 @@ module.exports.run = (client, message, args) => {
         return client.error(message.channel, 'No Villager Name Given!', 'You must supply a villager name to be removed from the adoption list for that villager!');
       }
 
-      const villager = findBest(args.slice(1).join(' '), client.villagerDB.keyArray()).bestMatch;
+      const villager = findBest(args.slice(1).join(' ').toProperCase(), client.villagerDB.keyArray()).bestMatch;
       if (villager.rating > 0.1) {
         // Remove user ID of author from the list of adopters for the given villager if they are on the list already
         if (client.villagerDB.getProp(villager.target, 'adopters').includes(message.author.id)) {
@@ -44,7 +44,7 @@ module.exports.run = (client, message, args) => {
         return client.error(message.channel, 'No Villager Name Given!', 'You must supply a villager name to check the adoption list for that villager!');
       }
 
-      const villager = findBest(args.slice(1).join(' '), client.villagerDB.keyArray()).bestMatch;
+      const villager = findBest(args.slice(1).join(' ').toProperCase(), client.villagerDB.keyArray()).bestMatch;
       if (villager.rating > 0.1) {
         const vilAdoptersLength = client.villagerDB.getProp(villager.target, 'adopters').length;
         if (vilAdoptersLength > 0) {
@@ -60,7 +60,7 @@ module.exports.run = (client, message, args) => {
         return client.error(message.channel, 'No Villager Name Given!', 'You must supply a villager name to be added to the adoption list for that villager!');
       }
 
-      const villager = findBest(args.join(' '), client.villagerDB.keyArray()).bestMatch;
+      const villager = findBest(args.join(' ').toProperCase(), client.villagerDB.keyArray()).bestMatch;
       if (villager.rating > 0.1) {
         const vilAdopters = client.villagerDB.get(villager.target).adopters;
         if (!vilAdopters.includes(message.author.id)) {
@@ -79,7 +79,7 @@ module.exports.conf = {
   guildOnly: true,
   aliases: ['ad'],
   permLevel: 'User',
-  blockedChannels: ['669696796024504341'],
+  allowedChannels: ['549858839994826753'],
 };
 
 module.exports.help = {
