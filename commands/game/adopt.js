@@ -18,7 +18,6 @@ module.exports.run = (client, message, args) => {
       return client.error(message.channel, 'Not Signed Up!', 'You are not signed up to adopt any villagers!\nYou can sign up to adopt any villager by using the `.adopt <villager name>` command.');
     }
     case 'delete':
-    case 'del':
     case 'd':
     case 'cancel':
     case 'remove': {
@@ -35,6 +34,23 @@ module.exports.run = (client, message, args) => {
           return client.success(message.channel, 'Removed from the List!', `Your name was removed from the list of members that wish to adopt **${villager.target}**!`);
         }
         return client.error(message.channel, 'Not on the List!', `You were not on the list to adopt **${villager.target}**!`);
+      }
+      return client.error(message.channel, 'Incorrect Villager Name!', 'Could not find a villager with that name!');
+    }
+    case 'check':
+    case 'peek': {
+      if (args.length === 1) {
+        // No villager name was given
+        return client.error(message.channel, 'No Villager Name Given!', 'You must supply a villager name to check the adoption list for that villager!');
+      }
+
+      const villager = findBest(args.slice(1).join(' '), client.villagerDB.keyArray()).bestMatch;
+      if (villager.rating > 0.1) {
+        const vilAdoptersLength = client.villagerDB.getProp(villager.target, 'adopters').length;
+        if (vilAdoptersLength > 0) {
+          return message.channel.send(`There are **${vilAdoptersLength}** members that wish to adopt **${villager.target}**!`);
+        }
+        return message.channel.send(`No one is currently on the list to adopt **${villager.target}**!`);
       }
       return client.error(message.channel, 'Incorrect Villager Name!', 'Could not find a villager with that name!');
     }
