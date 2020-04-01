@@ -7,19 +7,13 @@ module.exports.run = (client, message, args, level) => {
     return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member to upvote!');
   }
 
-  if (member === message.member) {
+  if (member.id === message.author.id) {
     return client.error(message.channel, 'No Upvoting Yourself!', 'You cannot upvote yourself!');
   }
 
-  const { positiveRep } = client.userDB.get(member.user.id);
-  const { negativeRep } = client.userDB.get(member.user.id);
+  client.userDB.ensure(member.id, client.config.userDBDefaults);
 
-  if (!positiveRep || !negativeRep) {
-    client.userDB.set(member.user.id, 0, 'positiveRep');
-    client.userDB.set(member.user.id, 0, 'negativeRep');
-  }
-
-  client.userDB.math(member.user.id, '+', 1, 'positiveRep');
+  client.userDB.math(member.id, '+', 1, 'positiveRep');
   return client.success(message.channel, 'Upvoted!', `Successfully upvoted **${member.user.tag}**!`);
 };
 
@@ -27,6 +21,7 @@ module.exports.conf = {
   guildOnly: true,
   aliases: ['repup', 'up'],
   permLevel: 'Verified',
+  allowedChannels: ['549858839994826753'],
   cooldown: 1800,
 };
 

@@ -1,21 +1,19 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = (client, message, args, level) => {
   const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || client.searchMember(args.join(' ')) || message.member;
-  const { positiveRep } = client.userDB.get(member.user.id);
-  const { negativeRep } = client.userDB.get(member.user.id);
+  const { positiveRep, negativeRep } = client.userDB.ensure(member.id, client.config.userDBDefaults);
 
-  if (!positiveRep || !negativeRep) {
-    client.userDB.set(member.user.id, 0, 'positiveRep');
-    client.userDB.set(member.user.id, 0, 'negativeRep');
+  if (positiveRep === 0 && negativeRep === 0) {
+    return message.channel.send(`**${member.user.tag}**'s Reputation is **unknown**.`)
   }
-
-  return message.channel.send(`**Postive Reputation:** ${positiveRep}\n**Negative Reputation:** ${negativeRep}\n\n**Total Reputation:** ${positiveRep - negativeRep}**`);
+  return message.channel.send(`**${member.user.tag}**'s Reputation is **${Math.round((positiveRep / ((positiveRep + negativeRep) || 1)) * 100)}%** positive based on **${positiveRep + negativeRep}** total ratings.`);
 };
 
 module.exports.conf = {
   guildOnly: true,
   aliases: ['rep', 'repcheck'],
   permLevel: 'Verified',
+  allowedChannels: ['549858839994826753'],
 };
 
 module.exports.help = {
