@@ -37,6 +37,10 @@ const config = {
   // Image-Only channels
   imageOnlyChannels: ['channelID'],
 
+  // Reputation Settings
+  negativeRepLimit: 20,
+  positiveRepLimit: 20,
+
   // UserDB
   userDBDefaults: {
     friendcode: '',
@@ -49,6 +53,8 @@ const config = {
     },
     positiveRep: 0,
     negativeRep: 0,
+    posRepList: [],
+    negRepList: [],
     roles: [],
     nicknames: [],
     usernames: [],

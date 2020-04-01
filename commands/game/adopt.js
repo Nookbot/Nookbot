@@ -48,7 +48,7 @@ module.exports.run = (client, message, args) => {
       if (villager.rating > 0.1) {
         const vilAdoptersLength = client.villagerDB.getProp(villager.target, 'adopters').length;
         if (vilAdoptersLength > 0) {
-          return message.channel.send(`There are **${vilAdoptersLength}** members that wish to adopt **${villager.target}**!`);
+          return message.channel.send(`There are **${vilAdoptersLength}** members who wish to adopt **${villager.target}**!`);
         }
         return message.channel.send(`No one is currently on the list to adopt **${villager.target}**!`);
       }
