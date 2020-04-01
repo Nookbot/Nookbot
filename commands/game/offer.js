@@ -6,7 +6,7 @@ module.exports.run = async (client, message, args) => {
     return client.error(message.channel, 'No Villager Name Given!', 'You must supply a villager name to be placed up for adoption!');
   }
 
-  const villager = findBest(args.join(' '), client.villagerDB.keyArray()).bestMatch;
+  const villager = findBest(args.slice(0, 2).join(' '), client.villagerDB.keyArray()).bestMatch;
   if (villager.rating > 0.1) {
     const vilAdopters = client.villagerDB.get(villager.target, 'adopters').filter((m) => message.guild.members.cache.has(m));
     const curOffset = client.villagerDB.get(villager.target, 'offset');
