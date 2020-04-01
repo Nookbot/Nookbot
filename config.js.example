@@ -47,6 +47,8 @@ const config = {
       hemisphere: '',
       profileName: '',
     },
+    positiveRep: 0,
+    negativeRep: 0,
     roles: [],
     nicknames: [],
     usernames: [],
