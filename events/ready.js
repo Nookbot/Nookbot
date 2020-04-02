@@ -66,7 +66,7 @@ module.exports = (client) => {
       };
 
       const todayDate = `${date.month() + 1}/${date.date()}`;
-      let todayList;
+      let todayList = '';
       let numOfVils = 0;
       let image;
 
