@@ -15,7 +15,7 @@ module.exports.run = (client, message, args, level) => {
   }
 
   const { posRepList, negRepList } = client.userDB.ensure(member.id, client.config.userDBDefaults);
-  
+
   if (negRepList.includes(message.author.id)) {
     return client.error(message.channel, 'Already Negatively Rated!', `You have already given **${member.displayName}** a negative rating! You can never give them another negative rating.`);
   }
@@ -41,10 +41,10 @@ module.exports.run = (client, message, args, level) => {
 
 module.exports.conf = {
   guildOnly: true,
-  aliases: ['repdown', 'down'],
+  aliases: ['repdown', 'down', 'downrep', '-rep', 'rep-'],
   permLevel: 'Verified',
   allowedChannels: ['549858839994826753'],
-  cooldown: 1800,
+  cooldown: 300,
 };
 
 module.exports.help = {

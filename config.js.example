@@ -41,6 +41,8 @@ const config = {
   negativeRepLimit: 20,
   positiveRepLimit: 20,
 
+  banAppealLink: 'LINK',
+
   // UserDB
   userDBDefaults: {
     friendcode: '',

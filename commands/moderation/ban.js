@@ -38,7 +38,7 @@ module.exports.run = async (client, message, args, level) => {
     await dmChannel.send(`You have been banned from the AC:NH server for the following reason:
 **${reason}**
 If you wish to appeal your ban, fill out this Google Form:
-<https://forms.gle/jcoP8kd3My31x3Gu6>`);
+${client.config.banAppealLink}`);
   } catch (e) {
     client.error(message.guild.channels.cache.get(client.config.staffChat), 'Failed to Send DM to Member!', "I've failed to send a dm to the most recent member banned. They most likely had dms off.");
   }

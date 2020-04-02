@@ -58,7 +58,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to appeal your ban, fill out this Google Form:
-<https://forms.gle/jcoP8kd3My31x3Gu6>`;
+${client.config.banAppealLink}`;
     action = 'Ban';
     ban = true;
   } else if (curPoints < 20 && newPoints + curPoints >= 20) {

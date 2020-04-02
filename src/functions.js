@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 const Discord = require('discord.js');
 const moment = require('moment');
-const { compareTwoStrings: distance } = require('string-similarity');
 
 module.exports = (client) => {
   client.permLevel = (message) => {
@@ -164,23 +163,8 @@ module.exports = (client) => {
     }
   };
 
-  client.searchMember = (name, threshold = 0.5) => {
-    const rated = [];
-
-    client.guilds.cache.first().members.cache.forEach((m) => {
-      const score = Math.max(distance(name, m.user.username), distance(name, m.displayName));
-      if (score > threshold) {
-        rated.push({
-          member: m,
-          score,
-        });
-      }
-    });
-
-    rated.sort((a, b) => b.score - a.score);
-
-    return (rated[0] && rated[0].member) || null;
-  };
+  // eslint-disable-next-line no-unused-vars
+  client.searchMember = (name, threshold = 0.5) => undefined;
 
   client.clearSongQueue = () => {
     client.songQueue.stopping = true;

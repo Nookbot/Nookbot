@@ -38,10 +38,10 @@ module.exports.run = (client, message, args, level) => {
 
 module.exports.conf = {
   guildOnly: true,
-  aliases: ['repup', 'up'],
+  aliases: ['repup', 'up', 'uprep', '+rep', 'rep+'],
   permLevel: 'Verified',
   allowedChannels: ['549858839994826753'],
-  cooldown: 1800,
+  cooldown: 300,
 };
 
 module.exports.help = {

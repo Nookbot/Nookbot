@@ -4,7 +4,7 @@ module.exports.run = (client, message, args, level) => {
   const { positiveRep, negativeRep } = client.userDB.ensure(member.id, client.config.userDBDefaults);
 
   if (positiveRep === 0 && negativeRep === 0) {
-    return message.channel.send(`**${member.user.tag}**'s Reputation is **unknown**.`)
+    return message.channel.send(`**${member.user.tag}**'s Reputation is **unknown**.`);
   }
   return message.channel.send(`**${member.user.tag}**'s Reputation is **${Math.round((positiveRep / ((positiveRep + negativeRep) || 1)) * 100)}%** positive based on **${positiveRep + negativeRep}** total ratings **(+${positiveRep}|-${negativeRep})**.`);
 };
