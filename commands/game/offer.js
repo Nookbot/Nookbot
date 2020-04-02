@@ -6,7 +6,7 @@ module.exports.run = async (client, message, args) => {
     return client.error(message.channel, 'No Villager Name Given!', 'You must supply a villager name to be placed up for adoption!');
   }
 
-  const villager = findBest(args.slice(0, 2).join(' '), client.villagerDB.keyArray()).bestMatch;
+  const villager = findBest(args.slice(0, 2).join(' ').toProperCase(), client.villagerDB.keyArray()).bestMatch;
   if (villager.rating > 0.1) {
     const vilAdopters = client.villagerDB.get(villager.target, 'adopters').filter((m) => message.guild.members.cache.has(m));
     const curOffset = client.villagerDB.get(villager.target, 'offset');
@@ -19,7 +19,7 @@ module.exports.run = async (client, message, args) => {
       return client.error(message.channel, 'No One On The List!', `Nobody is currently wishing to adopt **${villager.target}**, but thank you for offering!`);
     }
 
-    const decision = await client.reactPrompt(message, `You are about to ping **${vilAdopters.length > 10 ? `10 (+${vilAdopters.length - 10} not pinged)` : `${vilAdopters.length}`}** members of this server that wish to adopt **${villager.target}**.\n\n**WARNING: IF YOU CHOOSE TO PING AND DO NOT GIVE SOMEONE THE VILLAGER, YOU WILL BE GIVEN TEN STINGS!**\n\n**ONLY USE THIS COMMAND IF THE VILLAGER YOU ARE OFFERING IS IN BOXES MOVING OUT!**\n\nDo you wish to ping **${vilAdopters.length > 10 ? `10 (+${vilAdopters.length - 10} not pinged)` : `${vilAdopters.length}`}** members?`);
+    const decision = await client.reactPrompt(message, `**READ THIS**: If you are using this command just to check the number of people that want **${villager.target}**, **STOP**! Just use the \`.adopt check ${villager.target}\` command in <#549858839994826753>.\n\nDo you wish to ping **${vilAdopters.length > 10 ? `10 (+${vilAdopters.length - 10} not pinged)` : `${vilAdopters.length}`}** members that wish to adopt **${villager.target}**?`);
     if (decision) {
       if (curOffset !== 0 && curOffset + 10 >= vilAdopters.length) {
         client.villagerDB.set(villager.target, 0, 'offset');
