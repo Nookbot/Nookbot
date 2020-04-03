@@ -57,7 +57,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
           .setColor('#1DE9B6')
           .setDescription(collected.first().content)
           .setFooter(`.mm ${message.author.id}`);
-        await modMailCh.send(embed, { files: attachments });
+        await modMailCh.send({ embed, files: attachments });
         await client.success(dmCh, 'Sent!', 'Orville has successfully sent your postcard to Resident Services!');
       })
       .catch(() => {
@@ -70,7 +70,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       .setColor('#1DE9B6')
       .setDescription(args.join(' '))
       .setFooter(`.mm ${message.author.id}`);
-    await modMailCh.send(embed, { files: attachments });
+    await modMailCh.send({ embed, files: attachments });
     // Remove the message from the guild chat as it may contain sensitive information.
     if (message.guild) {
       message.delete().catch((err) => console.error(err));
