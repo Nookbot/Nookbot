@@ -53,7 +53,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       .then(async (collected) => {
         const attachments = collected.first().attachments.map((a) => a.url);
         const embed = new Discord.MessageEmbed()
-          .setAuthor(message.author.tag, message.author.defaultAvatarURL)
+          .setAuthor(`${message.author.tag} <@${message.author.id}>`, message.author.displayAvatarURL())
           .setColor('#1DE9B6')
           .setDescription(collected.first().content)
           .setFooter(`.mm ${message.author.id}`);
@@ -66,7 +66,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
   } else {
     const attachments = message.attachments.map((a) => a.url);
     const embed = new Discord.MessageEmbed()
-      .setAuthor(message.author.tag, message.author.defaultAvatarURL)
+      .setAuthor(`${message.author.tag} <@${message.author.id}>`, message.author.displayAvatarURL())
       .setColor('#1DE9B6')
       .setDescription(args.join(' '))
       .setFooter(`.mm ${message.author.id}`);
