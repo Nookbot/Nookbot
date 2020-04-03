@@ -74,10 +74,10 @@ module.exports = (client) => {
       for (const name in db) {
         if (db[name].birthday === todayDate) {
           numOfVils += 1;
-          image = `./villagers/${db[name].photoLink}`;
+          image = `./src/calendar/villagers/${db[name].photoLink}`;
           todayList = `${todayList}**${name}**, `;
           if (numOfVils > 1) {
-            image = `./villagers/shared/${todayList.replace(/\*|,| /g, '')}.png`;
+            image = `./src/calendar/villagers/shared/${todayList.replace(/\*|,| /g, '')}.png`;
           }
         }
       }

@@ -37,6 +37,10 @@ const config = {
   // Image-Only channels
   imageOnlyChannels: ['channelID'],
 
+  // Newline Limit Settings
+  newlineLimitChannels: [],
+  newlineLimit: 10,
+
   // Reputation Settings
   negativeRepLimit: 20,
   positiveRepLimit: 20,

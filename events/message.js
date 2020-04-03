@@ -60,10 +60,18 @@ If you believe this member is a mention spammer bot, please ban them with the co
     }
   }
 
-  // Delete non-image containing messages from pattern channels
+  // Delete non-image containing messages from image only channels
   if (message.guild && client.config.imageOnlyChannels.includes(message.channel.id)
       && message.attachments.size === 0 && !(/https?:\/\//i.test(message.content)) && client.permLevel(message)[1] < 2) {
     // Message is in the guild's image only channels, without an image or link in it, and is not a mod's message, so delete
+    if (!message.deleted && message.deletable) message.delete();
+    return;
+  }
+
+  // Delete posts with too many new line characters to prevent spammy messages in trade channels
+  if (message.guild && client.config.newlineLimitChannels.includes(message.channel.id)
+      && (message.content.match(/\n/g) || []).length >= client.config.newlineLimit && client.permLevel(message)[1] < 2) {
+    // Message is in the guild, in a channel that has a limit on newline characters, and has too many, and is not a mod's message, so delete
     if (!message.deleted && message.deletable) message.delete();
     return;
   }
