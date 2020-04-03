@@ -53,11 +53,11 @@ module.exports.run = async (client, message, args, level, Discord) => {
       .then(async (collected) => {
         const attachments = collected.first().attachments.map((a) => a.url);
         const embed = new Discord.MessageEmbed()
-          .setAuthor(`${message.author.tag} <@${message.author.id}>`, message.author.displayAvatarURL())
+          .setAuthor(message.author.tag, message.author.displayAvatarURL())
           .setColor('#1DE9B6')
           .setDescription(collected.first().content)
           .setFooter(`.mm ${message.author.id}`);
-        await modMailCh.send({ embed, files: attachments });
+        await modMailCh.send(`${message.author}`, { embed, files: attachments });
         await client.success(dmCh, 'Sent!', 'Orville has successfully sent your postcard to Resident Services!');
       })
       .catch(() => {
@@ -66,11 +66,11 @@ module.exports.run = async (client, message, args, level, Discord) => {
   } else {
     const attachments = message.attachments.map((a) => a.url);
     const embed = new Discord.MessageEmbed()
-      .setAuthor(`${message.author.tag} <@${message.author.id}>`, message.author.displayAvatarURL())
+      .setAuthor(message.author.tag, message.author.displayAvatarURL())
       .setColor('#1DE9B6')
       .setDescription(args.join(' '))
       .setFooter(`.mm ${message.author.id}`);
-    await modMailCh.send({ embed, files: attachments });
+    await modMailCh.send(`${message.author}`, { embed, files: attachments });
     // Remove the message from the guild chat as it may contain sensitive information.
     if (message.guild) {
       message.delete().catch((err) => console.error(err));
