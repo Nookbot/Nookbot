@@ -52,7 +52,7 @@ module.exports.run = async (client, message, args, level) => {
     await dmCh.awaitMessages(filter, { max: 1, time: 180000, errors: ['time'] })
       .then(async (collected) => {
         const attachments = collected.first().attachments.map((a) => a.url);
-        await modMailCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}`, { split: true, files: attachments });
+        await modMailCh.send(`> **${message.author.tag}** (${message.author}) :\n${collected.first().content}\n\nUser ID: **${message.author.id}**`, { split: true, files: attachments });
         await client.success(dmCh, 'Sent!', 'Orville has successfully sent your postcard to Resident Services!');
       })
       .catch(() => {
@@ -60,7 +60,7 @@ module.exports.run = async (client, message, args, level) => {
       });
   } else {
     const attachments = message.attachments.map((a) => a.url);
-    await modMailCh.send(`**${message.author.tag}** (${message.author}) : ${args.join(' ')}`, { split: true, files: attachments });
+    await modMailCh.send(`> **${message.author.tag}** (${message.author}) :\n${args.join(' ')}\n\nUser ID: **${message.author.id}**`, { split: true, files: attachments });
     // Remove the message from the guild chat as it may contain sensitive information.
     if (message.guild) {
       message.delete().catch((err) => console.error(err));
