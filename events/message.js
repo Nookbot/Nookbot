@@ -64,15 +64,37 @@ If you believe this member is a mention spammer bot, please ban them with the co
   if (message.guild && client.config.imageOnlyChannels.includes(message.channel.id)
       && message.attachments.size === 0 && !(/https?:\/\//i.test(message.content)) && client.permLevel(message)[1] < 2) {
     // Message is in the guild's image only channels, without an image or link in it, and is not a mod's message, so delete
-    if (!message.deleted && message.deletable) message.delete();
+    if (!message.deleted && message.deletable) {
+      message.delete();
+      client.imageOnlyFilterCount += 1;
+      if (client.imageOnlyFilterCount === 5) {
+        client.imageOnlyFilterCount = 0;
+        const autoMsg = await message.channel.send('Image Only Channel!\nThis channel only allows posts with images or links in them. Everything else is automatically deleted.');
+        setTimeout(() => {
+          autoMsg.delete();
+        }, 30000);
+      }
+    }
     return;
   }
 
-  // Delete posts with too many new line characters to prevent spammy messages in trade channels
+  // Delete posts with too many new line characters or images to prevent spammy messages in trade channels
   if (message.guild && client.config.newlineLimitChannels.includes(message.channel.id)
-      && (message.content.match(/\n/g) || []).length >= client.config.newlineLimit && client.permLevel(message)[1] < 2) {
-    // Message is in the guild, in a channel that has a limit on newline characters, and has too many, and is not a mod's message, so delete
-    if (!message.deleted && message.deletable) message.delete();
+      && ((message.content.match(/\n/g) || []).length >= client.config.newlineLimit
+      || (message.attachments.size + (message.content.match(/https?:\/\//gi) || []).length) >= client.config.imageLinkLimit)
+      && client.permLevel(message)[1] < 2) {
+    // Message is in the guild, in a channel that has a limit on newline characters, and has too many or too many links + attachments, and is not a mod's message, so delete
+    if (!message.deleted && message.deletable) {
+      message.delete();
+      client.newlineLimitFilterCount += 1;
+      if (client.newlineLimitFilterCount === 5) {
+        client.newlineLimitFilterCount = 0;
+        const autoMsg = await message.channel.send('Too Many New Lines or Attachments + Links!\nThis channel only allows posts with less than 10 newline characters and less than 3 attachments + links in them. Messages with more than that are automatically deleted.');
+        setTimeout(() => {
+          autoMsg.delete();
+        }, 30000);
+      }
+    }
     return;
   }
 

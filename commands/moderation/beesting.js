@@ -137,7 +137,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
   } else if (mute) {
     try {
       // Update unmuteTime on userDB
-      client.userDB.set(member.id, (mute * 60000) + time, 'unmuteTime');
+      client.muteDB.set(member.id, (mute * 60000) + time);
       const guildMember = await message.guild.members.fetch(member);
       await guildMember.roles.add('495854925054607381', reason);
 
@@ -148,7 +148,8 @@ If you wish to contact the moderators about your warning, please use the \`.modm
 
       // Schedule unmute
       setTimeout(() => {
-        if ((client.userDB.get(member.id, 'unmuteTime') || 0) < Date.now()) {
+        if ((client.muteDB.get(member.id) || 0) < Date.now()) {
+          client.muteDB.delete(member.id);
           guildMember.roles.remove('495854925054607381', `Scheduled unmute after ${mute} minutes.`).catch((err) => {
             client.error(message.guild.channels.cache.get(client.config.modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}\nID: ${member.id}`);
           });

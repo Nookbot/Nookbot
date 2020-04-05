@@ -39,6 +39,27 @@ module.exports = (client) => {
       }
     });
 
+    // Reschedule any unmutes from muteDB
+    const now = Date.now();
+    client.muteDB.keyArray().forEach((memID) => {
+      const unmuteTime = client.muteDB.get(memID);
+      client.guilds.cache.first().members.fetch(memID).then((member) => {
+        if (unmuteTime < now) {
+          // Immediately unmute
+          client.muteDB.delete(memID);
+          member.roles.remove('495854925054607381', 'Scheduled unmute through reboot.');
+        } else {
+          // Schedule unmute
+          setTimeout(() => {
+            if ((client.muteDB.get(memID) || 0) < Date.now()) {
+              client.muteDB.delete(memID);
+              member.roles.remove('495854925054607381', 'Scheduled unmute through reboot.');
+            }
+          }, unmuteTime - now);
+        }
+      });
+    });
+
     try {
       client.startTwitterFeed();
     } catch (err) {
@@ -86,7 +107,9 @@ module.exports = (client) => {
         return; // no birthdays today end code.
       }
 
-      guild.channels.cache.get('690235951628288023').send(`**__•• ${date.format('MMMM')} ${date.date()}, ${date.year()} ••__**\n• ${replaceLast(`${todayList.slice(0, -2)}\'s birthday${numOfVils > 1 ? 's' : ''}!`, ',', ' and')}`, { files: [image] });
+      guild.channels.fetch('690235951628288023').then((channel) => {
+        channel.send(`**__•• ${date.format('MMMM')} ${date.date()}, ${date.year()} ••__**\n• ${replaceLast(`${todayList.slice(0, -2)}\'s birthday${numOfVils > 1 ? 's' : ''}!`, ',', ' and')}`, { files: [image] });
+      });
     });
 
     // Logging a ready message on first boot

@@ -96,6 +96,10 @@ client.songQueue = {
   lastUpdateDesc: '',
 };
 
+// Auto-Filter Message Reminder Counts
+client.imageOnlyFilterCount = 0;
+client.newlineLimitFilterCount = 0;
+
 // Twitter object for listening for tweets
 client.twitter = new Twitter({
   consumer_key: client.config.twitterAPIKey,
@@ -107,7 +111,7 @@ client.twitter = new Twitter({
 // Start up the twitter webhook listener
 client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, client.config.twitterHookToken);
 
-Object.assign(client, Enmap.multi(['enabledCmds', 'userDB', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'infractionDB', 'sessionDB'], { ensureProps: true }));
+Object.assign(client, Enmap.multi(['enabledCmds', 'userDB', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'infractionDB', 'sessionDB', 'muteDB'], { ensureProps: true }));
 
 client.login(config.token).catch(() => {
   const interval = setInterval(() => {

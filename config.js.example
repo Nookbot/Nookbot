@@ -40,6 +40,7 @@ const config = {
   // Newline Limit Settings
   newlineLimitChannels: [],
   newlineLimit: 10,
+  imageLinkLimit: 3,
 
   // Reputation Settings
   negativeRepLimit: 20,
@@ -65,7 +66,6 @@ const config = {
     nicknames: [],
     usernames: [],
     infractions: [],
-    unmuteTime: 0,
   },
 
   // Bot Perms and Stuff
