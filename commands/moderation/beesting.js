@@ -123,7 +123,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
     case: caseNum,
     action,
     points: newPoints,
-    reason,
+    reason: `${reason}${message.attachments.size > 0 ? `\n${message.attachments.map((a) => `${a.url}`).join('\n')}` : ''}`,
     moderator: message.author.id,
     dmSent,
     date: time,
@@ -131,7 +131,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
 
   // Perform the required action
   if (ban) {
-    await message.guild.members.ban(member, { reason }).catch((err) => {
+    await message.guild.members.ban(member, '[Auto] Beestings').catch((err) => {
       client.error(message.guild.channels.cache.get(client.config.modLog), 'Ban Failed!', `I've failed to ban this member! ${err}`);
     });
   } else if (mute) {
@@ -139,7 +139,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
       // Update unmuteTime on userDB
       client.muteDB.set(member.id, (mute * 60000) + time);
       const guildMember = await message.guild.members.fetch(member);
-      await guildMember.roles.add('495854925054607381', reason);
+      await guildMember.roles.add('495854925054607381', '[Auto] Beestings');
 
       // Kick and mute/deafen member if in voice
       if (guildMember.voice.channel) {
