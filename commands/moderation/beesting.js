@@ -131,7 +131,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
 
   // Perform the required action
   if (ban) {
-    await message.guild.members.ban(member, '[Auto] Beestings').catch((err) => {
+    await message.guild.members.ban(member, { reason: '[Auto] Beestings', days: 1 }).catch((err) => {
       client.error(message.guild.channels.cache.get(client.config.modLog), 'Ban Failed!', `I've failed to ban this member! ${err}`);
     });
   } else if (mute) {
