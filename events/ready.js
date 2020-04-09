@@ -5,8 +5,13 @@ const db = require('../src/calendar/database.json');
 module.exports = (client) => {
   if (!client.firstReady) {
     client.firstReady = true;
-    setTimeout(() => {
+    const intv = setInterval(() => {
       const guild = client.guilds.cache.first();
+      if (!guild) {
+        return;
+      } else {
+        clearInterval(intv);
+      }
 
       // Emoji usage tracking database init
       guild.emojis.cache.forEach((e) => {
