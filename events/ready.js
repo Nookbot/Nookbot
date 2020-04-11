@@ -65,6 +65,9 @@ module.exports = (client) => {
               }
             }, unmuteTime - now);
           }
+        }).catch(() => {
+          // Probably no longer a member, don't schedule their unmute and remove entry from DB.
+          client.muteDB.delete(memID);
         });
       });
 
