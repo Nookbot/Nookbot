@@ -34,7 +34,7 @@
     "request": "^2.88.0",
     "string-similarity": "^3.0.0",
     "twitter-lite": "^0.9.4",
-    "ytdl-core": "^1.0.3",
+    "ytdl-core": "^2.0.1",
     "ytdl-core-discord": "^1.1.0",
     "ytpl": "github:NotArandomGUY/node-ytpl#master"
   },

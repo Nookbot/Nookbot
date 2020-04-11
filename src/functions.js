@@ -89,7 +89,7 @@ module.exports = (client) => {
       outTimes = outTimes.replace('|', ' and ');
     }
 
-    return outTimes;
+    return outTimes || '0 seconds';
   };
 
   client.regexCount = (regexp, str) => {

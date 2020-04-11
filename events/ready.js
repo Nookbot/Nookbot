@@ -9,9 +9,8 @@ module.exports = (client) => {
       const guild = client.guilds.cache.first();
       if (!guild) {
         return;
-      } else {
-        clearInterval(intv);
       }
+      clearInterval(intv);
 
       // Emoji usage tracking database init
       guild.emojis.cache.forEach((e) => {
