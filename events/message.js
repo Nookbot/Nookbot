@@ -15,6 +15,9 @@ module.exports = async (client, message) => {
     return;
   }
 
+  // User activity tracking
+  client.userDB.set(message.author.id, message.createdTimestamp, 'lastMessageTimestamp');
+
   // Emoji finding and tracking
   const regex = /<a?:\w+:([\d]+)>/g;
   const msg = message.content;

@@ -66,6 +66,7 @@ const config = {
     nicknames: [],
     usernames: [],
     infractions: [],
+    lastMessageTimestamp: 0,
   },
 
   // Bot Perms and Stuff
