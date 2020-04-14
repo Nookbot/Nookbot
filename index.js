@@ -74,7 +74,7 @@ fs.readdir('./commands/', (err, folders) => {
           });
         }
 
-        client.enabledCmds.ensure(commandName, { enabled: true });
+        client.enabledCmds.ensure(commandName, true);
       });
     });
   }

@@ -121,7 +121,7 @@ If you believe this member is a mention spammer bot, please ban them with the co
     return;
   }
 
-  if (enabledCmds.enabled === false && level[1] < 2) {
+  if (enabledCmds === false && level[1] < 2) {
     return client.error(message.channel, 'Command Disabled!', 'This command is currently disabled!');
   }
 

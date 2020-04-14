@@ -1,7 +1,7 @@
 module.exports.run = (client, message, [command], level) => {
   if (!command) {
     let commands = client.commands.filter((cmd) => client.levelCache[cmd.conf.permLevel] <= level
-      && client.enabledCmds.get(cmd.help.name).enabled === true);
+      && client.enabledCmds.get(cmd.help.name) === true);
 
     if (!message.guild) {
       commands = client.commands.filter((cmd) => client.levelCache[cmd.conf.permLevel] <= level
