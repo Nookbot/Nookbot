@@ -4,13 +4,18 @@ const db = require('../src/calendar/database.json');
 
 module.exports = (client) => {
   if (!client.firstReady) {
+    let counter = 1;
     client.firstReady = true;
+    console.log('First ready event triggered, loading the guild.');
     const intv = setInterval(() => {
       const guild = client.guilds.cache.first();
       if (!guild) {
+        console.log(`  Attempting to wait for guild to load ${counter}...`);
+        counter += 1;
         return;
       }
       clearInterval(intv);
+      console.log('Guild successfully loaded.');
 
       // Emoji usage tracking database init
       guild.emojis.cache.forEach((e) => {
