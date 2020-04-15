@@ -130,7 +130,11 @@ client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, clie
 Object.assign(client, Enmap.multi(['enabledCmds', 'userDB', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'infractionDB', 'sessionDB', 'muteDB', 'memberStats'], { ensureProps: true }));
 
 client.login(config.token).catch(() => {
+  console.log('Retrying client.login()...');
+  let counter = 1;
   const interval = setInterval(() => {
+    console.log(`  Retrying attempt ${counter}`);
+    counter += 1;
     client.login(config.token).then(clearInterval(interval));
-  }, 5000);
+  }, 30000);
 });
