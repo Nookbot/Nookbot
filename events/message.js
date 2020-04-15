@@ -114,7 +114,10 @@ If you believe this member is a mention spammer bot, please ban them with the co
 
   // Grab the command data and aliases from the client.commands Enmap
   const cmd = client.commands.get(command) || client.commands.get(client.aliases.get(command));
-  const enabledCmds = client.enabledCmds.get(command) || client.enabledCmds.get(client.aliases.get(command));
+  let enabledCmds = client.enabledCmds.get(command);
+  if (enabledCmds === undefined) {
+    enabledCmds = client.enabledCmds.get(client.aliases.get(command));
+  }
 
   // If that command doesn't exist, silently exit and do nothing
   if (!cmd) {
