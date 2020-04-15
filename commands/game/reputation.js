@@ -12,7 +12,7 @@ module.exports.run = (client, message, args, level) => {
 module.exports.conf = {
   guildOnly: true,
   aliases: ['rep', 'repcheck'],
-  permLevel: 'Verified',
+  permLevel: 'User',
   allowedChannels: ['549858839994826753'],
 };
 

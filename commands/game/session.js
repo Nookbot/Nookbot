@@ -50,7 +50,7 @@ module.exports.run = (client, message, args) => {
 module.exports.conf = {
   guildOnly: true,
   aliases: ['sess', 'voicesession', 'voice'],
-  permLevel: 'Verified',
+  permLevel: 'User',
   cooldown: 120, // 2 mins
 };
 

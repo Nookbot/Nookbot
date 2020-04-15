@@ -42,7 +42,7 @@ module.exports.run = async (client, message, args) => {
 module.exports.conf = {
   guildOnly: true,
   aliases: ['orphan'],
-  permLevel: 'Verified',
+  permLevel: 'User',
   cooldown: 1800, // 30 minutes
   allowedChannels: ['669696796024504341'],
 };

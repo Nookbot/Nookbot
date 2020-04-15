@@ -39,7 +39,7 @@ module.exports.run = (client, message, args, level) => {
 module.exports.conf = {
   guildOnly: true,
   aliases: ['repup', 'up', 'uprep', '+rep', 'rep+'],
-  permLevel: 'Verified',
+  permLevel: 'User',
   allowedChannels: ['549858839994826753'],
   cooldown: 300,
 };
