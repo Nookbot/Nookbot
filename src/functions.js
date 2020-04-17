@@ -44,11 +44,11 @@ module.exports = (client) => {
   };
 
   client.success = (channel, suc, msg) => {
-    channel.send(`${client.emoji.checkMark} **${suc}**\n${msg}`);
+    channel.send(`${client.emoji.checkMark} **${suc}**\n${msg}`, { split: true });
   };
 
   client.error = (channel, err, msg) => {
-    channel.send(`${client.emoji.redX} **${err}**\n${msg}`);
+    channel.send(`${client.emoji.redX} **${err}**\n${msg}`, { split: true });
   };
 
   client.humanTimeBetween = (time1, time2) => {

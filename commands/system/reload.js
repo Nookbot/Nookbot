@@ -8,9 +8,9 @@ module.exports.run = (client, message, args, level) => {
     return client.error(message.channel, 'Invalid Command!', "That's not a valid command!");
   }
 
-  const props = require(`../../commands/${command.help.category}/${command.help.name}`);
-
   delete require.cache[require.resolve(`../../commands/${command.help.category}/${command.help.name}.js`)];
+
+  const props = require(`../../commands/${command.help.category}/${command.help.name}`);
   client.commands.set(command.help.name, props);
 
   console.log(`${command.help.name} command was reloaded!`);
@@ -20,7 +20,7 @@ module.exports.run = (client, message, args, level) => {
 module.exports.conf = {
   guildOnly: false,
   aliases: [],
-  permLevel: 'Bot Owner',
+  permLevel: 'Bot Admin',
   args: 1,
 };
 

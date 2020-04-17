@@ -1,13 +1,15 @@
 module.exports.run = async (client, message, args, level, Discord) => {
-  let member = message.mentions.members.first();
-  if (!member) {
-    if (parseInt(args[0], 10)) {
-      try {
-        member = await client.users.fetch(args[0]);
-      } catch (err) {
-        // Don't need to send a message here
-      }
+  let member;
+  if (parseInt(args[0], 10)) {
+    try {
+      member = await client.users.fetch(args[0]);
+    } catch (err) {
+      // Don't need to send a message here
     }
+  }
+
+  if (!member) {
+    member = message.mentions.members.first();
   }
 
   if (!member) {
