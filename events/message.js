@@ -9,7 +9,7 @@ module.exports = async (client, message) => {
   if (message.author.bot) {
     // If message sent by ban appeal webhook bot account, and in the ban appeals channel
     if ((message.author.id === '695145674081042443' && message.channel.id === '680479301857968237')
-      || message.author.id === '700611254296903741' && message.channel.id === '700454847643648129') {
+     || (message.author.id === '700611254296903741' && message.channel.id === '700454847643648129')) {
       await message.react(client.emoji.checkMark);
       message.react(client.emoji.redX);
     }

@@ -67,7 +67,7 @@ module.exports = async (client, messageReaction, user) => {
 
   // If message has a cumulative count of reactions over 4000, reset all the reactions on the message.
   let totalReactions = 0;
-  messageReaction.message.reactions.cache.forEach((reaction) => totalReactions += reaction.count);
+  messageReaction.message.reactions.cache.forEach((reaction) => { totalReactions += reaction.count; });
   if (totalReactions > 4000) {
     // Remove all reactions.
     messageReaction.message.reactions.removeAll()
