@@ -52,7 +52,7 @@ ${client.config.banAppealLink}`);
 
 module.exports.conf = {
   guildOnly: true,
-  aliases: ['b'],
+  aliases: [],
   permLevel: 'Mod',
   args: 1,
 };
