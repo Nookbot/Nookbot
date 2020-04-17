@@ -2,7 +2,7 @@
 module.exports.run = async (client, message, args, level, Discord) => {
   const modMailCh = client.guilds.cache.first().channels.cache.get(client.config.modMail);
 
-  if (message.channel.id === client.config.modMail || message.channel.id === client.config.reportMail) {
+  if (message.channel.id === client.config.modMail) {
     // This was sent in the staff channel, so they are trying to reply to modmail.
     let member = message.mentions.members.first();
     if (!member) {
@@ -57,8 +57,13 @@ module.exports.run = async (client, message, args, level, Discord) => {
           .setColor('#1DE9B6')
           .setDescription(collected.first().content)
           .setFooter(`.mm ${message.author.id}`);
-        await modMailCh.send(`${message.author}`, { embed, files: attachments });
-        await client.success(dmCh, 'Sent!', 'Orville has successfully sent your postcard to Resident Services!');
+        modMailCh.send(`${message.author}`, { embed, files: attachments })
+          .then(() => {
+            client.success(dmCh, 'Sent!', 'Orville has successfully sent your postcard to Resident Services!');
+          })
+          .catch(() => {
+            client.error(dmCh, 'Not Sent!', 'Orville had difficulties sending your postcard to Resident Services!');
+          });
       })
       .catch(() => {
         client.error(dmCh, "Time's Up!", "Time has expired! You'll have to run the command again if you want to send a message to the staff!");
@@ -70,12 +75,21 @@ module.exports.run = async (client, message, args, level, Discord) => {
       .setColor('#1DE9B6')
       .setDescription(args.join(' '))
       .setFooter(`.mm ${message.author.id}`);
-    await modMailCh.send(`${message.author}`, { embed, files: attachments });
-    // Remove the message from the guild chat as it may contain sensitive information.
-    if (message.guild) {
-      message.delete().catch((err) => console.error(err));
-    }
-    await client.success(message.channel, 'Sent!', 'Orville has successfully sent your postcard to Resident Services!');
+    modMailCh.send(`${message.author}`, { embed, files: attachments })
+      .then(() => {
+        // Remove the message from the guild chat as it may contain sensitive information.
+        if (message.guild) {
+          message.delete().catch((err) => console.error(err));
+        }
+        client.success(message.channel, 'Sent!', 'Orville has successfully sent your postcard to Resident Services!');
+      })
+      .catch(() => {
+        // Remove the message from the guild chat as it may contain sensitive information.
+        if (message.guild) {
+          message.delete().catch((err) => console.error(err));
+        }
+        client.error(message.channel, 'Not Sent!', 'Orville had difficulties sending your postcard to Resident Services!');
+      });
   }
 };
 

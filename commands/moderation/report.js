@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-unused-vars
-module.exports.run = async (client, message, args, level) => {
+module.exports.run = async (client, message, args, level, Discord) => {
   const reportMailCh = client.guilds.cache.first().channels.cache.get(client.config.reportMail);
 
-  if (message.channel.id === client.config.reportMail || message.channel.id === client.config.modMail) {
+  if (message.channel.id === client.config.reportMail) {
     // This was sent in the staff channel, so they are trying to reply to the report.
     let member = message.mentions.members.first();
     if (!member) {
@@ -49,23 +49,47 @@ module.exports.run = async (client, message, args, level) => {
     }
 
     const filter = (m) => !m.author.bot;
-    await dmCh.awaitMessages(filter, { max: 1, time: 180000, errors: ['time'] })
-      .then(async (collected) => {
+    dmCh.awaitMessages(filter, { max: 1, time: 180000, errors: ['time'] })
+      .then((collected) => {
         const attachments = collected.first().attachments.map((a) => a.url);
-        await reportMailCh.send(`**${message.author.tag}** (${message.author}) : ${collected.first().content}`, { split: true, files: attachments });
-        await client.success(dmCh, 'Sent!', 'Orville has successfully sent your report to Resident Services!');
+        const embed = new Discord.MessageEmbed()
+          .setAuthor(message.author.tag, message.author.displayAvatarURL())
+          .setColor('#5F5FFF')
+          .setDescription(collected.first().content)
+          .setFooter(`.scam ${message.author.id}`);
+        reportMailCh.send(`${message.author}`, { embed, files: attachments })
+          .then(() => {
+            client.success(dmCh, 'Sent!', 'Orville has successfully sent your report to Resident Services!');
+          })
+          .catch(() => {
+            client.error(dmCh, 'Not Sent!', 'Orville had difficulties sending your report to Resident Services!');
+          });
       })
       .catch(() => {
         client.error(dmCh, "Time's Up!", "Time has expired! You'll have to run the command again if you want to send a report to the staff!");
       });
   } else {
     const attachments = message.attachments.map((a) => a.url);
-    await reportMailCh.send(`**${message.author.tag}** (${message.author}) : ${args.join(' ')}`, { split: true, files: attachments });
-    // Remove the message from the guild chat as it may contain sensitive information.
-    if (message.guild) {
-      message.delete().catch((err) => console.error(err));
-    }
-    await client.success(message.channel, 'Sent!', 'Orville has successfully sent your report to Resident Services!');
+    const embed = new Discord.MessageEmbed()
+      .setAuthor(message.author.tag, message.author.displayAvatarURL())
+      .setColor('#5F5FFF')
+      .setDescription(args.join(' '))
+      .setFooter(`.scam ${message.author.id}`);
+    reportMailCh.send(`${message.author}`, { embed, files: attachments })
+      .then(() => {
+        // Remove the message from the guild chat as it may contain sensitive information.
+        if (message.guild) {
+          message.delete().catch((err) => console.error(err));
+        }
+        client.success(message.channel, 'Sent!', 'Orville has successfully sent your report to Resident Services!');
+      })
+      .catch(() => {
+        // Remove the message from the guild chat as it may contain sensitive information.
+        if (message.guild) {
+          message.delete().catch((err) => console.error(err));
+        }
+        client.error(message.channel, 'Not Sent!', 'Orville had difficulties sending your report to Resident Services!');
+      });
   }
 };
 
