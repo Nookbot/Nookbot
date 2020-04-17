@@ -3,14 +3,14 @@ module.exports = async (client, messageReaction, user) => {
     return;
   }
 
-  const { type, reactions } = client.reactionRoleDB.get(messageReaction.message.id);
+  const reactionRoleMenu = client.reactionRoleDB.get(messageReaction.message.id);
 
   // If not there isn't a type, then this is not a reaction role message.
-  if (!type) {
+  if (!reactionRoleMenu) {
     return;
   }
 
-  const roleID = reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
+  const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
   if (roleID) {
     const member = await client.guilds.cache.first().members.fetch(user.id);

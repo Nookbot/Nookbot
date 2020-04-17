@@ -73,6 +73,12 @@ module.exports = (client) => {
         });
       });
 
+      // Cache messages for reaction roles
+      client.reactionRoleDB.keyArray().forEach((msgID) => {
+        const { channel } = client.reactionRoleDB.get(msgID);
+        client.channels.cache.get(channel).messages.fetch(msgID);
+      });
+
       try {
         client.startTwitterFeed();
       } catch (err) {
