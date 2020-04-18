@@ -40,7 +40,7 @@ module.exports = async (client, messageReaction, user) => {
             }
           });
           if (rolesToRemove.length !== 0) {
-            member.roles.remove(rolesToRemove, '[Auto] Exclusive Reaction Role Remove');
+            await member.roles.remove(rolesToRemove, '[Auto] Exclusive Reaction Role Remove');
           }
           if (!member.roles.cache.has(roleID)) {
             member.roles.add(roleID, '[Auto] Exclusive Reaction Role Add');
