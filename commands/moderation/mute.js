@@ -7,6 +7,16 @@ module.exports.run = async (client, message, args, level) => {
   let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
 
   if (!member) {
+    if (parseInt(args[0], 10)) {
+      try {
+        member = await message.guild.members.fetch(args[0]);
+      } catch (err) {
+        // Don't need to send a message here
+      }
+    }
+  }
+
+  if (!member) {
     const searchedMember = client.searchMember(args[0]);
     if (searchedMember) {
       const decision = await client.reactPrompt(message, `Would you like to mute \`${searchedMember.user.tag}\`?`);
@@ -24,7 +34,7 @@ module.exports.run = async (client, message, args, level) => {
     return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
   }
 
-  // Kick and mute/deafen member if in voice
+  // Kick member if in voice
   if (member.voice.channel) {
     member.voice.kick();
   }
