@@ -27,7 +27,10 @@ module.exports = (client) => {
       // Sweep emojis from the DB that are no longer in the guild emojis
       client.emojiDB.sweep((v, k) => !guild.emojis.cache.has(k));
 
-      client.user.setActivity('ACNH with very many users!');
+      setInterval(() => {
+        client.memberStats.set(client.memberStats.autonum, { time: Date.now(), members: guild.memberCount });
+        client.user.setActivity(`ACNH with ${guild.memberCount} users!`);
+      }, 30000);
 
       // Save the current collection of guild invites.
       guild.fetchInvites().then((guildInvites) => {
