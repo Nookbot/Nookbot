@@ -19,20 +19,22 @@ const config = {
 
   // Settings
   prefix: '.',
-  verifiedRole: 'Islander',
-  modRole: 'Nooklings (mod)',
-  adminRole: 'Tom Nook (admin)',
-  staffChat: 'channelID',
-  modMail: 'channelID',
-  reportMail: 'channelID',
-  actionLog: 'channelID',
-  joinLeaveLog: 'channelID',
-  modLog: 'channelID',
-  musicText: 'channelID',
-  music: 'channelID',
-  sesReqText: 'channelID',
-  sesCategory: 'channelID',
-  calendar: 'channelID',
+  verifiedRole: 'role ID',
+  headReddRole: 'role ID',
+  modRole: 'role ID',
+  headModRole: 'role ID',
+  adminRole: 'role ID',
+  staffChat: 'channel ID',
+  modMail: 'channel ID',
+  reportMail: 'channel ID',
+  actionLog: 'channel ID',
+  joinLeaveLog: 'channel ID',
+  modLog: 'channel ID',
+  musicText: 'channel ID',
+  music: 'channel ID',
+  sesReqText: 'channel ID',
+  sesCategory: 'channel ID',
+  calendar: 'channel ID',
 
   // Image-Only channels
   imageOnlyChannels: ['channelID'],
@@ -92,9 +94,9 @@ const config = {
       name: 'Verified',
       check: (client, message) => {
         if (message.guild) {
-          const verifiedRole = message.guild.roles.cache.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).verifiedRole.toLowerCase());
+          const verifiedRoleObj = message.guild.roles.cache.get(config.verifiedRole);
 
-          if (verifiedRole && message.member.roles.cache.has(verifiedRole.id)) {
+          if (verifiedRoleObj && message.member.roles.cache.has(verifiedRoleObj.id)) {
             return true;
           }
         }
@@ -103,12 +105,12 @@ const config = {
     },
     {
       level: 2,
-      name: 'Mod',
+      name: 'Head Redd',
       check: (client, message) => {
         if (message.guild) {
-          const modRole = message.guild.roles.cache.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).modRole.toLowerCase());
+          const headReddObj = message.guild.roles.cache.get(config.headReddRole);
 
-          if (modRole && message.member.roles.cache.has(modRole.id)) {
+          if (headReddObj && message.member.roles.cache.has(headReddObj.id)) {
             return true;
           }
         }
@@ -117,12 +119,12 @@ const config = {
     },
     {
       level: 3,
-      name: 'Admin',
+      name: 'Mod',
       check: (client, message) => {
         if (message.guild) {
-          const adminRole = message.guild.roles.cache.find((r) => r.name.toLowerCase() === client.getSettings(message.guild).adminRole.toLowerCase());
+          const modRoleObj = message.guild.roles.cache.get(config.modRole);
 
-          if ((adminRole && message.member.roles.cache.has(adminRole.id)) || message.member.hasPermission('ADMINISTRATOR')) {
+          if (modRoleObj && message.member.roles.cache.has(modRoleObj.id)) {
             return true;
           }
         }
@@ -131,6 +133,34 @@ const config = {
     },
     {
       level: 4,
+      name: 'Head Mod',
+      check: (client, message) => {
+        if (message.guild) {
+          const headModRoleObj = message.guild.roles.cache.get(config.headModRole);
+
+          if (headModRoleObj && message.member.roles.cache.has(headModRoleObj.id)) {
+            return true;
+          }
+        }
+        return false;
+      },
+    },
+    {
+      level: 5,
+      name: 'Admin',
+      check: (client, message) => {
+        if (message.guild) {
+          const adminRoleObj = message.guild.roles.cache.get(config.adminRole);
+
+          if ((adminRoleObj && message.member.roles.cache.has(adminRoleObj.id)) || message.member.hasPermission('ADMINISTRATOR')) {
+            return true;
+          }
+        }
+        return false;
+      },
+    },
+    {
+      level: 6,
       name: 'Server Owner',
       check: (client, message) => {
         if (message.guild && message.author.id === message.guild.ownerID) {

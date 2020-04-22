@@ -135,7 +135,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'clr':
     case 'mod': {
       let memberID;
-      if (args[0].toLowerCase() === 'mod' && level >= 2) {
+      if (args[0].toLowerCase() === 'mod' && level >= 3) {
         // If the mod subcommand is used, grab the next arguement as a member
         let member = message.mentions.members.first();
         if (!member) {
@@ -172,10 +172,10 @@ module.exports.run = async (client, message, args, level, Discord) => {
         memberID = message.author.id;
       }
 
-      if ((args[0].toLowerCase() === 'mod' && level >= 2) ? args.length === 2 : args.length === 1) {
+      if ((args[0].toLowerCase() === 'mod' && level >= 3) ? args.length === 2 : args.length === 1) {
         return client.error(message.channel, 'No Value To Remove!', 'Please supply the value you would like to remove! (islandname/fruit/charactername/hemisphere/profilename/friendcode)');
       }
-      switch ((args[0].toLowerCase() === 'mod' && level >= 2) ? args[2].toLowerCase() : args[1].toLowerCase()) {
+      switch ((args[0].toLowerCase() === 'mod' && level >= 3) ? args[2].toLowerCase() : args[1].toLowerCase()) {
         case 'islandname':
         case 'island':
         case 'in':
