@@ -44,6 +44,9 @@ const config = {
   newlineLimit: 10,
   imageLinkLimit: 3,
 
+  // No-Mention channels
+  noMentionChannels: ['channelID'],
+
   // Reputation Settings
   negativeRepLimit: 20,
   positiveRepLimit: 20,

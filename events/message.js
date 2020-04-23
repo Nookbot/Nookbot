@@ -37,7 +37,7 @@ module.exports = async (client, message) => {
   // Anti Mention Spam
   if (message.mentions.members && message.mentions.members.size > 10) {
     // They mentioned more than 10 members, automute them for 10 mintues.
-    if (message.member && client.permLevel(message)[1] < 2) {
+    if (message.member && client.permLevel(message)[1] < 3) {
       // Mute
       message.member.roles.add('495854925054607381', 'Mention Spam');
       // Delete Message
@@ -66,7 +66,7 @@ If you believe this member is a mention spammer bot, please ban them with the co
 
   // Delete non-image containing messages from image only channels
   if (message.guild && client.config.imageOnlyChannels.includes(message.channel.id)
-      && message.attachments.size === 0 && !(/https?:\/\//i.test(message.content)) && client.permLevel(message)[1] < 2) {
+      && message.attachments.size === 0 && !(/https?:\/\//i.test(message.content)) && client.permLevel(message)[1] < 3) {
     // Message is in the guild's image only channels, without an image or link in it, and is not a mod's message, so delete
     if (!message.deleted && message.deletable) {
       message.delete();
@@ -86,7 +86,7 @@ If you believe this member is a mention spammer bot, please ban them with the co
   if (message.guild && client.config.newlineLimitChannels.includes(message.channel.id)
       && ((message.content.match(/\n/g) || []).length >= client.config.newlineLimit
       || (message.attachments.size + (message.content.match(/https?:\/\//gi) || []).length) >= client.config.imageLinkLimit)
-      && client.permLevel(message)[1] < 2) {
+      && client.permLevel(message)[1] < 3) {
     // Message is in the guild, in a channel that has a limit on newline characters, and has too many or too many links + attachments, and is not a mod's message, so delete
     if (!message.deleted && message.deletable) {
       message.delete();
@@ -94,6 +94,25 @@ If you believe this member is a mention spammer bot, please ban them with the co
       if (client.newlineLimitFilterCount === 5) {
         client.newlineLimitFilterCount = 0;
         const autoMsg = await message.channel.send('Too Many New Lines or Attachments + Links!\nThis channel only allows posts with less than 10 newline characters and less than 3 attachments + links in them. Messages with more than that are automatically deleted.');
+        setTimeout(() => {
+          autoMsg.delete();
+        }, 30000);
+      }
+    }
+    return;
+  }
+
+  // Delete posts with @ mentions in villager and turnip channels
+  if (message.guild && client.config.noMentionChannels.includes(message.channel.id)
+    && message.mentions.members.size > 0
+    && client.permLevel(message)[1] < 3) {
+  // Message is in the guild, in a channel that restricts mentions, and is not a mod's message, so delete
+    if (!message.deleted && message.deletable) {
+      message.delete();
+      client.noMentionFilterCount += 1;
+      if (client.noMentionFilterCount === 5) {
+        client.noMentionFilterCount = 0;
+        const autoMsg = await message.channel.send('No Mention Channel!\nThis channel is to be kept clear of @ mentions of any members. Any message mentioning another member will be automatically deleted.');
         setTimeout(() => {
           autoMsg.delete();
         }, 30000);

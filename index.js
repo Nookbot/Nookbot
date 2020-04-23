@@ -115,6 +115,7 @@ client.songQueue = {
 // Auto-Filter Message Reminder Counts
 client.imageOnlyFilterCount = 0;
 client.newlineLimitFilterCount = 0;
+client.noMentionFilterCount = 0;
 
 // Twitter object for listening for tweets
 client.twitter = new Twitter({
