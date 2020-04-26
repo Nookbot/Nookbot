@@ -7,3 +7,4 @@ configtest.js
 
 # Data
 data
+!data/*.json
