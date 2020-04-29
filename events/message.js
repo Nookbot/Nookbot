@@ -37,7 +37,7 @@ module.exports = async (client, message) => {
   // Anti Mention Spam
   if (message.mentions.members && message.mentions.members.size > 10) {
     // They mentioned more than 10 members, automute them for 10 mintues.
-    if (message.member && client.permLevel(message)[1] < 3) {
+    if (message.member && client.permLevel(message)[1] < 4) {
       // Mute
       message.member.roles.add('495854925054607381', 'Mention Spam');
       // Delete Message
@@ -66,7 +66,7 @@ If you believe this member is a mention spammer bot, please ban them with the co
 
   // Delete non-image containing messages from image only channels
   if (message.guild && client.config.imageOnlyChannels.includes(message.channel.id)
-      && message.attachments.size === 0 && !(/https?:\/\//i.test(message.content)) && client.permLevel(message)[1] < 3) {
+      && message.attachments.size === 0 && !(/https?:\/\//i.test(message.content)) && client.permLevel(message)[1] < 4) {
     // Message is in the guild's image only channels, without an image or link in it, and is not a mod's message, so delete
     if (!message.deleted && message.deletable) {
       message.delete();
@@ -86,7 +86,7 @@ If you believe this member is a mention spammer bot, please ban them with the co
   if (message.guild && client.config.newlineLimitChannels.includes(message.channel.id)
       && ((message.content.match(/\n/g) || []).length >= client.config.newlineLimit
       || (message.attachments.size + (message.content.match(/https?:\/\//gi) || []).length) >= client.config.imageLinkLimit)
-      && client.permLevel(message)[1] < 3) {
+      && client.permLevel(message)[1] < 4) {
     // Message is in the guild, in a channel that has a limit on newline characters, and has too many or too many links + attachments, and is not a mod's message, so delete
     if (!message.deleted && message.deletable) {
       message.delete();
@@ -144,7 +144,7 @@ If you believe this member is a mention spammer bot, please ban them with the co
     return;
   }
 
-  if (enabledCmds === false && level[1] < 2) {
+  if (enabledCmds === false && level[1] < 4) {
     return client.error(message.channel, 'Command Disabled!', 'This command is currently disabled!');
   }
 
@@ -152,11 +152,11 @@ If you believe this member is a mention spammer bot, please ban them with the co
     return client.error(message.channel, 'Command Not Available in DMs!', 'This command is unavailable in DMs. Please use it in a server!');
   }
 
-  if (cmd.conf.blockedChannels && cmd.conf.blockedChannels.includes(message.channel.id) && level[1] < 2) {
+  if (cmd.conf.blockedChannels && cmd.conf.blockedChannels.includes(message.channel.id) && level[1] < 4) {
     return client.error(message.channel, 'Command Not Available in this Channel!', 'You will have to use this command in the <#549858839994826753> channel!');
   }
 
-  if (cmd.conf.allowedChannels && !cmd.conf.allowedChannels.includes(message.channel.id) && level[1] < 2) {
+  if (cmd.conf.allowedChannels && !cmd.conf.allowedChannels.includes(message.channel.id) && level[1] < 4) {
     return client.error(message.channel, 'Command Not Available in this Channel!', `You will have to use this command in one of the allowed channels: ${cmd.conf.allowedChannels.map((ch) => `<#${ch}>`).join(', ')}.`);
   }
 
