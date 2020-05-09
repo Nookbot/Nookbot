@@ -26,7 +26,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'add':
     case 'make':
       // Check permissions to create tags
-      if (!message.member.hasPermission('ADMINISTRATOR')) {
+      if (level < 5) {
         client.error(message.channel, 'Cannot Create!', 'You do not have permission to create tags!');
         return;
       }
@@ -63,7 +63,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'e':
     case 'set':
       // Check permissions to edit tags
-      if (!message.member.hasPermission('ADMINISTRATOR')) {
+      if (level < 5) {
         client.error(message.channel, 'Cannot Edit!', 'You do not have permission to edit tags!');
         return;
       }
@@ -94,7 +94,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     case 'remove':
     case 'r':
       // Check permissions to edit tags
-      if (!message.member.hasPermission('ADMINISTRATOR')) {
+      if (level < 5) {
         client.error(message.channel, 'Cannot Delete!', 'You do not have permission to delete tags!');
         return;
       }
