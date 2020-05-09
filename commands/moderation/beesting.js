@@ -65,7 +65,7 @@ ${client.config.banAppealLink}`;
     ban = true;
   } else if (curPoints < 20 && newPoints + curPoints >= 20) {
     // Mute 12 hours
-    dmMsg = `You have been temporarily muted for 12 hours in the AC:NH server for the following reason:
+    dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 12 hours in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
@@ -73,7 +73,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     mute = 720;
   } else if (curPoints < 15 && newPoints + curPoints >= 15) {
     // Mute 1 hour
-    dmMsg = `You have been temporarily muted for 1 hour in the AC:NH server for the following reason:
+    dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 1 hour in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
@@ -81,7 +81,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     mute = 60;
   } else if (curPoints < 10 && newPoints + curPoints >= 10) {
     // Mute 30 minutes
-    dmMsg = `You have been temporarily muted for 30 minutes in the AC:NH server for the following reason:
+    dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 30 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
@@ -89,7 +89,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     mute = 30;
   } else if (curPoints < 5 && newPoints + curPoints >= 5) {
     // Mute 10 minutes
-    dmMsg = `You have been temporarily muted for 10 minutes in the AC:NH server for the following reason:
+    dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 10 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
