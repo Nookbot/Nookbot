@@ -1,7 +1,3 @@
-const schedule = require('node-schedule');
-const moment = require('moment');
-const db = require('../src/calendar/database.json');
-
 module.exports = (client) => {
   if (!client.firstReady) {
     let counter = 1;
@@ -88,63 +84,6 @@ module.exports = (client) => {
         // The stream function returned an error
         console.error(err);
       }
-
-      // Implementated from code provided by plump#6345
-      schedule.scheduleJob('0 15 * * *', () => {
-        const date = moment().add(1, 'd');
-
-        const replaceLast = (x, y, z) => {
-          const a = x.split('');
-          const { length } = y;
-          if (x.lastIndexOf(y) !== -1) {
-            for (let i = x.lastIndexOf(y); i < x.lastIndexOf(y) + length; i++) {
-              if (i === x.lastIndexOf(y)) {
-                a[i] = z;
-              } else {
-                delete a[i];
-              }
-            }
-          }
-          return a.join('');
-        };
-
-        const todayDate = `${date.month() + 1}/${date.date()}`;
-        let todayList = '';
-        let numOfVils = 0;
-        let image;
-
-        // eslint-disable-next-line no-restricted-syntax
-        for (const name in db) {
-          if (db[name].birthday === todayDate) {
-            numOfVils += 1;
-            image = `./src/calendar/villagers/${db[name].photoLink}`;
-            todayList = `${todayList}**${name}**, `;
-            if (numOfVils > 1) {
-              image = `./src/calendar/villagers/shared/${todayList.replace(/\*|,| /g, '')}.png`;
-            }
-          }
-        }
-
-        if (todayList === undefined) {
-          return; // no birthdays today end code.
-        }
-
-        guild.channels.resolve('690235951628288023').send(`**__•• ${date.format('MMMM')} ${date.date()}, ${date.year()} ••__**\n• ${replaceLast(`${todayList.slice(0, -2)}\'s birthday${numOfVils > 1 ? 's' : ''}!`, ',', ' and')}`, { files: [image] });
-      });
-
-      // Auto message in villager channels
-      const villTradeSearchCh = guild.channels.resolve('669696796024504341');
-      const freeVillCh = guild.channels.resolve('701251557458444395');
-      const villWarnMsg = `**${client.emoji['!']}If you are offering a villager, post a picture of your villager IN BOXES, __along with your character saying your Discord name__ in the screenshot!${client.emoji['!']}\n\n${client.emoji.warning} When you want to trade with someone, ALWAYS make sure to ask for some proof first! Trade at your own risk. ${client.emoji.warning}**`;
-
-      setInterval(() => {
-        villTradeSearchCh.send(villWarnMsg)
-          .then((villMsg) => villMsg.delete({ timeout: 10000 }))
-          .catch(console.error);
-        freeVillCh.send(villWarnMsg)
-          .then((villMsg) => villMsg.delete({ timeout: 10000 }))
-          .catch(console.error);
-      }, 10000);
 
       // Logging a ready message on first boot
       console.log(`Ready sequence finished, with ${guild.memberCount} users, in ${guild.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`);
