@@ -183,7 +183,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
 module.exports.conf = {
   guildOnly: true,
   aliases: ['bee', 'bs', 'sting'],
-  permLevel: 'Head Redd',
+  permLevel: 'Redd',
   args: 2,
 };
 

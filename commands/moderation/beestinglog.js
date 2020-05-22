@@ -66,9 +66,11 @@ module.exports.run = async (client, message, args, level) => {
   try {
     const dmChannel = await member.createDM();
     if (curMsg || expMsg) {
-      return await dmChannel.send(msg, { split: true });
+      await dmChannel.send(msg, { split: true });
+    } else {
+      await dmChannel.send('You do not have any bee stings!');
     }
-    return await dmChannel.send('You do not have any bee stings!');
+    return message.channel.send("I've sent you a DM!");
   } catch (e) {
     // Send basic version in channel
     if (curMsg || expMsg) {
