@@ -3,36 +3,22 @@
 module.exports.run = async (client, message, args, level, Discord) => {
   const code = args.join(' ');
 
-  const codeEmbed = new Discord.MessageEmbed()
-    .setAuthor('Eval', message.author.displayAvatarURL())
-    .addField('Input', `\`\`\`js\n${code}\`\`\``);
-
   try {
-    const evaled = eval(code);
+    const evaled = await eval(`(async () => {${code}})()`);
     const clean = await client.clean(client, evaled);
 
-    codeEmbed.setColor('#37ec4b')
-      .addField('Output', `\`\`\`js\n${clean}\`\`\``);
-
-    message.channel.send(codeEmbed);
+    client.success(message.channel, 'Eval', `\`\`\`js\n${clean}\`\`\``);
   } catch (err) {
     const error = await client.clean(client, err);
 
-    if (error.length < 1024) {
-      codeEmbed.setColor('#eb2219')
-        .addField('ERROR', `\`\`\`xl\n${error}\`\`\``);
-
-      message.channel.send(codeEmbed);
-    } else {
-      message.channel.send(`**ERROR**\nThis error was too long for an embed.\n\n\`\`\`xl\n${error}\`\`\``);
-    }
+    client.error(message.channel, 'Eval', `\`\`\`xl\n${error.split('at', 3).join(' ')}\`\`\``);
   }
 };
 
 module.exports.conf = {
   guildOnly: false,
   aliases: [],
-  permLevel: 'Bot Owner',
+  permLevel: 'Bot Admin',
 };
 
 module.exports.help = {

@@ -1,13 +1,15 @@
 module.exports.run = async (client, message, args, level, Discord) => {
-  let member = message.mentions.members.first();
-  if (!member) {
-    if (parseInt(args[0], 10)) {
-      try {
-        member = await client.users.fetch(args[0]);
-      } catch (err) {
-        // Don't need to send a message here
-      }
+  let member;
+  if (parseInt(args[0], 10)) {
+    try {
+      member = await client.users.fetch(args[0]);
+    } catch (err) {
+      // Don't need to send a message here
     }
+  }
+
+  if (!member) {
+    member = message.mentions.members.first();
   }
 
   if (!member) {
@@ -58,12 +60,12 @@ module.exports.run = async (client, message, args, level, Discord) => {
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to appeal your ban, fill out this Google Form:
-<https://forms.gle/jcoP8kd3My31x3Gu6>`;
+${client.config.banAppealLink}`;
     action = 'Ban';
     ban = true;
   } else if (curPoints < 20 && newPoints + curPoints >= 20) {
     // Mute 12 hours
-    dmMsg = `You have been temporarily muted for 12 hours in the AC:NH server for the following reason:
+    dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 12 hours in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
@@ -71,7 +73,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     mute = 720;
   } else if (curPoints < 15 && newPoints + curPoints >= 15) {
     // Mute 1 hour
-    dmMsg = `You have been temporarily muted for 1 hour in the AC:NH server for the following reason:
+    dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 1 hour in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
@@ -79,7 +81,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     mute = 60;
   } else if (curPoints < 10 && newPoints + curPoints >= 10) {
     // Mute 30 minutes
-    dmMsg = `You have been temporarily muted for 30 minutes in the AC:NH server for the following reason:
+    dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 30 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
@@ -87,7 +89,7 @@ If you wish to contact the moderators about your mute, please use the \`.modmail
     mute = 30;
   } else if (curPoints < 5 && newPoints + curPoints >= 5) {
     // Mute 10 minutes
-    dmMsg = `You have been temporarily muted for 10 minutes in the AC:NH server for the following reason:
+    dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 10 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 If you wish to contact the moderators about your mute, please use the \`.modmail <message>\` command in this DM.`;
@@ -123,7 +125,7 @@ If you wish to contact the moderators about your warning, please use the \`.modm
     case: caseNum,
     action,
     points: newPoints,
-    reason,
+    reason: `${reason}${message.attachments.size > 0 ? `\n${message.attachments.map((a) => `${a.url}`).join('\n')}` : ''}`,
     moderator: message.author.id,
     dmSent,
     date: time,
@@ -131,25 +133,32 @@ If you wish to contact the moderators about your warning, please use the \`.modm
 
   // Perform the required action
   if (ban) {
-    await message.guild.members.ban(member, { reason }).catch((err) => {
-      client.error(message.guild.channels.cache.get(client.getSettings(message.guild).modLog), 'Ban Failed!', `I've failed to ban this member! ${err}`);
+    await message.guild.members.ban(member, { reason: '[Auto] Beestings', days: 1 }).catch((err) => {
+      client.error(message.guild.channels.cache.get(client.config.modLog), 'Ban Failed!', `I've failed to ban this member! ${err}`);
     });
   } else if (mute) {
     try {
       // Update unmuteTime on userDB
-      client.userDB.set(member.id, (mute * 60000) + time, 'unmuteTime');
+      client.muteDB.set(member.id, (mute * 60000) + time);
       const guildMember = await message.guild.members.fetch(member);
-      await guildMember.roles.add('495854925054607381', reason);
+      await guildMember.roles.add('495854925054607381', '[Auto] Beestings');
+
+      // Kick and mute/deafen member if in voice
+      if (guildMember.voice.channel) {
+        guildMember.voice.kick();
+      }
+
       // Schedule unmute
       setTimeout(() => {
-        if ((client.userDB.get(member.id, 'unmuteTime') || 0) < Date.now()) {
+        if ((client.muteDB.get(member.id) || 0) < Date.now()) {
+          client.muteDB.delete(member.id);
           guildMember.roles.remove('495854925054607381', `Scheduled unmute after ${mute} minutes.`).catch((err) => {
-            client.error(message.guild.channels.cache.get(client.getSettings(message.guild).modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}\nID: ${member.id}`);
+            client.error(message.guild.channels.cache.get(client.config.modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}\nID: ${member.id}`);
           });
         }
       }, mute * 60000);
     } catch (err) {
-      client.error(message.guild.channels.cache.get(client.getSettings(message.guild).modLog), 'Mute Failed!', `I've failed to mute this member! ${err}`);
+      client.error(message.guild.channels.cache.get(client.config.modLog), 'Mute Failed!', `I've failed to mute this member! ${err}`);
     }
   }
 
@@ -168,13 +177,13 @@ If you wish to contact the moderators about your warning, please use the \`.modm
     .addField('Total Stings', curPoints + newPoints, true)
     .setFooter(`ID: ${member.id}`)
     .setTimestamp();
-  return message.guild.channels.cache.get(client.getSettings(message.guild).modLog).send(embed);
+  return message.guild.channels.cache.get(client.config.modLog).send(embed);
 };
 
 module.exports.conf = {
   guildOnly: true,
   aliases: ['bee', 'bs', 'sting'],
-  permLevel: 'Mod',
+  permLevel: 'Redd',
   args: 2,
 };
 

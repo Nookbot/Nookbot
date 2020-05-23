@@ -6,7 +6,24 @@ const Enmap = require('enmap');
 const fs = require('fs');
 const Twitter = require('twitter-lite');
 
-const client = new Discord.Client({ messageCacheMaxSize: 500, disabledEvents: ['TYPING_START'] });
+const client = new Discord.Client({
+  messageCacheMaxSize: 500,
+  fetchAllMembers: false,
+  ws: {
+    intents: [
+      Discord.Intents.FLAGS.GUILDS,
+      Discord.Intents.FLAGS.GUILD_MEMBERS,
+      Discord.Intents.FLAGS.GUILD_BANS,
+      Discord.Intents.FLAGS.GUILD_EMOJIS,
+      Discord.Intents.FLAGS.GUILD_VOICE_STATES,
+      Discord.Intents.FLAGS.GUILD_PRESENCES,
+      Discord.Intents.FLAGS.GUILD_MESSAGES,
+      Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+      Discord.Intents.FLAGS.DIRECT_MESSAGES,
+      Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+    ],
+  },
+});
 const config = require('./config');
 const { version } = require('./package.json');
 const emoji = require('./src/emoji');
@@ -58,7 +75,7 @@ fs.readdir('./commands/', (err, folders) => {
           });
         }
 
-        client.enabledCmds.ensure(commandName, { enabled: true });
+        client.enabledCmds.ensure(commandName, true);
       });
     });
   }
@@ -96,6 +113,11 @@ client.songQueue = {
   lastUpdateDesc: '',
 };
 
+// Auto-Filter Message Reminder Counts
+client.imageOnlyFilterCount = 0;
+client.newlineLimitFilterCount = 0;
+client.noMentionFilterCount = 0;
+
 // Twitter object for listening for tweets
 client.twitter = new Twitter({
   consumer_key: client.config.twitterAPIKey,
@@ -107,10 +129,19 @@ client.twitter = new Twitter({
 // Start up the twitter webhook listener
 client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, client.config.twitterHookToken);
 
-Object.assign(client, Enmap.multi(['settings', 'enabledCmds', 'userDB', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'infractionDB'], { ensureProps: true }));
+Object.assign(client, Enmap.multi(['enabledCmds', 'userDB', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'infractionDB', 'sessionDB', 'muteDB', 'memberStats', 'reactionRoleDB'], { ensureProps: true }));
 
-client.login(config.token).catch(() => {
+client.login(config.token).then(() => {
+  console.log('Bot successfully logged in.');
+}).catch(() => {
+  console.log('Retrying client.login()...');
+  let counter = 1;
   const interval = setInterval(() => {
-    client.login(config.token).then(clearInterval(interval));
-  }, 5000);
+    console.log(`  Retrying attempt ${counter}`);
+    counter += 1;
+    client.login(config.token).then(() => {
+      console.log('  Bot successfully logged in.');
+      clearInterval(interval);
+    });
+  }, 30000);
 });

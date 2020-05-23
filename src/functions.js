@@ -1,20 +1,8 @@
 /* eslint-disable no-param-reassign */
 const Discord = require('discord.js');
 const moment = require('moment');
-const { compareTwoStrings: distance } = require('string-similarity');
 
 module.exports = (client) => {
-  client.getSettings = (guild) => {
-    client.settings.ensure('default', client.config.defaultSettings);
-
-    if (!guild) {
-      return client.settings.get('default');
-    }
-
-    const guildConf = client.settings.get(guild.id) || {};
-    return ({ ...client.settings.get('default'), ...guildConf });
-  };
-
   client.permLevel = (message) => {
     let permName = 'User';
     let permlvl = 0;
@@ -56,11 +44,11 @@ module.exports = (client) => {
   };
 
   client.success = (channel, suc, msg) => {
-    channel.send(`${client.emoji.checkMark} **${suc}**\n${msg}`);
+    channel.send(`${client.emoji.checkMark} **${suc}**\n${msg}`, { split: true });
   };
 
   client.error = (channel, err, msg) => {
-    channel.send(`${client.emoji.redX} **${err}**\n${msg}`);
+    channel.send(`${client.emoji.redX} **${err}**\n${msg}`, { split: true });
   };
 
   client.humanTimeBetween = (time1, time2) => {
@@ -101,7 +89,7 @@ module.exports = (client) => {
       outTimes = outTimes.replace('|', ' and ');
     }
 
-    return outTimes;
+    return outTimes || '0 seconds';
   };
 
   client.regexCount = (regexp, str) => {
@@ -175,23 +163,8 @@ module.exports = (client) => {
     }
   };
 
-  client.searchMember = (name, threshold = 0.5) => {
-    const rated = [];
-
-    client.guilds.cache.first().members.cache.forEach((m) => {
-      const score = Math.max(distance(name, m.user.username), distance(name, m.displayName));
-      if (score > threshold) {
-        rated.push({
-          member: m,
-          score,
-        });
-      }
-    });
-
-    rated.sort((a, b) => b.score - a.score);
-
-    return (rated[0] && rated[0].member) || null;
-  };
+  // eslint-disable-next-line no-unused-vars
+  client.searchMember = (name, threshold = 0.5) => undefined;
 
   client.clearSongQueue = () => {
     client.songQueue.stopping = true;
@@ -214,17 +187,27 @@ module.exports = (client) => {
     // Enable Raid Mode
     client.raidMode = true;
     // Save @everyone role and staff/actionlog channels here for ease of use.
-    const everyone = guild.defaultRole;
-    const staffChat = guild.channels.cache.get(client.getSettings(guild).staffChat);
-    const actionLog = guild.channels.cache.get(client.getSettings(guild).actionLog);
+    const { everyone } = guild.roles;
+    const staffChat = guild.channels.cache.get(client.config.staffChat);
+    const joinLeaveLog = guild.channels.cache.get(client.config.joinLeaveLog);
+
+    const generalChat = guild.channels.cache.get('538938170822230026');
+    const acnhChat = guild.channels.cache.get('494376688877174785');
+    const raidMsg = "**Raid Ongoing**!\nWe're sorry to inconvenience everyone, but we've restricted all message sending capabilities due to a suspected raid. Don't worry though, you'll be back to chatting about your favorite game in no time, yes yes!";
+    const noMoreRaidMsg = "**Raid Mode Has Been Lifted**!\nWe've determined that it's safe to lift raid mode precautions and allow everyone to send messages again! Channels should open up again immediately, yes yes!";
+
+    await generalChat.send(raidMsg);
+    await acnhChat.send(raidMsg);
+
     // Create a Permissions object with the permissions of the @everyone role, but remove Send Messages.
     const perms = new Discord.Permissions(everyone.permissions).remove('SEND_MESSAGES');
     everyone.setPermissions(perms);
+
     // Send message to staff with prompts
     client.raidMessage = await staffChat.send(`**##### RAID MODE ACTIVATED #####**
 <@&495865346591293443> <@&494448231036747777>
 
-A list of members that joined in the raid is being updated in <#630581732453908493>.
+A list of members that joined in the raid is being updated in <#689260556460359762>.
 This message updates every 5 seconds, and you should wait to decide until the count stops increasing.
 
 If you would like to remove any of the members from the list, use the \`.raidremove <ID>\` command.
@@ -253,7 +236,7 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
             } else {
               // We've finished banning, annouce that raid mode is ending.
               staffChat.send('Finished banning all raid members. Raid Mode is deactivated.');
-              actionLog.send(`The above ${client.raidMembersPrinted} members have been banned.`);
+              joinLeaveLog.send(`The above ${client.raidMembersPrinted} members have been banned.`);
               // Reset all raid variables
               client.raidMode = false;
               // Deactivate Raid Banning after a few seconds to allow for other events generated to finish
@@ -263,6 +246,9 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
               client.raidJoins = [];
               client.raidMessage = null;
               client.raidMembersPrinted = 0;
+
+              generalChat.send(noMoreRaidMsg);
+              acnhChat.send(noMoreRaidMsg);
               // Allow users to send messages again.
               perms.add('SEND_MESSAGES');
               everyone.setPermissions(perms);
@@ -278,6 +264,9 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
           client.raidMessage = null;
           client.raidMembersPrinted = 0;
           // Allow users to send messages again.
+          generalChat.send(noMoreRaidMsg);
+          acnhChat.send(noMoreRaidMsg);
+
           perms.add('SEND_MESSAGES');
           everyone.setPermissions(perms);
         }
@@ -293,7 +282,7 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
         client.raidMessage.edit(`**##### RAID MODE ACTIVATED #####**
 <@&495865346591293443> <@&494448231036747777>
 
-A list of members that joined in the raid is being updated in <#630581732453908493>.
+A list of members that joined in the raid is being updated in <#689260556460359762>.
 This message updates every 5 seconds, and you should wait to decide until the count stops increasing.
 
 If you would like to remove any of the members from the list, use the \`.raidremove <ID>\` command.
@@ -306,7 +295,7 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
           newMembers.forEach((mem) => {
             msg += `\n${mem.user.tag} (${mem.id})`;
           });
-          actionLog.send(msg, { split: true });
+          joinLeaveLog.send(msg, { split: true });
           msg = '';
         }
       }

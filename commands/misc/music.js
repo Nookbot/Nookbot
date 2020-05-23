@@ -5,10 +5,9 @@ const ytpl = require('ytpl');
 const { findBestMatch: findBest } = require('string-similarity');
 
 module.exports.run = async (client, message, args, level, Discord) => {
-  // Secret update command to redownload the update, only Tristan can use
-  // Tristan's UserID
+  // Secret update command to redownload the update
   if (args[0] === 'update') {
-    if (message.author.id === '170307091628556289' || message.author.id === '403103000630919169') {
+    if (level >= 9) {
       return ytpl('PLmJ4dQSfFie-81me0jlzewxPIxKuO2-sI', { limit: 0 }, (err, playlistObj) => {
         if (err) {
           console.error(err);
@@ -34,8 +33,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   // The music commands must be used in voice text
   const voiceChannel = message.member && message.member.voice.channel;
-  if (!voiceChannel || voiceChannel.id !== client.getSettings(message.guild).music || client.getSettings(message.guild).musicText !== message.channel.id) {
-    return client.error(message.channel, 'Command Unavailable!', `To use this command, you must use the <#${client.getSettings(message.guild).musicText}> channel and currently be in the music channel.`);
+  if (!voiceChannel || voiceChannel.id !== client.config.music || client.config.musicText !== message.channel.id) {
+    return client.error(message.channel, 'Command Unavailable!', `To use this command, you must use the <#${client.config.musicText}> channel and currently be in the music channel.`);
   }
 
   // Helper function to update the music bot info

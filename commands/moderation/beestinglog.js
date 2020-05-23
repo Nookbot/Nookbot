@@ -36,12 +36,13 @@ module.exports.run = async (client, message, args, level) => {
   infractions.forEach((i) => {
     // Only allow mods to see zero point stings, called notes, on a user
     if (i.points > 0 || level >= 2) {
+      const moderator = client.users.cache.get(i.moderator);
       if ((i.points * 604800000) + i.date > time) {
         curPoints += i.points;
-        curMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+        curMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
       } else {
         expPoints += i.points;
-        expMsg += `\n• Case ${i.case} (${moment.utc(i.date).format('DD MMM YY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+        expMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
       }
     }
   });
@@ -65,9 +66,11 @@ module.exports.run = async (client, message, args, level) => {
   try {
     const dmChannel = await member.createDM();
     if (curMsg || expMsg) {
-      return await dmChannel.send(msg, { split: true });
+      await dmChannel.send(msg, { split: true });
+    } else {
+      await dmChannel.send('You do not have any bee stings!');
     }
-    return await dmChannel.send('You do not have any bee stings!');
+    return message.channel.send("I've sent you a DM!");
   } catch (e) {
     // Send basic version in channel
     if (curMsg || expMsg) {
@@ -81,7 +84,7 @@ module.exports.run = async (client, message, args, level) => {
 
 module.exports.conf = {
   guildOnly: false,
-  aliases: ['beelog', 'bslog', 'stinglog'],
+  aliases: ['beelog', 'bslog', 'stinglog', 'bl'],
   permLevel: 'User',
 };
 

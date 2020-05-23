@@ -36,8 +36,14 @@ module.exports.run = async (client, message, args, level, Discord) => {
       return message.channel.send(embed);
     }
     case 'user': {
-      // Setting the member to the mentioned user, if no mentioned user, falls back to author
-      const member = message.mentions.members.first() || message.guild.members.cache.get(args[1]) || client.searchMember(args.slice(1).join(' ')) || message.member;
+      // Setting the member to the mentioned user
+      let member = message.mentions.members.first() || message.guild.members.cache.get(args[1]) || client.searchMember(args.slice(1).join(' '));
+
+      if (!member && !args[1]) {
+        member = message.member;
+      } else if (!member) {
+        return client.error(message.channel, 'Member Not Found!', 'This member may have left the server or the id provided is not a member id!');
+      }
 
       // Block everyone but mods or higher from using this command to show other users info.
       if (member !== message.member && level < 2) {
@@ -82,7 +88,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       return message.channel.send(embed);
     default:
-      return client.error(message.channel, 'Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`bot\`, \`server\`, or \`user\`! For further details, use \`${client.getSettings(message.guild).prefix}help info\`!`);
+      return client.error(message.channel, 'Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`bot\`, \`server\`, or \`user\`! For further details, use \`${client.config.prefix}help info\`!`);
   }
 };
 

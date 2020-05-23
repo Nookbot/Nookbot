@@ -26,7 +26,7 @@ module.exports = async (client, member) => {
   if (storedMember.roles.length !== 0) {
     storedMember.roles.forEach((r) => {
       const role = member.guild.roles.cache.get(r);
-      if (!role.managed && role.id !== member.guild.id) {
+      if (role && !role.managed && role.id !== member.guild.id) {
         member.roles.add(role);
       }
     });
@@ -78,5 +78,5 @@ module.exports = async (client, member) => {
     .addField('**Account Age**', accountAge, true)
     .addField('**Invite Used**', inviteField, true);
 
-  member.guild.channels.cache.get(client.getSettings(member.guild).actionLog).send(embed);
+  member.guild.channels.cache.get(client.config.joinLeaveLog).send(embed);
 };

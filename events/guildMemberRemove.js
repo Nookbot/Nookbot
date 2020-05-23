@@ -30,5 +30,5 @@ module.exports = async (client, member) => {
     .addField('**Member For**', serverAge, true)
     .addField(`**Roles (${rolesArray.size})**`, roles, true);
 
-  member.guild.channels.cache.get(client.getSettings(member.guild).actionLog).send(embed);
+  member.guild.channels.cache.get(client.config.joinLeaveLog).send(embed);
 };
