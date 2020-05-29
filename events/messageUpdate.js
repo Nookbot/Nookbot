@@ -4,7 +4,8 @@ module.exports = async (client, oldMessage, newMessage) => {
   // Ignore all bots and make sure the content of the message changed.
   if (!newMessage.guild || newMessage.author.bot || oldMessage.content === newMessage.content
       || client.config.ignoreChannel.includes(newMessage.channel.id)
-      || client.config.ignoreMember.includes(newMessage.author.id)) {
+      || client.config.ignoreMember.includes(newMessage.author.id)
+      || newMessage.guild.id !== client.config.mainGuild) {
     return;
   }
 

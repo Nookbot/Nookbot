@@ -1,5 +1,5 @@
 module.exports = async (client, messageReaction, user) => {
-  if (user.bot) {
+  if (user.bot || messageReaction.message.guild.id !== client.config.mainGuild) {
     return;
   }
 
@@ -13,7 +13,7 @@ module.exports = async (client, messageReaction, user) => {
   const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
   if (roleID) {
-    const member = await client.guilds.cache.first().members.fetch(user.id);
+    const member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(user.id);
     if (member && member.roles.cache.has(roleID)) {
       member.roles.remove(roleID, '[Auto] Reaction Role Remove');
     }

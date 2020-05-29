@@ -1,6 +1,10 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, member) => {
+  if (member.guild.id !== client.config.mainGuild) {
+    return;
+  }
+
   // Raid checking
   // Add this member to the list of raid joins.
   client.raidJoins.push(member);

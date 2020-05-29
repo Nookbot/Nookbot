@@ -1,10 +1,14 @@
+/* eslint-disable no-restricted-globals */
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   const channel = message.mentions.channels.first() || message.channel;
-  // eslint-disable-next-line no-restricted-globals
   const newSlowmodeSeconds = parseInt(args.find((num) => !isNaN(num)), 10);
 
-  channel.setRateLimitPerUser(newSlowmodeSeconds)
+  if (!newSlowmodeSeconds || isNaN(newSlowmodeSeconds)) {
+    return client.error(message.channel, 'Invalid Slowmode Argument!', 'Please provide a valid number of seconds to set the slowmode to!');
+  }
+
+  return channel.setRateLimitPerUser(newSlowmodeSeconds)
     .then(() => client.success(message.channel, 'Successfully Set New Slowmode!', `I've successfully set the slowmode of ${channel} to **${newSlowmodeSeconds} seconds!**`))
     .catch(() => client.error(message.channel, 'Failed to Set Slowmode!', `I've failed to set the slowmode for ${channel}! Make sure the new slowmode you provide is in seconds!`));
 };

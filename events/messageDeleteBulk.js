@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 
 module.exports = async (client, messages) => {
   // Ignore all ignoreChannels
-  if (client.config.ignoreChannel.includes(messages.first().channel.id)) {
+  if (client.config.ignoreChannel.includes(messages.first().channel.id) || messages.first().guild.id !== client.config.mainGuild) {
     return;
   }
 

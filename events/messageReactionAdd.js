@@ -1,5 +1,5 @@
 module.exports = async (client, messageReaction, user) => {
-  if (user.bot) {
+  if (user.bot || messageReaction.message.guild.id !== client.config.mainGuild) {
     return;
   }
 
@@ -17,7 +17,7 @@ module.exports = async (client, messageReaction, user) => {
 
       if (roleID) {
         // This reaction corresponds to a role
-        const member = await client.guilds.cache.first().members.fetch(user.id);
+        const member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(user.id);
         if (member && member.roles.cache.has(roleID)) {
           member.roles.remove(roleID, '[Auto] Remove Reaction Role');
         }
@@ -29,7 +29,7 @@ module.exports = async (client, messageReaction, user) => {
       const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
       if (roleID) {
-        const member = await client.guilds.cache.first().members.fetch(user.id);
+        const member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(user.id);
         if (member) {
           // Check if they have any of the other roles in this list and remove them.
           const rolesToRemove = [];
@@ -54,7 +54,7 @@ module.exports = async (client, messageReaction, user) => {
       const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
       if (roleID) {
-        const member = await client.guilds.cache.first().members.fetch(user.id);
+        const member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(user.id);
         if (member && !member.roles.cache.has(roleID)) {
           member.roles.add(roleID, '[Auto] Multiple Reaction Role Add');
         }

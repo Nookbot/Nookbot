@@ -4,32 +4,33 @@ module.exports = (client) => {
     client.firstReady = true;
     console.log('First ready event triggered, loading the guild.');
     const intv = setInterval(() => {
-      const guild = client.guilds.cache.first();
-      if (!guild) {
-        console.log(`  Attempting to wait for guild to load ${counter}...`);
+      const mainGuild = client.guilds.cache.get(client.config.mainGuild);
+      const modMailGuild = client.guilds.cache.get(client.config.modMailGuild);
+      if (!mainGuild || !modMailGuild) {
+        console.log(`  Attempting to wait for both guilds to load ${counter}...`);
         counter += 1;
         return;
       }
       clearInterval(intv);
-      console.log('Guild successfully loaded.');
+      console.log('Guilds successfully loaded.');
 
       // Emoji usage tracking database init
-      guild.emojis.cache.forEach((e) => {
+      mainGuild.emojis.cache.forEach((e) => {
         // If EmojiDB does not have the emoji, add it.
         if (!client.emojiDB.has(e.id)) {
           client.emojiDB.set(e.id, 0);
         }
       });
       // Sweep emojis from the DB that are no longer in the guild emojis
-      client.emojiDB.sweep((v, k) => !guild.emojis.cache.has(k));
+      client.emojiDB.sweep((v, k) => !mainGuild.emojis.cache.has(k));
 
       setInterval(() => {
-        client.memberStats.set(client.memberStats.autonum, { time: Date.now(), members: guild.memberCount });
-        client.user.setActivity(`ACNH with ${guild.memberCount} users!`);
+        client.memberStats.set(client.memberStats.autonum, { time: Date.now(), members: mainGuild.memberCount });
+        client.user.setActivity(`ACNH with ${mainGuild.memberCount} users!`);
       }, 30000);
 
       // Save the current collection of guild invites.
-      guild.fetchInvites().then((guildInvites) => {
+      mainGuild.fetchInvites().then((guildInvites) => {
         client.invites = guildInvites;
       });
 
@@ -52,7 +53,7 @@ module.exports = (client) => {
       const now = Date.now();
       client.muteDB.keyArray().forEach((memID) => {
         const unmuteTime = client.muteDB.get(memID);
-        guild.members.fetch(memID).then((member) => {
+        mainGuild.members.fetch(memID).then((member) => {
           if (unmuteTime < now) {
             // Immediately unmute
             client.muteDB.delete(memID);
@@ -86,7 +87,7 @@ module.exports = (client) => {
       }
 
       // Logging a ready message on first boot
-      console.log(`Ready sequence finished, with ${guild.memberCount} users, in ${guild.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`);
+      console.log(`Ready sequence finished, with ${mainGuild.memberCount} users, in ${mainGuild.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`);
     }, 1000);
   } else {
     console.log('########## We had a second ready event trigger for some reason. ##########');
