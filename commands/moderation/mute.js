@@ -41,8 +41,7 @@ module.exports.run = async (client, message, args, level) => {
 
   // Adds the role to the member and deletes the message that initiated the command
   member.roles.add(role).catch((err) => console.error(err));
-  message.delete().catch((err) => console.error(err));
-  return message.channel.send(`Successfully muted ${member}!`).catch((err) => console.error(err));
+  return client.success(message.channel, 'Success!', `${message.author}, I've successfully muted ${member}!`);
 };
 
 module.exports.conf = {

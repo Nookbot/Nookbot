@@ -25,8 +25,12 @@ module.exports = (client) => {
       client.emojiDB.sweep((v, k) => !mainGuild.emojis.cache.has(k));
 
       setInterval(() => {
-        client.memberStats.set(client.memberStats.autonum, { time: Date.now(), members: mainGuild.memberCount });
-        client.user.setActivity(`ACNH with ${mainGuild.memberCount} users!`);
+        try {
+          client.memberStats.set(client.memberStats.autonum, { time: Date.now(), members: mainGuild.memberCount });
+          client.user.setActivity(`ACNH with ${mainGuild.memberCount} users!`);
+        } catch (e) {
+          // Don't need any handling
+        }
       }, 30000);
 
       // Save the current collection of guild invites.
