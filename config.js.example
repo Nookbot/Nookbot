@@ -145,7 +145,7 @@ const config = {
       name: 'Mod',
       check: (client, message) => {
         if (message.guild) {
-          const modRoleObj = message.guild.roles.cache.get(message.guild.id === config.modMailGuild ? config.modMailModRole || config.modRole);
+          const modRoleObj = message.guild.roles.cache.get((message.guild.id === config.modMailGuild) ? config.modMailModRole : config.modRole);
 
           if (modRoleObj && message.member.roles.cache.has(modRoleObj.id)) {
             return true;
@@ -159,7 +159,7 @@ const config = {
       name: 'Head Mod',
       check: (client, message) => {
         if (message.guild) {
-          const headModRoleObj = message.guild.roles.cache.get(message.guild.id === config.modMailGuild ? config.modMailHeadModRole || config.headModRole);
+          const headModRoleObj = message.guild.roles.cache.get((message.guild.id === config.modMailGuild) ? config.modMailHeadModRole : config.headModRole);
 
           if (headModRoleObj && message.member.roles.cache.has(headModRoleObj.id)) {
             return true;
@@ -173,7 +173,7 @@ const config = {
       name: 'Admin',
       check: (client, message) => {
         if (message.guild) {
-          const adminRoleObj = message.guild.roles.cache.get(message.guild.id === config.modMailGuild ? config.modMailAdminRole || config.adminRole);
+          const adminRoleObj = message.guild.roles.cache.get((message.guild.id === config.modMailGuild) ? config.modMailAdminRole : config.adminRole);
 
           if ((adminRoleObj && message.member.roles.cache.has(adminRoleObj.id)) || message.member.hasPermission('ADMINISTRATOR')) {
             return true;
