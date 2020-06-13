@@ -68,7 +68,7 @@ ${client.config.banAppealLink}`;
     dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 12 hours in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-To understand why you received this sting, please review the rules.`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
     action = '12 Hour Mute';
     mute = 720;
   } else if (curPoints < 15 && newPoints + curPoints >= 15) {
@@ -76,7 +76,7 @@ To understand why you received this sting, please review the rules.`;
     dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 1 hour in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-To understand why you received this sting, please review the rules.`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
     action = '1 Hour Mute';
     mute = 60;
   } else if (curPoints < 10 && newPoints + curPoints >= 10) {
@@ -84,7 +84,7 @@ To understand why you received this sting, please review the rules.`;
     dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 30 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-To understand why you received this sting, please review the rules.`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
     action = '30 Minute Mute';
     mute = 30;
   } else if (curPoints < 5 && newPoints + curPoints >= 5) {
@@ -92,7 +92,7 @@ To understand why you received this sting, please review the rules.`;
     dmMsg = `You have been temporarily muted and will be unable to see many trade channels for 10 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-To understand why you received this sting, please review the rules.`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
     action = '10 Minute Mute';
     mute = 10;
   } else {
@@ -100,7 +100,7 @@ To understand why you received this sting, please review the rules.`;
     dmMsg = `You have been warned in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-To understand why you received this sting, please review the rules.`;
+For more information about why you were warned, please read #rules-you-must-read (<#696239787467604008>).`;
     action = 'Warn';
   }
 
