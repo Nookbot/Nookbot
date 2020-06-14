@@ -37,17 +37,18 @@ module.exports.run = async (client, message, args, level, Discord) => {
     }
     case 'user': {
       // Setting the member to the mentioned user
-      let member = message.mentions.members.first() || message.guild.members.cache.get(args[1]) || client.searchMember(args.slice(1).join(' '));
+      let member = message.mentions.members.first() || message.guild.members.cache.get(args[1]);
 
       if (!member && !args[1]) {
         member = message.member;
-      } else if (!member) {
-        return client.error(message.channel, 'Member Not Found!', 'This member may have left the server or the id provided is not a member id!');
       }
 
-      // Block everyone but mods or higher from using this command to show other users info.
-      if (member !== message.member && level < 2) {
-        return client.error(message.channel, 'Not Allowed!', 'You are not allowed to show user information on other users!');
+      if (!member) {
+        try {
+          member = await message.guild.members.fetch(args[1]);
+        } catch (e) {
+          return client.error(message.channel, 'Member Not Found!', 'This member may have left the server or the id provided is not a member id!');
+        }
       }
 
       const roles = member.roles.cache.filter((r) => r.id !== message.guild.id).map((r) => r.name).join(', ') || 'No Roles';
