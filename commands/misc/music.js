@@ -179,17 +179,43 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
         return updateInfo('Song Already Playing!', 'A song is already playing, you can add new songs with \`.music play <song name>\`.');
       }
       return;
-    case 'skip':
+    case 'skip': {
       // Check if there's a song to skip
       if (client.songQueue.songs.length === 0) {
         return client.error(message.channel, 'No Song To Skip!', 'No song is currently playing, so there is nothing to skip!');
       }
 
-      // End the current song, and this will load the next song if any are in the queue
-      if (client.songQueue.connection && client.songQueue.connection.dispatcher) {
+      const songToSkip = client.songQueue.songs[0].title;
+
+      const vote = await message.channel.send(`Skip **${songToSkip}**?\nA **60% majority** is required for a vote to pass.`);
+      await vote.react(client.emoji.checkMark);
+      await vote.react(client.emoji.redX);
+
+      const filter = (reaction, user) => [client.emoji.checkMark, client.emoji.redX].includes(reaction.emoji.name)
+          && voiceChannel.members.has(user.id);
+
+      let decision = false;
+      await vote.awaitReactions(filter, { max: voiceChannel.members.size, time: 10000 })
+        .then((collected) => {
+          const voteToSkip = collected.get(client.emoji.checkMark);
+          const voteNotToSkip = collected.get(client.emoji.redX);
+
+          if (voteToSkip.count >= (voteNotToSkip.count * 0.6)) {
+            decision = true;
+          }
+        })
+        .catch(console.error);
+
+      if (client.songQueue.connection && client.songQueue.connection.dispatcher && decision && songToSkip === client.songQueue.songs[0].title) {
         client.songQueue.connection.dispatcher.end('skip');
+        await vote.edit(`Skipped **${songToSkip}**!`);
+      } else {
+        await vote.edit(`Not skipping **${songToSkip}**.`);
       }
-      return;
+
+      await vote.reactions.removeAll();
+      break;
+    }
     case 'pause':
       // Check if a song is currently playing to pause
       if (client.songQueue.playing) {
