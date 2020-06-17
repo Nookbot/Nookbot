@@ -195,12 +195,15 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
           && voiceChannel.members.has(user.id);
 
       let decision = false;
+      let percent;
       await vote.awaitReactions(filter, { max: voiceChannel.members.size, time: 10000 })
         .then((collected) => {
-          const voteToSkip = collected.get(client.emoji.checkMark);
-          const voteNotToSkip = collected.get(client.emoji.redX);
+          const voteToSkip = collected.get(client.emoji.checkMark) ? collected.get(client.emoji.checkMark).count - 1 : 0;
+          const voteNotToSkip = collected.get(client.emoji.redX) ? collected.get(client.emoji.redX).count - 1 : 0;
+          const total = voteToSkip + voteNotToSkip;
+          percent = voteToSkip / total;
 
-          if (voteToSkip.count >= (voteNotToSkip.count * 0.6)) {
+          if (percent >= 0.6) {
             decision = true;
           }
         })
@@ -210,7 +213,7 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
         client.songQueue.connection.dispatcher.end('skip');
         await vote.edit(`Skipped **${songToSkip}**!`);
       } else {
-        await vote.edit(`Not skipping **${songToSkip}**.`);
+        await vote.edit(`${percent !== undefined ? `Vote **failed** with **${(percent * 100).toFixed(2)}%** in favor of skipping.` : 'Vote failed.'} Not skipping **${songToSkip}**.`);
       }
 
       await vote.reactions.removeAll();
