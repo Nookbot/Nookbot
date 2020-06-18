@@ -20,7 +20,7 @@ module.exports = async (client, message) => {
     await message.guild.members.fetch(message.author);
   }
 
-  if (message.guild.id === client.config.mainGuild) {
+  if (message.guild && message.guild.id === client.config.mainGuild) {
     // User activity tracking
     client.userDB.set(message.author.id, message.createdTimestamp, 'lastMessageTimestamp');
 
@@ -146,7 +146,7 @@ module.exports = async (client, message) => {
     return;
   }
 
-  if (message.guild.id === client.config.modMailGuild && cmd.help.name !== 'beesting' && cmd.help.name !== 'beestinglog') {
+  if (message.guild && message.guild.id === client.config.modMailGuild && cmd.help.name !== 'beesting' && cmd.help.name !== 'beestinglog') {
     return;
   }
 
