@@ -178,7 +178,7 @@ For more information about why you were warned, please read #rules-you-must-read
     .addField('Total Stings', curPoints + newPoints, true)
     .setFooter(`ID: ${member.id}`)
     .setTimestamp();
-  return message.guild.channels.cache.get(client.config.modLog).send(embed);
+  return client.channels.cache.get(client.config.modLog).send(embed);
 };
 
 module.exports.conf = {
