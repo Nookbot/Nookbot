@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
 const config = {
   token: '',
+  
+  // MongoDB URI
+  mongoURI: 'mongodb://user:pass@127.0.0.1:27017/?authSource=authdbname',
 
   // Twitter
   twitterAPIKey: '',
@@ -20,6 +23,9 @@ const config = {
   // Settings
   prefix: '.',
   verifiedRole: 'role ID',
+  mutedRole: 'role ID',
+  tradeRole: 'role ID',
+  voiceRole: 'role ID',
   reddRole: 'role ID',
   headReddRole: 'role ID',
   modRole: 'role ID',

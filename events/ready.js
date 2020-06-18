@@ -61,13 +61,13 @@ module.exports = (client) => {
           if (unmuteTime < now) {
             // Immediately unmute
             client.muteDB.delete(memID);
-            member.roles.remove('495854925054607381', 'Scheduled unmute through reboot.');
+            member.roles.remove(client.config.mutedRole, 'Scheduled unmute through reboot.');
           } else {
             // Schedule unmute
             setTimeout(() => {
               if ((client.muteDB.get(memID) || 0) < Date.now()) {
                 client.muteDB.delete(memID);
-                member.roles.remove('495854925054607381', 'Scheduled unmute through reboot.');
+                member.roles.remove(client.config.mutedRole, 'Scheduled unmute through reboot.');
               }
             }, unmuteTime - now);
           }

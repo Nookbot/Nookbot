@@ -40,7 +40,7 @@ module.exports = async (client, message) => {
       // They mentioned more than 10 members, automute them for 10 mintues.
       if (message.member && client.permLevel(message)[1] < 4) {
         // Mute
-        message.member.roles.add('495854925054607381', 'Mention Spam');
+        message.member.roles.add(client.config.mutedRole, 'Mention Spam');
         // Delete Message
         if (!message.deleted) {
           message.delete();
@@ -48,7 +48,7 @@ module.exports = async (client, message) => {
         // Schedule unmute
         setTimeout(() => {
           try {
-            message.member.roles.remove('495854925054607381', 'Unmuted after 10 mintues for Mention Spam');
+            message.member.roles.remove(client.config.mutedRole, 'Unmuted after 10 mintues for Mention Spam');
           } catch (error) {
             // Couldn't unmute, oh well
             console.error('Failed to unmute after Anit Mention Spam');
@@ -146,7 +146,7 @@ module.exports = async (client, message) => {
     return;
   }
 
-  if (message.guild.id === client.config.modMailGuild && (cmd.help.name !== 'beesting' || cmd.help.name !== 'beestinglog')) {
+  if (message.guild.id === client.config.modMailGuild && cmd.help.name !== 'beesting' && cmd.help.name !== 'beestinglog') {
     return;
   }
 
