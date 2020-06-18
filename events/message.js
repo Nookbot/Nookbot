@@ -146,7 +146,7 @@ module.exports = async (client, message) => {
     return;
   }
 
-  if (message.guild.id === client.config.modMailGuild && (cmd.help.name !== 'beesting' || cmd.help.name !== 'beestinglog')) {
+  if (message.guild.id === client.config.modMailGuild && cmd.help.name !== 'beesting' && cmd.help.name !== 'beestinglog') {
     return;
   }
 
