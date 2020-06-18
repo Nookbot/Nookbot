@@ -20,7 +20,7 @@ module.exports = async (client, message) => {
     await message.guild.members.fetch(message.author);
   }
 
-  if (message.guild.id === client.config.mainGuild) {
+  if (message.guild && message.guild.id === client.config.mainGuild) {
     // User activity tracking
     client.userDB.set(message.author.id, message.createdTimestamp, 'lastMessageTimestamp');
 
