@@ -12,6 +12,9 @@ const config = {
   twitterAccessTokenSecret: '',
   followedTwitterUsers: [],
 
+  // YouTube
+  youtubeAPIKey: '',
+
   // Webhooks
   twitterHookID: '',
   twitterHookToken: '',

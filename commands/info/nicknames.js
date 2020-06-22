@@ -6,7 +6,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
   const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || !isNaN(args[0]) ? args[0] : message.member;
 
   const nickArray = [];
-  client.userDB.ensure(member === parseInt(args[0], 10) ? member : member.id, client.config.userDBDefaults).nicknames.forEach((n) => {
+  client.userDB.ensure(member === args[0] ? member : member.id, client.config.userDBDefaults).nicknames.forEach((n) => {
     nickArray.unshift(`${moment.utc(n.timestamp).format('DD MMM YY HH:mm')} UTC: ${n.nickname}`);
   });
 
