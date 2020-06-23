@@ -2,6 +2,7 @@
 const moment = require('moment');
 const timezones = require('../../src/timezones.json');
 
+// eslint-disable-next-line consistent-return
 module.exports.run = async (client, message, args, level) => {
   let member;
   if (args.length > 0 && level >= 2) {
@@ -85,7 +86,9 @@ module.exports.run = async (client, message, args, level) => {
     } else {
       await dmChannel.send('You do not have any bee stings!');
     }
-    return message.channel.send("I've sent you a DM!");
+    if (message.channel.type !== 'dm') {
+      return message.channel.send("I've sent you a DM!");
+    }
   } catch (e) {
     // Send basic version in channel
     if (curMsg || expMsg) {
