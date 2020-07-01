@@ -16,6 +16,16 @@ module.exports = async (client, message) => {
     return;
   }
 
+  // React in needs-voting channel
+  if (message.channel.id === '727674382415298691') {
+    const guilty = message.guild.emojis.cache.get('727679416532205660');
+    const inconclusive = message.guild.emojis.cache.get('727679946323132579');
+    const innocent = message.guild.emojis.cache.get('727679357061038133');
+    await message.react(guilty);
+    await message.react(inconclusive);
+    await message.react(innocent);
+  }
+
   if (message.guild && !message.member) {
     await message.guild.members.fetch(message.author);
   }

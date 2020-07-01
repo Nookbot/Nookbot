@@ -47,6 +47,7 @@ const config = {
   calendar: 'channel ID',
   mainGuild: 'guild ID',
   modMailGuild: 'guild ID',
+  modMailReddRole: 'role ID',
   modMailModRole: 'role ID',
   modMailHeadModRole: 'role ID',
   modMailAdminRole: 'role ID',
@@ -126,7 +127,7 @@ const config = {
       name: 'Redd',
       check: (client, message) => {
         if (message.guild) {
-          const reddObj = message.guild.roles.cache.get(config.reddRole);
+          const reddObj = message.guild.roles.cache.get((message.guild.id === config.modMailGuild) ? config.modMailReddRole : config.reddRole);
 
           if (reddObj && message.member.roles.cache.has(reddObj.id)) {
             return true;
