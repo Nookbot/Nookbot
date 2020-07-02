@@ -37,7 +37,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     }
     case 'user': {
       // Setting the member to the mentioned user
-      let member = message.mentions.members.first() || message.guild.members.cache.get(args[1]);
+      let member = message.mentions.members.first() || message.guild.members.cache.get(args[1]) || client.guilds.cache.get(client.config.mainGuild).members.cache.get(args[1]);
 
       if (!member && !args[1]) {
         member = message.member;
@@ -45,14 +45,18 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       if (!member) {
         try {
-          member = await message.guild.members.fetch(args[1]);
+          if (message.guild.id === client.config.modMailGuild) {
+            member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(args[1]);
+          } else {
+            member = await message.guild.members.fetch(args[1]);
+          }
         } catch (e) {
           return client.error(message.channel, 'Member Not Found!', 'This member may have left the server or the id provided is not a member id!');
         }
       }
 
-      const roles = member.roles.cache.filter((r) => r.id !== message.guild.id).map((r) => r.name).join(', ') || 'No Roles';
-      const roleSize = member.roles.cache.filter((r) => r.id !== message.guild.id).size;
+      const roles = member.roles.cache.filter((r) => r.id !== member.guild.id).map((r) => r.name).join(', ') || 'No Roles';
+      const roleSize = member.roles.cache.filter((r) => r.id !== member.guild.id).size;
 
       let activity = member.presence.status;
 
