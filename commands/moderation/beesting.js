@@ -142,7 +142,12 @@ For more information about why you were warned, please read #rules-you-must-read
       client.muteDB.set(member.id, (mute * 60000) + time);
       const guildMember = await client.guilds.cache.get(client.config.mainGuild).members.fetch(member);
       await guildMember.roles.add(client.config.mutedRole, '[Auto] Beestings');
-      await guildMember.roles.remove([client.config.tradeRole, client.config.voiceRole], '[Auto] Beestings');
+      if (guildMember.roles.cache.has(client.config.tradeRole)) {
+        await guildMember.roles.remove(client.config.tradeRole, '[Auto] Beestings');
+      }
+      if (guildMember.roles.cache.has(client.config.voiceRole)) {
+        await guildMember.roles.remove(client.config.voiceRole, '[Auto] Beestings');
+      }
 
       // Kick and mute/deafen member if in voice
       if (guildMember.voice.channel) {
