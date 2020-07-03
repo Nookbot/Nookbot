@@ -37,15 +37,9 @@ module.exports.run = async (client, message, args, level) => {
   }
 
   try {
-  // Adds the role to the member and deletes the message that initiated the command
-    await member.roles.add(client.config.mutedRole);
-
-    if (member.roles.cache.has(client.config.tradeRole)) {
-      await member.roles.remove(client.config.tradeRole);
-    }
-    if (member.roles.cache.has(client.config.voiceRole)) {
-      await member.roles.remove(client.config.voiceRole);
-    }
+  // Adds the role to the member and removes the trade and voice roles
+    const mutedMember = await member.roles.add(client.config.mutedRole);
+    await mutedMember.roles.remove([client.config.tradeRole, client.config.voiceRole]);
   } catch (e) {
     return client.error(message.channel, 'Error!', `Failed to mute member! Error: ${e}`);
   }
