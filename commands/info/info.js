@@ -37,7 +37,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     }
     case 'user': {
       // Setting the member to the mentioned user
-      let member = message.mentions.members.first() || message.guild.members.cache.get(args[1]) || client.guilds.cache.get(client.config.mainGuild).members.cache.get(args[1]);
+      let member = message.mentions.members.first() || client.guilds.cache.get(client.config.mainGuild).members.cache.get(args[0]);
 
       if (!member && !args[1]) {
         member = message.member;
@@ -45,11 +45,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       if (!member) {
         try {
-          if (message.guild.id === client.config.modMailGuild) {
-            member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(args[1]);
-          } else {
-            member = await message.guild.members.fetch(args[1]);
-          }
+          member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(args[1]);
         } catch (e) {
           return client.error(message.channel, 'Member Not Found!', 'This member may have left the server or the id provided is not a member id!');
         }

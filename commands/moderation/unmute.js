@@ -1,12 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // Sets the member to the user mentioned
-  let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
+  let member = message.mentions.members.first() || client.guilds.cache.get(client.config.mainGuild).members.cache.get(args[0]);
 
   if (!member) {
     if (parseInt(args[0], 10)) {
       try {
-        member = await message.guild.members.fetch(args[0]);
+        member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(args[1]);
       } catch (err) {
         // Don't need to send a message here
       }

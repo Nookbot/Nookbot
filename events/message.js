@@ -161,7 +161,9 @@ module.exports = async (client, message) => {
     && cmd.help.name !== 'beestinglog'
     && cmd.help.name !== 'info'
     && cmd.help.name !== 'nicknames'
-    && cmd.help.name !== 'usernames') {
+    && cmd.help.name !== 'usernames'
+    && cmd.help.name !== 'mute'
+    && cmd.help.name !== 'unmute') {
     return;
   }
 
