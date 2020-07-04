@@ -6,29 +6,11 @@ module.exports.run = async (client, message, args, level) => {
   if (!member) {
     if (parseInt(args[0], 10)) {
       try {
-        member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(args[1]);
+        member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(args[0]);
       } catch (err) {
-        // Don't need to send a message here
+        return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
       }
     }
-  }
-
-  if (!member) {
-    const searchedMember = client.searchMember(args[0]);
-    if (searchedMember) {
-      const decision = await client.reactPrompt(message, `Would you like to mute \`${searchedMember.user.tag}\`?`);
-      if (decision) {
-        member = searchedMember;
-      } else {
-        message.delete().catch((err) => console.error(err));
-        return client.error(message.channel, 'Member Not Muted!', 'The prompt timed out, or you selected no.');
-      }
-    }
-  }
-
-  // If no user mentioned, display this
-  if (!member) {
-    return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
   }
 
   // Kick member if in voice
@@ -49,7 +31,7 @@ module.exports.run = async (client, message, args, level) => {
 
 module.exports.conf = {
   guildOnly: true,
-  aliases: ['m'],
+  aliases: [],
   permLevel: 'Redd',
   args: 1,
 };
