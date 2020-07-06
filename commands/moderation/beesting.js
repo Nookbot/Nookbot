@@ -68,6 +68,7 @@ ${client.config.banAppealLink}`;
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 12 hours in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
 For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
     action = '12 Hour Mute';
     mute = 720;
@@ -76,6 +77,7 @@ For more information about why you were muted, please read #rules-you-must-read 
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 1 hour in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
 For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
     action = '1 Hour Mute';
     mute = 60;
@@ -84,6 +86,7 @@ For more information about why you were muted, please read #rules-you-must-read 
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 30 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
 For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
     action = '30 Minute Mute';
     mute = 30;
@@ -92,6 +95,7 @@ For more information about why you were muted, please read #rules-you-must-read 
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 10 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
 For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
     action = '10 Minute Mute';
     mute = 10;
@@ -100,6 +104,7 @@ For more information about why you were muted, please read #rules-you-must-read 
     dmMsg = `You have been warned in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
+Don't worry, 1 sting is just a warning and will expire in **1 week**.
 For more information about why you were warned, please read #rules-you-must-read (<#696239787467604008>).`;
     action = 'Warn';
   }

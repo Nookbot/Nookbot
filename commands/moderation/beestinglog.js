@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-globals */
 const moment = require('moment');
 const timezones = require('../../src/timezones.json');
 
@@ -37,16 +36,19 @@ module.exports.run = async (client, message, args, level) => {
   let curMsg = '';
 
   const time = Date.now();
-  const tz = args[1] && isNaN(args[1]) ? args[1].toUpperCase() : 'UTC';
+  let tz = args.find((arg) => timezones[arg.toUpperCase()]);
+  tz = tz ? tz.toUpperCase() : 'UTC';
   let offset = timezones[tz];
 
   if (offset === undefined) {
     offset = 0;
   }
 
-  let timeToUse = parseInt(args.find((arg) => !isNaN(arg) && arg !== member.id), 10);
-  if (!timeToUse) {
-    timeToUse = 24;
+  // eslint-disable-next-line no-restricted-globals
+  let timeToUse = args.find((arg) => client.timeRegex.test(arg) && arg !== member.id);
+  console.log(timeToUse);
+  if (!timeToUse || (timeToUse.toLowerCase() !== '24h' && timeToUse.toLowerCase() !== '12h')) {
+    timeToUse = '24h';
   }
 
   infractions.forEach((i) => {
@@ -55,10 +57,10 @@ module.exports.run = async (client, message, args, level) => {
       const moderator = client.users.cache.get(i.moderator);
       if ((i.points * 604800000) + i.date > time) {
         curPoints += i.points;
-        curMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).add(offset, 'hours').format(`DD MMM YYYY ${timeToUse === 12 ? 'hh:mm:ss a' : 'HH:mm:ss'}`)} ${tz}) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+        curMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).add(offset, 'hours').format(`DD MMM YYYY ${timeToUse === '12h' ? 'hh:mm:ss a' : 'HH:mm:ss'}`)} ${tz}) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
       } else {
         expPoints += i.points;
-        expMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).add(offset, 'hours').format(`DD MMM YYYY ${timeToUse === 12 ? 'hh:mm:ss a' : 'HH:mm:ss'}`)} ${tz}) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+        expMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).add(offset, 'hours').format(`DD MMM YYYY ${timeToUse === '12h' ? 'hh:mm:ss a' : 'HH:mm:ss'}`)} ${tz}) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
       }
     }
   });

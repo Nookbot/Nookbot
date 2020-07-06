@@ -71,7 +71,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField('ID', member.user.id, true)
         .addField('Nickname', member.displayName, true)
         .addField('Account Created', moment(member.user.createdAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
-        .addField(`Joined *${message.guild.name}*`, moment(member.joinedAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
+        .addField(`Joined *${client.guilds.cache.get(client.config.mainGuild).name}*`, moment(member.joinedAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
         .addField(`Roles (${roleSize})`, roles, true)
         .addField('Status', activity, true);
 
