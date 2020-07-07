@@ -46,7 +46,6 @@ module.exports.run = async (client, message, args, level) => {
 
   // eslint-disable-next-line no-restricted-globals
   let timeToUse = args.find((arg) => client.timeRegex.test(arg) && arg !== member.id);
-  console.log(timeToUse);
   if (!timeToUse || (timeToUse.toLowerCase() !== '24h' && timeToUse.toLowerCase() !== '12h')) {
     timeToUse = '24h';
   }
