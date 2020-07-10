@@ -8,10 +8,9 @@ module.exports = async (client, message) => {
   // Ignore all bots
   if (message.author.bot) {
     // If message sent by ban appeal webhook bot account, and in the ban appeals channel
-    if ((message.author.id === '695145674081042443' && message.channel.id === '680479301857968237')
-     || (message.author.id === '700611254296903741' && message.channel.id === '700454847643648129')) {
+    if (message.author.id === '695145674081042443' && message.channel.id === '680479301857968237') {
       await message.react(client.emoji.checkMark);
-      message.react(client.emoji.redX);
+      await message.react(client.emoji.redX);
     }
     return;
   }
@@ -48,7 +47,7 @@ module.exports = async (client, message) => {
     // Anti Mention Spam
     if (message.mentions.members && message.mentions.members.size > 10) {
       // They mentioned more than 10 members, automute them for 10 mintues.
-      if (message.member && client.permLevel(message)[1] < 4) {
+      if (message.member && client.permLevel(message)[1] < 2) {
         // Mute
         message.member.roles.add(client.config.mutedRole, 'Mention Spam');
         // Delete Message
@@ -77,7 +76,7 @@ module.exports = async (client, message) => {
 
     // Delete non-image containing messages from image only channels
     if (message.guild && client.config.imageOnlyChannels.includes(message.channel.id)
-        && message.attachments.size === 0 && client.permLevel(message)[1] < 4) {
+        && message.attachments.size === 0 && client.permLevel(message)[1] < 2) {
       // Message is in the guild's image only channels, without an image or link in it, and is not a mod's message, so delete
       if (!message.deleted && message.deletable) {
         message.delete();
@@ -97,7 +96,7 @@ module.exports = async (client, message) => {
     if (message.guild && client.config.newlineLimitChannels.includes(message.channel.id)
         && ((message.content.match(/\n/g) || []).length >= client.config.newlineLimit
         || (message.attachments.size + (message.content.match(/https?:\/\//gi) || []).length) >= client.config.imageLinkLimit)
-        && client.permLevel(message)[1] < 4) {
+        && client.permLevel(message)[1] < 2) {
       // Message is in the guild, in a channel that has a limit on newline characters, and has too many or too many links + attachments, and is not a mod's message, so delete
       if (!message.deleted && message.deletable) {
         message.delete();
@@ -116,7 +115,7 @@ module.exports = async (client, message) => {
     // Delete posts with @ mentions in villager and turnip channels
     if (message.guild && client.config.noMentionChannels.includes(message.channel.id)
       && message.mentions.members.size > 0
-      && client.permLevel(message)[1] < 3) {
+      && client.permLevel(message)[1] < 2) {
     // Message is in the guild, in a channel that restricts mentions, and is not a mod's message, so delete
       if (!message.deleted && message.deletable) {
         message.delete();
@@ -163,7 +162,8 @@ module.exports = async (client, message) => {
     && cmd.help.name !== 'nicknames'
     && cmd.help.name !== 'usernames'
     && cmd.help.name !== 'mute'
-    && cmd.help.name !== 'unmute') {
+    && cmd.help.name !== 'unmute'
+    && cmd.help.name !== 'medicine') {
     return;
   }
 
