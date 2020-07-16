@@ -29,6 +29,8 @@ module.exports = async (client, message) => {
     await message.guild.members.fetch(message.author);
   }
 
+  const level = client.permLevel(message);
+
   if (message.guild && message.guild.id === client.config.mainGuild) {
     // User activity tracking
     client.userDB.set(message.author.id, message.createdTimestamp, 'lastMessageTimestamp');
@@ -44,10 +46,74 @@ module.exports = async (client, message) => {
       }
     }
 
+    // Banned Words
+    if (level[1] < 2) {
+      const tokens = message.content.split(/ +/g);
+      let ban = false;
+      let del = false;
+      let match;
+
+      tokens.forEach((s, index, arr) => {
+        const matches = client.bannedWordsFilter.search(s);
+        if (matches.length === 0) {
+          return;
+        }
+
+        match = client.bannedWordsDB.find((w) => w.word === matches[0].original);
+
+        if (match.phrase.length !== 0) {
+          for (let i = 0; i < match.phrase.length; i++) {
+            if (arr[index + (i + 1)].toLowerCase() !== match.phrase[i].toLowerCase()) {
+              return;
+            }
+          }
+        }
+
+        if (match.blockedChannels && !match.blockedChannels.includes(message.channel.id)) {
+          // Only blocked in specific channels, so exit if not in that channel
+          return;
+        }
+        if (match.autoBan) {
+          ban = true;
+          return;
+        }
+        // Delete message
+        del = true;
+      });
+
+      const embed = new Discord.MessageEmbed()
+        .setAuthor(message.author.tag, message.author.displayAvatarURL())
+        .setColor('RED')
+        .setFooter(`ID: ${message.author.id}`)
+        .setTimestamp()
+        .setTitle(`Banned word sent by ${message.author} in ${message.channel}`)
+        .setDescription(message.content);
+
+      const modLogCh = client.channels.cache.get(client.config.modLog);
+
+      if (ban) {
+        message.delete()
+          .catch((err) => client.error(modLogCh, 'Message Delete Failed!', `I've failed to delete a message containing a banned word from ${message.author}! ${err}`));
+        return message.guild.members.ban(message.author, { reason: '[Auto] Banned Word', days: 1 })
+          .catch((err) => client.error(modLogCh, 'Ban Failed!', `I've failed to ban ${message.author}! ${err}`));
+      }
+      if (del) {
+        return message.delete()
+          .catch((err) => client.error(modLogCh, 'Message Delete Failed!', `I've failed to delete a message containing a banned word from ${message.author}! ${err}`));
+      }
+
+      if (ban || del) {
+        embed.addField('Match', match, true)
+          .addField('Action', ban ? 'Banned' : 'Deleted', true);
+
+        return modLogCh.send(embed);
+      }
+    }
+
     // Anti Mention Spam
     if (message.mentions.members && message.mentions.members.size > 10) {
       // They mentioned more than 10 members, automute them for 10 mintues.
-      if (message.member && client.permLevel(message)[1] < 2) {
+      if (message.member && level[1] < 2) {
         // Mute
         message.member.roles.add(client.config.mutedRole, 'Mention Spam');
         // Delete Message
@@ -76,7 +142,7 @@ module.exports = async (client, message) => {
 
     // Delete non-image containing messages from image only channels
     if (message.guild && client.config.imageOnlyChannels.includes(message.channel.id)
-        && message.attachments.size === 0 && client.permLevel(message)[1] < 2) {
+        && message.attachments.size === 0 && level[1] < 2) {
       // Message is in the guild's image only channels, without an image or link in it, and is not a mod's message, so delete
       if (!message.deleted && message.deletable) {
         message.delete();
@@ -96,7 +162,7 @@ module.exports = async (client, message) => {
     if (message.guild && client.config.newlineLimitChannels.includes(message.channel.id)
         && ((message.content.match(/\n/g) || []).length >= client.config.newlineLimit
         || (message.attachments.size + (message.content.match(/https?:\/\//gi) || []).length) >= client.config.imageLinkLimit)
-        && client.permLevel(message)[1] < 2) {
+        && level[1] < 2) {
       // Message is in the guild, in a channel that has a limit on newline characters, and has too many or too many links + attachments, and is not a mod's message, so delete
       if (!message.deleted && message.deletable) {
         message.delete();
@@ -115,7 +181,7 @@ module.exports = async (client, message) => {
     // Delete posts with @ mentions in villager and turnip channels
     if (message.guild && client.config.noMentionChannels.includes(message.channel.id)
       && message.mentions.members.size > 0
-      && client.permLevel(message)[1] < 2) {
+      && level[1] < 2) {
     // Message is in the guild, in a channel that restricts mentions, and is not a mod's message, so delete
       if (!message.deleted && message.deletable) {
         message.delete();
@@ -136,8 +202,6 @@ module.exports = async (client, message) => {
   if (message.content.indexOf(client.config.prefix) !== 0) {
     return;
   }
-
-  const level = client.permLevel(message);
 
   // Our standard argument/command name definition.
   const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
