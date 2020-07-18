@@ -16,9 +16,6 @@ module.exports.run = async (client, message, args, level) => {
         }
       }
     }
-    if (!member) {
-      member = client.searchMember(args[0]);
-    }
 
     // If no user mentioned, display this
     if (!member) {

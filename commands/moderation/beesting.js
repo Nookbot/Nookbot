@@ -12,19 +12,6 @@ module.exports.run = async (client, message, args, level, Discord) => {
     member = message.mentions.members.first();
   }
 
-  if (!member) {
-    const searchedMember = client.searchMember(args[0]);
-    if (searchedMember) {
-      const decision = await client.reactPrompt(message, `Would you like to give \`${searchedMember.user.tag}\` a bee sting?`);
-      if (decision) {
-        member = searchedMember;
-      } else {
-        message.delete().catch((err) => console.error(err));
-        return client.error(message.channel, 'Bee Sting Not Given!', 'The prompt timed out, or you selected no.');
-      }
-    }
-  }
-
   // If no user mentioned, display this
   if (!member) {
     return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');

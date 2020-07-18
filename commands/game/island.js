@@ -149,19 +149,6 @@ module.exports.run = async (client, message, args, level, Discord) => {
         }
 
         if (!member) {
-          const searchedMember = client.searchMember(args[1]);
-          if (searchedMember) {
-            const decision = await client.reactPrompt(message, `Would you like to moderate \`${searchedMember.user.tag}\`'s island settings?`);
-            if (decision) {
-              member = searchedMember;
-            } else {
-              message.delete().catch((err) => console.error(err));
-              return client.error(message.channel, 'Island Settings Not Moderated!', 'The prompt timed out, or you selected no.');
-            }
-          }
-        }
-
-        if (!member) {
           return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server to moderate their island settings!');
         }
 
@@ -237,7 +224,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       if (args.length === 0) {
         member = message.member;
       } else {
-        member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || client.searchMember(args.join(' '));
+        member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || await message.guild.members.fetch(args[0]);
         if (!member) {
           return client.error(message.channel, 'Unknown Member!', 'Could not find a member by that name!');
         }
