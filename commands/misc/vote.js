@@ -23,6 +23,6 @@ module.exports.help = {
   name: 'vote',
   category: 'misc',
   description: 'Create a simple reaction vote with a provided message id',
-  usage: 'tag <message id>',
+  usage: 'vote <message id>',
   details: '<message id> => A valid message id from the channel the command is used in.',
 };
