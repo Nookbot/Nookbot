@@ -34,6 +34,6 @@ module.exports = async (client, message) => {
       embed.addField('**Attachments Deleted**', attachList.slice(1));
     }
   }
-  embed.addField('**Posted**', moment.utc(msg.createdAt).format('MMMM Do YYYY, HH:mm:ss z'));
+  embed.addField('**Posted**', moment.utc(message.createdAt).format('MMMM Do YYYY, HH:mm:ss z'));
   message.guild.channels.cache.get(client.config.actionLog).send(embed);
 };

@@ -224,7 +224,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       if (args.length === 0) {
         member = message.member;
       } else {
-        member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || await message.guild.members.fetch(args[0]);
+        member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
         if (!member) {
           return client.error(message.channel, 'Unknown Member!', 'Could not find a member by that name!');
         }

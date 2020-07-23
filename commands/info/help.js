@@ -31,7 +31,7 @@ module.exports.run = (client, message, [command], level) => {
 
     let output = `= ${cmd.help.name} = \n${cmd.help.description}\n\nUsage :: ${client.config.prefix}${cmd.help.usage}`;
 
-    if (cmd.conf.aliases) {
+    if (cmd.conf.aliases && cmd.conf.aliases.length !== 0) {
       output += `\nAliases :: ${cmd.conf.aliases.join(', ')}`;
     }
 

@@ -1,12 +1,20 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
+  let fail = false;
   const msgToReact = await message.channel.messages.fetch(args[0])
-    .catch(() => client.error(message.channel, 'No Message Found!', 'No message was found! Please use a valid message id from **THIS** channel!'));
+    .catch(() => {
+      fail = true;
+      return client.error(message.channel, 'No Message Found!', 'No message was found! Please use a valid message id from **THIS** channel!');
+    });
+
+  if (fail) {
+    return;
+  }
 
   await msgToReact.react(client.emoji.thumbsUp);
   await msgToReact.react(client.emoji.thumbsDown);
   await msgToReact.react(client.emoji.neutral);
-  return message.delete({ timeout: 1000 });
+  message.delete({ timeout: 1000 });
 };
 
 module.exports.conf = {
