@@ -116,6 +116,7 @@ client.songQueue = {
 
 // Auto-Filter Message Reminder Counts
 client.imageOnlyFilterCount = 0;
+client.imageAndTextOnlyFilterCount = 0;
 client.newlineLimitFilterCount = 0;
 client.noMentionFilterCount = 0;
 

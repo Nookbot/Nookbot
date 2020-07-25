@@ -149,10 +149,26 @@ module.exports = async (client, message) => {
         client.imageOnlyFilterCount += 1;
         if (client.imageOnlyFilterCount === 5) {
           client.imageOnlyFilterCount = 0;
-          const autoMsg = await message.channel.send('Image Only Channel!\nThis channel only allows posts with images or links in them. Everything else is automatically deleted.');
+          const autoMsg = await message.channel.send('Image Only Channel!\nThis channel only allows posts with images. Everything else is automatically deleted.');
           setTimeout(() => {
             autoMsg.delete();
           }, 30000);
+        }
+      }
+      return;
+    }
+
+    // Delete messages that don't contain BOTH image and text from image&text only channels
+    if (message.guild && client.config.imageAndTextOnlyChannels.includes(message.channel.id)
+      && (message.attachments.size === 0 || message.content === '')
+      && level[1] < 2) {
+      if (!message.deleted && message.deletable) {
+        message.delete();
+        client.imageAndTextOnlyFilterCount += 1;
+        if (client.imageAndTextOnlyFilterCount === 5) {
+          client.imageAndTextOnlyFilterCount = 0;
+          const autoMsg = await message.channel.send('Image And Text Channel!\nThis channel only allows messages with both images and text. Everything else is automatically deleted. This allows for keywords to be searchable.');
+          autoMsg.delete({ timeout: 30000 });
         }
       }
       return;
