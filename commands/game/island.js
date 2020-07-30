@@ -127,6 +127,25 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       return client.success(message.channel, 'Successfully set your Switch friend code!', `Friend Code: **${code}**`);
     }
+    case 'dreamaddress':
+    case 'dream':
+    case 'address':
+    case 'da': {
+      if (args.length === 1) {
+        return client.error(message.channel, 'No Dream Address Given!', 'Please supply your dream address!');
+      }
+
+      let address = args.slice(1).join().replace(/[\D]/g, '');
+
+      if (address.length !== 12) {
+        return client.error(message.channel, 'Invalid Address!', 'The address must have 12 digits!');
+      }
+
+      address = `DA-${address.slice(0, 4)}-${address.slice(4, 8)}-${address.slice(8, 12)}`;
+      client.userDB.set(message.author.id, address, 'island.dreamAddress');
+
+      return client.success(message.channel, 'Successfully set your Dream Address!', `Dream Address: **${address}**`);
+    }
     case 'remove':
     case 'delete':
     case 'rm':
@@ -205,6 +224,12 @@ module.exports.run = async (client, message, args, level, Discord) => {
             return client.success(message.channel, 'Successfully cleared your Switch friend code!', 'To set your Switch friend code again, use `.island friendcode <code>`!');
           }
           return client.error(message.channel, 'No Friend Code To Remove!', 'You did not have a friend code in the database. You can set it by typing \`.fc set <code>\`!');
+        case 'dreamaddress':
+        case 'dream':
+        case 'address':
+        case 'da':
+          client.userDB.set(memberID, '', 'island.dreamAddress');
+          return client.success(message.channel, 'Successfully cleared your Dream Address!', 'To set your dream address again, use `.island dreamaddress <address>`!');
         case 'all':
         case 'every':
           client.userDB.set(memberID, {
@@ -213,6 +238,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
             characterName: '',
             hemisphere: '',
             profileName: '',
+            dreamAddress: '',
           }, 'island');
           return client.success(message.channel, 'Successfully cleared your Switch profile name!', 'To set your Switch profile name again, use `.island profilename <name>`!');
         default:
@@ -252,6 +278,9 @@ module.exports.run = async (client, message, args, level, Discord) => {
       if (island.hemisphere) {
         msg.push(`Hemisphere: **${island.hemisphere}**`);
       }
+      if (island.dreamAddress) {
+        msg.push(`Dream Address: **${island.dreamAddress}**`);
+      }
 
       if (msg.length === 0) {
         if (member.id === message.author.id) {
@@ -290,6 +319,6 @@ module.exports.help = {
   name: 'island',
   category: 'game',
   description: 'Island information display',
-  usage: 'island <islandname|fruit|charactername|hemisphere|profilename|friendcode> <name|fruit|hemisphere|code>',
-  details: '<islandname> => Set the name of your island.\n<fruit> => Set the fruit that is native on your island.\n<charactername> => Set the name of your character on the island.\n<hemisphere> => Set the hemisphere your island is in.\n<profilename> => Set the name of your Switch profile.\n<friendcode> => Set your Switch friendcode.',
+  usage: 'island <islandname|fruit|charactername|hemisphere|profilename|friendcode|dreamaddress> <name|fruit|hemisphere|code|address>',
+  details: "<islandname> => Set the name of your island.\n<fruit> => Set the fruit that is native on your island.\n<charactername> => Set the name of your character on the island.\n<hemisphere> => Set the hemisphere your island is in.\n<profilename> => Set the name of your Switch profile.\n<friendcode> => Set your Switch friendcode.\n<dreamaddress> => Set your island's dream address.",
 };
