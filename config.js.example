@@ -78,6 +78,7 @@ const config = {
       characterName: '',
       hemisphere: '',
       profileName: '',
+      dreamAddress: '',
     },
     positiveRep: 0,
     negativeRep: 0,
