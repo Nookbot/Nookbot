@@ -79,6 +79,7 @@ const config = {
       hemisphere: '',
       profileName: '',
       dreamAddress: '',
+      creatorCode: '',
     },
     positiveRep: 0,
     negativeRep: 0,

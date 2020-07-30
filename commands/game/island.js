@@ -146,6 +146,25 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       return client.success(message.channel, 'Successfully set your Dream Address!', `Dream Address: **${address}**`);
     }
+    case 'creatorcode':
+    case 'create':
+    case 'creator':
+    case 'cc': {
+      if (args.length === 1) {
+        return client.error(message.channel, 'No Creator Code Given!', 'Please supply your creator code!');
+      }
+
+      let code = args.slice(1).join().replace(/[\D]/g, '');
+
+      if (code.length !== 12) {
+        return client.error(message.channel, 'Invalid Code!', 'The code must have 12 digits!');
+      }
+
+      code = `MA-${code.slice(0, 4)}-${code.slice(4, 8)}-${code.slice(8, 12)}`;
+      client.userDB.set(message.author.id, code, 'island.creatorCode');
+
+      return client.success(message.channel, 'Successfully set your Creator Code!', `Creator Code: **${code}**`);
+    }
     case 'remove':
     case 'delete':
     case 'rm':
@@ -230,6 +249,12 @@ module.exports.run = async (client, message, args, level, Discord) => {
         case 'da':
           client.userDB.set(memberID, '', 'island.dreamAddress');
           return client.success(message.channel, 'Successfully cleared your Dream Address!', 'To set your dream address again, use `.island dreamaddress <address>`!');
+        case 'creatorcode':
+        case 'create':
+        case 'creator':
+        case 'cc':
+          client.userDB.set(memberID, '', 'island.creatorCode');
+          return client.success(message.channel, 'Successfully cleared your Creator Code!', 'To set your creator code again, use `.island creatorcode <code>`!');
         case 'all':
         case 'every':
           client.userDB.set(memberID, {
@@ -281,6 +306,9 @@ module.exports.run = async (client, message, args, level, Discord) => {
       if (island.dreamAddress) {
         msg.push(`Dream Address: **${island.dreamAddress}**`);
       }
+      if (island.creatorCode) {
+        msg.push(`Creator Code: **${island.creatorCode}**`);
+      }
 
       if (msg.length === 0) {
         if (member.id === message.author.id) {
@@ -319,6 +347,6 @@ module.exports.help = {
   name: 'island',
   category: 'game',
   description: 'Island information display',
-  usage: 'island <islandname|fruit|charactername|hemisphere|profilename|friendcode|dreamaddress> <name|fruit|hemisphere|code|address>',
-  details: "<islandname> => Set the name of your island.\n<fruit> => Set the fruit that is native on your island.\n<charactername> => Set the name of your character on the island.\n<hemisphere> => Set the hemisphere your island is in.\n<profilename> => Set the name of your Switch profile.\n<friendcode> => Set your Switch friendcode.\n<dreamaddress> => Set your island's dream address.",
+  usage: 'island <islandname|fruit|charactername|hemisphere|profilename|friendcode|dreamaddress|creatorcode> <name|fruit|hemisphere|code|address>',
+  details: "<islandname> => Set the name of your island.\n<fruit> => Set the fruit that is native on your island.\n<charactername> => Set the name of your character on the island.\n<hemisphere> => Set the hemisphere your island is in.\n<profilename> => Set the name of your Switch profile.\n<friendcode> => Set your Switch friendcode.\n<dreamaddress> => Set your island's dream address.\n<creatorcode> => Set your creator code.",
 };
