@@ -5,6 +5,7 @@ const Discord = require('discord.js');
 const Enmap = require('enmap');
 const fs = require('fs');
 const Twitter = require('twitter-lite');
+const { Searcher } = require('fast-fuzzy');
 
 const client = new Discord.Client({
   messageCacheMaxSize: 500,
@@ -115,6 +116,7 @@ client.songQueue = {
 
 // Auto-Filter Message Reminder Counts
 client.imageOnlyFilterCount = 0;
+client.imageAndTextOnlyFilterCount = 0;
 client.newlineLimitFilterCount = 0;
 client.noMentionFilterCount = 0;
 
@@ -129,7 +131,14 @@ client.twitter = new Twitter({
 // Start up the twitter webhook listener
 client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, client.config.twitterHookToken);
 
-Object.assign(client, Enmap.multi(['enabledCmds', 'userDB', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'infractionDB', 'sessionDB', 'muteDB', 'memberStats', 'reactionRoleDB'], { ensureProps: true }));
+Object.assign(client, Enmap.multi(['enabledCmds', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'sessionDB', 'muteDB', 'reactionRoleDB', 'bannedWordsDB'], { ensureProps: true }));
+Object.assign(client, Enmap.multi(['userDB', 'infractionDB', 'memberStats'], { fetchAll: false, ensureProps: true }));
+
+// Banned words array and Searcher
+const bannedWordsArray = client.bannedWordsDB.array();
+client.bannedWordsfilter = new Searcher(bannedWordsArray, {
+  keySelector: (s) => s.word, threshold: 1, returnMatchData: true, useSellers: false,
+});
 
 client.login(config.token).then(() => {
   console.log('Bot successfully logged in.');
