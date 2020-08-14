@@ -133,8 +133,8 @@ For more information about why you were warned, please read #rules-you-must-read
       // Update unmuteTime on userDB
       client.muteDB.set(member.id, (mute * 60000) + time);
       const guildMember = await client.guilds.cache.get(client.config.mainGuild).members.fetch(member);
-      const mutedMember = await guildMember.roles.add(client.config.mutedRole);
-      await mutedMember.roles.remove([client.config.tradeRole, client.config.voiceRole]);
+      const mutedMember = await guildMember.roles.add(client.config.mutedRole, '[Auto] Beestings');
+      await mutedMember.roles.remove([client.config.tradeRole, client.config.voiceRole], '[Auto] Beestings');
 
       // Kick member from voice
       if (guildMember.voice.channel) {
