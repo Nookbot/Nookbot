@@ -53,60 +53,68 @@ module.exports = async (client, message) => {
       let del = false;
       let match;
 
-      tokens.forEach((s, index, arr) => {
-        const matches = client.bannedWordsFilter.search(s);
-        if (matches.length === 0) {
-          return;
-        }
+      for (let index = 0; index < tokens.length; index++) {
+        const matches = client.bannedWordsFilter.search(tokens[index]);
 
-        match = client.bannedWordsDB.find((w) => w.word === matches[0].original);
+        if (matches.length !== 0) {
+          const chkMatch = client.bannedWordsDB.find((w) => w.word === matches[0].original);
 
-        if (match.phrase.length !== 0) {
-          for (let i = 0; i < match.phrase.length; i++) {
-            if (arr[index + (i + 1)].toLowerCase() !== match.phrase[i].toLowerCase()) {
-              return;
+          // Only check if we're not already deleting this message, or the matched word is an autoBan
+          if (!del || chkMatch.autoBan) {
+            // This is to save the first match that caused the message to get deleted or banned
+            match = chkMatch;
+
+            let matchedPhrase = true;
+            if (match.phrase.length !== 0) {
+              for (let i = 0; i < match.phrase.length; i++) {
+                if (tokens[index + (i + 1)].toLowerCase() !== match.phrase[i].toLowerCase()) {
+                  matchedPhrase = false;
+                  break;
+                }
+              }
+            }
+
+            if (matchedPhrase) {
+              if (match.blockedChannels && match.blockedChannels.length !== 0) {
+                if (match.blockedChannels.includes(message.channel.id)) {
+                  del = true;
+                }
+              } else {
+                del = true;
+              }
+            }
+
+            if (del && match.autoBan) {
+              ban = true;
+              break; // Break on autoBan because we don't need to check for any other banned words.
             }
           }
         }
-
-        if (match.blockedChannels && !match.blockedChannels.includes(message.channel.id)) {
-          // Only blocked in specific channels, so exit if not in that channel
-          return;
-        }
-        if (match.autoBan) {
-          ban = true;
-          return;
-        }
-        // Delete message
-        del = true;
-      });
-
-      const embed = new Discord.MessageEmbed()
-        .setAuthor(message.author.tag, message.author.displayAvatarURL())
-        .setColor('RED')
-        .setFooter(`ID: ${message.author.id}`)
-        .setTimestamp()
-        .setTitle(`Banned word sent by ${message.author} in ${message.channel}`)
-        .setDescription(message.content);
-
-      const modLogCh = client.channels.cache.get(client.config.modLog);
-
-      if (ban) {
-        message.delete()
-          .catch((err) => client.error(modLogCh, 'Message Delete Failed!', `I've failed to delete a message containing a banned word from ${message.author}! ${err}`));
-        return message.guild.members.ban(message.author, { reason: '[Auto] Banned Word', days: 1 })
-          .catch((err) => client.error(modLogCh, 'Ban Failed!', `I've failed to ban ${message.author}! ${err}`));
-      }
-      if (del) {
-        return message.delete()
-          .catch((err) => client.error(modLogCh, 'Message Delete Failed!', `I've failed to delete a message containing a banned word from ${message.author}! ${err}`));
       }
 
       if (ban || del) {
-        embed.addField('Match', match, true)
+        const embed = new Discord.MessageEmbed()
+          .setAuthor(message.author.tag, message.author.displayAvatarURL())
+          .setColor('#ff9292')
+          .setFooter(`ID: ${message.author.id}`)
+          .setTimestamp()
+          .setDescription(`**Banned word sent by ${message.author} in ${message.channel}**\n${message.content.slice(0, 1800)}`);
+
+        const modLogCh = client.channels.cache.get(client.config.modLog);
+
+        if (ban) {
+          message.guild.members.ban(message.author, { reason: '[Auto] Banned Word', days: 1 })
+            .catch((err) => client.error(modLogCh, 'Ban Failed!', `I've failed to ban ${message.author}! ${err}`));
+        } else {
+          message.delete()
+            .catch((err) => client.error(modLogCh, 'Message Delete Failed!', `I've failed to delete a message containing a banned word from ${message.author}! ${err}`));
+        }
+
+        embed.addField('Match', match.word, true)
           .addField('Action', ban ? 'Banned' : 'Deleted', true);
 
-        return modLogCh.send(embed);
+        modLogCh.send(embed);
+        return;
       }
     }
 

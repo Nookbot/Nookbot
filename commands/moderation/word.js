@@ -10,11 +10,11 @@ module.exports.run = (client, message, args, level) => { // eslint-disable-line 
     argsMod = argsMod.replace(/[“”]/gi, '"');
   }
 
-  if (argsMod.includes('"')) {
-    phrase = argsMod.match(/[^\s"]+|"([^"]*)"/g)[0].replace(/"/gi, '').split(' ');
+  if (/"([^"]+)"/.test(argsMod)) {
+    phrase = argsMod.match(/"([^"]+)"/)[0].replace(/"/g, '').trim().toLowerCase().split(/\s+/);
     word = phrase.shift();
   } else {
-    word = argsMod.split(' ').shift();
+    word = argsMod.split(' ').shift().toLowerCase();
   }
 
   if (!word) {
@@ -28,11 +28,19 @@ module.exports.run = (client, message, args, level) => { // eslint-disable-line 
       let global = true;
       const blockedChannels = [];
 
-      autoBan = argsMod.split(phrase.length === 0 ? word : `"${word} ${phrase.join(' ')}"`)[1].trim().toLowerCase() === 'ban';
+      if (/"([^"]+)"/.test(argsMod)) {
+        autoBan = argsMod.replace(/^[^"]*"[^"]*"/, '').toLowerCase().trim().startsWith('ban');
+      } else {
+        autoBan = argsMod.split(' ').slice(1).join(' ').toLowerCase().trim().startsWith('ban');
+      }
 
       if (message.mentions.channels.size > 0) {
         message.mentions.channels.forEach((ch) => blockedChannels.push(ch.id));
         global = false;
+      }
+
+      if (client.bannedWordsDB.find((s) => s.word === word && (s.phrase.length === 0 ? true : s.phrase.join(' ') === phrase.join(' ')))) {
+        return client.error(message.channel, 'Already in Database!', `The ${phrase.length === 0 ? `word \`${word}\`` : `phrase \`${word} ${phrase.join(' ')}\``} is already in the banned words database! Please remove it if you wish to change an option.`);
       }
 
       client.bannedWordsFilter.add({ word });
@@ -50,17 +58,16 @@ module.exports.run = (client, message, args, level) => { // eslint-disable-line 
     case 'delete':
     case 'del':
     case 'd': {
-      const key = client.bannedWordsDB.findKey((s) => (s.word === word && s.phrase.length === 0 ? true : s.phrase.join(' ') === phrase));
+      const key = client.bannedWordsDB.findKey((s) => s.word === word && (s.phrase.length === 0 ? true : s.phrase.join(' ') === phrase.join(' ')));
 
       if (!key) {
-        return client.error(message.channel, 'Not In Database', `The ${phrase.length === 0 ? `word \`${word}\`` : `phrase \`${word} ${phrase.join(' ')}\``}\` does not exist in the banned words database and therefore cannot be removed!`);
+        client.error(message.channel, 'Not In Database', `The ${phrase.length === 0 ? `word \`${word}\`` : `phrase \`${word} ${phrase.join(' ')}\``} does not exist in the banned words database and therefore cannot be removed!`);
+        break;
       }
 
-      client.bannedWordsDB.delete(key);
-
-      const bannedWordsArray = client.bannedWordsDB.array();
+      const bannedWordsArray = client.bannedWordsDB.delete(key).array();
       client.bannedWordsFilter = new Searcher(bannedWordsArray, {
-        keySelector: (s) => s.word, threshold: 1, returnMatchData: true, useSellers: false,
+        keySelector: (s) => s.word, threshold: 1, returnMatchData: true, useSellers: false, ignoreSymbols: false,
       });
 
       client.success(message.channel, 'Successfully Removed From Banned Words!', `I've successfully removed \`${phrase.length === 0 ? `${word}` : `${word} ${phrase.join(' ')}`}\` from the banned words database!`);
@@ -82,6 +89,6 @@ module.exports.help = {
   name: 'word',
   category: 'moderation',
   description: 'Adds or removes words and phrases from the banned words database',
-  usage: '.word <add|remove> <word|"multiple words"> <ban> <#channels>\`',
+  usage: 'word <add|remove> <word|"multiple words"> <ban> <#channels>',
   details: '<add|remove> => Whether to add or remove words or phrases from the database.\n<word|"multiple words"> => The word or phrase to add to the database. NOTE: Use quotes (") when adding phrases.\n<ban> => Whether to ban the member automatically for using this word or phrase.\n<#channels> => The channels for which this word or phrase is banned. NOTE: Only needed if the word or phrase is not global.',
 };
