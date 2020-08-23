@@ -12,7 +12,8 @@ module.exports = async (client, messageReaction, user) => {
     if (reactionData.reactions.includes(messageReaction.emoji.name)) {
       const index = reactionData.reactions.findIndex((s) => s === messageReaction.emoji.name);
       const namesToEdit = reactionData.names[index].split(',');
-      const nameToRemove = namesToEdit.findIndex((s) => s.trim() === messageReaction.message.guild.members.cache.get(user.id).displayName);
+      const member = await messageReaction.message.guild.members.fetch(user.id);
+      const nameToRemove = namesToEdit.findIndex((s) => s.trim() === member.displayName);
       namesToEdit.splice(nameToRemove, 1);
 
       let newSignUp = '';

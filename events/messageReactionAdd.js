@@ -10,7 +10,8 @@ module.exports = async (client, messageReaction, user) => {
     if (reactionData.reactions.includes(messageReaction.emoji.name)) {
       const index = reactionData.reactions.findIndex((s) => s === messageReaction.emoji.name);
       const namesToEdit = reactionData.names[index];
-      const newNames = `${namesToEdit === '' ? '' : `${namesToEdit.trim()},`} ${messageReaction.message.guild.members.cache.get(user.id).displayName}`;
+      const member = await messageReaction.message.guild.members.fetch(user.id);
+      const newNames = `${namesToEdit === '' ? '' : `${namesToEdit.trim()},`} ${member.displayName}`;
 
       let newSignUp = '';
       for (let i = 0; i < reactionData.signUpSheet.length; i++) {
