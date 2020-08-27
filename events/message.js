@@ -54,10 +54,13 @@ module.exports = async (client, message) => {
       let match;
 
       for (let index = 0; index < tokens.length; index++) {
+        if (ban) {
+          break;
+        }
         const matches = client.bannedWordsFilter.search(tokens[index]);
 
-        if (matches.length !== 0) {
-          const chkMatch = client.bannedWordsDB.find((w) => w.word === matches[0].original);
+        for (let mIndex = 0; mIndex < matches.length; mIndex++) {
+          const chkMatch = client.bannedWordsDB.find((w) => w.word === matches[mIndex].original && w.phrase.join(' ') === matches[mIndex].item.phrase.join(' '));
 
           // Only check if we're not already deleting this message, or the matched word is an autoBan
           if (!del || chkMatch.autoBan) {
