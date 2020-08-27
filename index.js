@@ -136,7 +136,7 @@ Object.assign(client, Enmap.multi(['userDB', 'infractionDB', 'memberStats'], { f
 
 // Banned words array and Searcher
 const bannedWordsArray = client.bannedWordsDB.array();
-client.bannedWordsfilter = new Searcher(bannedWordsArray, {
+client.bannedWordsFilter = new Searcher(bannedWordsArray, {
   keySelector: (s) => s.word, threshold: 1, returnMatchData: true, useSellers: false,
 });
 
