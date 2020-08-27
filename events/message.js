@@ -106,15 +106,15 @@ module.exports = async (client, message) => {
 
         const modLogCh = client.channels.cache.get(client.config.modLog);
 
+        message.delete()
+          .catch((err) => client.error(modLogCh, 'Message Delete Failed!', `I've failed to delete a message containing a banned word from ${message.author}! ${err}`));
+
         if (ban) {
           message.guild.members.ban(message.author, { reason: '[Auto] Banned Word', days: 1 })
             .catch((err) => client.error(modLogCh, 'Ban Failed!', `I've failed to ban ${message.author}! ${err}`));
-        } else {
-          message.delete()
-            .catch((err) => client.error(modLogCh, 'Message Delete Failed!', `I've failed to delete a message containing a banned word from ${message.author}! ${err}`));
         }
 
-        embed.addField('Match', match.word, true)
+        embed.addField('Match', match.phrase.length === 0 ? match.word : `${match.word} ${match.phrase.join(' ')}`, true)
           .addField('Action', ban ? 'Banned' : 'Deleted', true);
 
         modLogCh.send(embed);
