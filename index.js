@@ -131,13 +131,13 @@ client.twitter = new Twitter({
 // Start up the twitter webhook listener
 client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, client.config.twitterHookToken);
 
-Object.assign(client, Enmap.multi(['enabledCmds', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'sessionDB', 'muteDB', 'reactionRoleDB', 'bannedWordsDB'], { ensureProps: true }));
+Object.assign(client, Enmap.multi(['enabledCmds', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'sessionDB', 'muteDB', 'reactionRoleDB', 'bannedWordsDB', 'reactionSignUp'], { ensureProps: true }));
 Object.assign(client, Enmap.multi(['userDB', 'infractionDB', 'memberStats'], { fetchAll: false, ensureProps: true }));
 
 // Banned words array and Searcher
 const bannedWordsArray = client.bannedWordsDB.array();
 client.bannedWordsFilter = new Searcher(bannedWordsArray, {
-  keySelector: (s) => s.word, threshold: 1, returnMatchData: true, useSellers: false,
+  keySelector: (s) => s.word, threshold: 1, returnMatchData: true, useSellers: false, ignoreSymbols: false,
 });
 
 client.login(config.token).then(() => {

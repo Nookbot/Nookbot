@@ -39,6 +39,10 @@ module.exports.run = (client, message, args, level) => { // eslint-disable-line 
         global = false;
       }
 
+      if (client.bannedWordsDB.find((s) => s.word === word && (s.phrase.length === 0 ? true : s.phrase.join(' ') === phrase.join(' ')))) {
+        return client.error(message.channel, 'Already in Database!', `The ${phrase.length === 0 ? `word \`${word}\`` : `phrase \`${word} ${phrase.join(' ')}\``} is already in the banned words database! Please remove it if you wish to change an option.`);
+      }
+
       client.bannedWordsFilter.add({ word });
 
       client.bannedWordsDB.set(client.bannedWordsDB.autonum, {
@@ -54,18 +58,16 @@ module.exports.run = (client, message, args, level) => { // eslint-disable-line 
     case 'delete':
     case 'del':
     case 'd': {
-      const key = client.bannedWordsDB.findKey((s) => (s.word === word && s.phrase.length === 0 ? true : s.phrase.join(' ') === phrase.join(' ')));
+      const key = client.bannedWordsDB.findKey((s) => s.word === word && (s.phrase.length === 0 ? true : s.phrase.join(' ') === phrase.join(' ')));
 
       if (!key) {
         client.error(message.channel, 'Not In Database', `The ${phrase.length === 0 ? `word \`${word}\`` : `phrase \`${word} ${phrase.join(' ')}\``} does not exist in the banned words database and therefore cannot be removed!`);
         break;
       }
 
-      
-
       const bannedWordsArray = client.bannedWordsDB.delete(key).array();
       client.bannedWordsFilter = new Searcher(bannedWordsArray, {
-        keySelector: (s) => s.word, threshold: 1, returnMatchData: true, useSellers: false,
+        keySelector: (s) => s.word, threshold: 1, returnMatchData: true, useSellers: false, ignoreSymbols: false,
       });
 
       client.success(message.channel, 'Successfully Removed From Banned Words!', `I've successfully removed \`${phrase.length === 0 ? `${word}` : `${word} ${phrase.join(' ')}`}\` from the banned words database!`);

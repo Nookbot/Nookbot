@@ -1,3 +1,5 @@
+const schedule = require('node-schedule');
+
 module.exports = (client) => {
   if (!client.firstReady) {
     let counter = 1;
@@ -81,6 +83,25 @@ module.exports = (client) => {
       client.reactionRoleDB.keyArray().forEach((msgID) => {
         const { channel } = client.reactionRoleDB.get(msgID);
         client.channels.cache.get(channel).messages.fetch(msgID);
+      });
+
+      // Cache signup sheet
+      const data = client.reactionSignUp.get('data');
+      client.channels.cache.get(data.channelID).messages.fetch(data.messageID);
+
+      // Schedule reset of signup stats
+      const rule = new schedule.RecurrenceRule();
+      rule.dayOfWeek = 0;
+      rule.hour = 0;
+
+      schedule.scheduleJob(rule, () => {
+        const keyArray = client.reactionSignUp.keyArray();
+        keyArray.forEach((k) => {
+          if (k !== 'data') {
+            client.reactionSignUp.set(k, 0, 'signUpsThisWeek');
+            client.reactionSignUp.set(k, 0, 'hoursThisWeek');
+          }
+        });
       });
 
       try {
