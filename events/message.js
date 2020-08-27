@@ -66,11 +66,15 @@ module.exports = async (client, message) => {
 
             let matchedPhrase = true;
             if (match.phrase.length !== 0) {
-              for (let i = 0; i < match.phrase.length; i++) {
-                if (tokens[index + (i + 1)].toLowerCase() !== match.phrase[i].toLowerCase()) {
-                  matchedPhrase = false;
-                  break;
+              if (match.phrase.length < (tokens.length - index)) {
+                for (let i = 0; i < match.phrase.length; i++) {
+                  if (tokens[index + (i + 1)].toLowerCase() !== match.phrase[i].toLowerCase()) {
+                    matchedPhrase = false;
+                    break;
+                  }
                 }
+              } else {
+                matchedPhrase = false;
               }
             }
 
