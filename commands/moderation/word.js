@@ -43,7 +43,9 @@ module.exports.run = (client, message, args, level) => { // eslint-disable-line 
         return client.error(message.channel, 'Already in Database!', `The ${phrase.length === 0 ? `word \`${word}\`` : `phrase \`${word} ${phrase.join(' ')}\``} is already in the banned words database! Please remove it if you wish to change an option.`);
       }
 
-      client.bannedWordsFilter.add({ word });
+      client.bannedWordsFilter.add({
+        word, phrase, autoBan, global, blockedChannels,
+      });
 
       client.bannedWordsDB.set(client.bannedWordsDB.autonum, {
         word, phrase, autoBan, global, blockedChannels,

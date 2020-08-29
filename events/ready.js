@@ -1,4 +1,5 @@
 const schedule = require('node-schedule');
+const moment = require('moment');
 
 module.exports = (client) => {
   if (!client.firstReady) {
@@ -92,7 +93,7 @@ module.exports = (client) => {
       // Schedule reset of signup stats
       schedule.scheduleJob({ dayOfWeek: 0, hour: 0, minute: 0 }, async () => {
         const mods = client.reactionSignUp.map((v, k) => ({ id: k, hours: v.hoursThisWeek })).sort((a, b) => b.hours - a.hours);
-        let msg = '**Sign Up Sheet Statistics**\nRank - Name - Hours';
+        let msg = `**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD MM YYYY')}-${moment().format('DD MM YYYY')})**\nRank - Name - Hours`;
         client.asyncForEach(mods, async (k, i) => {
           if (k.id !== 'data') {
             const guild = client.guilds.cache.get(client.config.mainGuild);
