@@ -34,8 +34,13 @@ module.exports = async (client, messageReaction, user) => {
       if (client.reactionSignUp.get(user.id).channels.length === 0) {
         const start = client.reactionSignUp.get(user.id, 'start');
         const duration = moment.duration(moment().diff(moment(start)));
-        const hoursThisWeek = Math.round(duration.asHours() * 1000) / 1000;
-        client.reactionSignUp.math(user.id, '+', hoursThisWeek, 'hoursThisWeek');
+        const hoursToAdd = Math.round(duration.asHours() * 1000) / 1000;
+
+        // eslint-disable-next-line no-restricted-globals
+        if (isNaN(duration) || isNaN(hoursToAdd)) {
+          client.channels.get('629468250601816097').send(`<@392398406552780800> please check logs for NaN values that just came through!\n**D**: ${duration}\n**H**: ${hoursToAdd}\n**CH**: ${client.reactionSignUp.get(user.id).hoursThisWeek}`);
+        }
+        client.reactionSignUp.math(user.id, '+', hoursToAdd.toFixed(3), 'hoursThisWeek');
         client.reactionSignUp.set(user.id, null, 'start');
       }
 

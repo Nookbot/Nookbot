@@ -93,12 +93,12 @@ module.exports = (client) => {
       // Schedule reset of signup stats
       schedule.scheduleJob({ dayOfWeek: 0, hour: 0, minute: 0 }, async () => {
         const mods = client.reactionSignUp.map((v, k) => ({ id: k, hours: v.hoursThisWeek })).sort((a, b) => b.hours - a.hours);
-        let msg = `**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD MM YYYY')}-${moment().format('DD MM YYYY')})**\nRank - Name - Hours`;
-        client.asyncForEach(mods, async (k, i) => {
+        let msg = `**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().format('DD/MM/YYYY')})**\nRank - Name - Hours`;
+        await client.asyncForEach(mods, async (k, i) => {
           if (k.id !== 'data') {
             const guild = client.guilds.cache.get(client.config.mainGuild);
             const modMember = guild.members.cache.get(k.id) || await guild.members.fetch(k.id);
-            msg += `\n#${i + 1} - **${modMember ? modMember.displayName : 'Unknown Mod'}** (${k.id}) - ${k.hoursThisWeek} hours`;
+            msg += `\n#${i + 1} - **${modMember ? modMember.displayName : 'Unknown Mod'}** (${k.id}) - ${k.hours} hours`;
             client.reactionSignUp.set(k.id, 0, 'signUpsThisWeek');
             client.reactionSignUp.set(k.id, 0, 'hoursThisWeek');
           }
