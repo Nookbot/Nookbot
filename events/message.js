@@ -67,6 +67,7 @@ module.exports = async (client, message) => {
             // This is to save the first match that caused the message to get deleted or banned
             match = chkMatch;
 
+            let chkDel = false;
             let matchedPhrase = true;
             if (match.phrase.length !== 0) {
               if (match.phrase.length < (tokens.length - index)) {
@@ -84,14 +85,18 @@ module.exports = async (client, message) => {
             if (matchedPhrase) {
               if (match.blockedChannels && match.blockedChannels.length !== 0) {
                 if (match.blockedChannels.includes(message.channel.id)) {
-                  del = true;
+                  chkDel = true;
                 }
               } else {
-                del = true;
+                chkDel = true;
               }
             }
 
-            if (del && match.autoBan) {
+            if (!del && chkDel) {
+              del = chkDel;
+            }
+
+            if (chkDel && match.autoBan) {
               ban = true;
               break; // Break on autoBan because we don't need to check for any other banned words.
             }
