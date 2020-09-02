@@ -64,14 +64,12 @@ module.exports = async (client, message) => {
 
           // Only check if we're not already deleting this message, or the matched word is an autoBan
           if (!del || chkMatch.autoBan) {
-            // This is to save the first match that caused the message to get deleted or banned
-            match = chkMatch;
-
+            let chkDel = false;
             let matchedPhrase = true;
-            if (match.phrase.length !== 0) {
-              if (match.phrase.length < (tokens.length - index)) {
-                for (let i = 0; i < match.phrase.length; i++) {
-                  if (tokens[index + (i + 1)].toLowerCase() !== match.phrase[i].toLowerCase()) {
+            if (chkMatch.phrase.length !== 0) {
+              if (chkMatch.phrase.length < (tokens.length - index)) {
+                for (let i = 0; i < chkMatch.phrase.length; i++) {
+                  if (tokens[index + (i + 1)].toLowerCase() !== chkMatch.phrase[i].toLowerCase()) {
                     matchedPhrase = false;
                     break;
                   }
@@ -82,16 +80,23 @@ module.exports = async (client, message) => {
             }
 
             if (matchedPhrase) {
-              if (match.blockedChannels && match.blockedChannels.length !== 0) {
-                if (match.blockedChannels.includes(message.channel.id)) {
-                  del = true;
+              if (chkMatch.blockedChannels && chkMatch.blockedChannels.length !== 0) {
+                if (chkMatch.blockedChannels.includes(message.channel.id)) {
+                  chkDel = true;
                 }
               } else {
-                del = true;
+                chkDel = true;
               }
             }
 
-            if (del && match.autoBan) {
+            if (!del && chkDel) {
+              // This is to save the first match that caused the message to get deleted or banned
+              match = chkMatch;
+              del = chkDel;
+            }
+
+            if (chkDel && chkMatch.autoBan) {
+              match = chkMatch;
               ban = true;
               break; // Break on autoBan because we don't need to check for any other banned words.
             }
