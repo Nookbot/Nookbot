@@ -118,6 +118,7 @@ client.songQueue = {
 client.imageOnlyFilterCount = 0;
 client.imageAndTextOnlyFilterCount = 0;
 client.newlineLimitFilterCount = 0;
+client.imageAndLinkFilterCount = 0;
 client.noMentionFilterCount = 0;
 
 // Twitter object for listening for tweets

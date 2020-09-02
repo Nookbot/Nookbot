@@ -2,7 +2,7 @@ const moment = require('moment');
 
 /* eslint-disable consistent-return */
 module.exports = async (client, messageReaction, user) => {
-  if (user.bot || messageReaction.message.guild.id !== client.config.mainGuild) {
+  if (user.bot || !messageReaction.message.guild || messageReaction.message.guild.id !== client.config.mainGuild) {
     return;
   }
 

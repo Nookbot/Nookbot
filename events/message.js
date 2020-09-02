@@ -165,9 +165,7 @@ module.exports = async (client, message) => {
         if (client.imageOnlyFilterCount === 5) {
           client.imageOnlyFilterCount = 0;
           const autoMsg = await message.channel.send('Image Only Channel!\nThis channel only allows posts with images. Everything else is automatically deleted.');
-          setTimeout(() => {
-            autoMsg.delete();
-          }, 30000);
+          autoMsg.delete({ timeout: 30000 });
         }
       }
       return;
@@ -189,10 +187,10 @@ module.exports = async (client, message) => {
       return;
     }
 
-    // Delete posts with too many new line characters or images to prevent spammy messages in trade channels
-    if (message.guild && client.config.newlineLimitChannels.includes(message.channel.id)
-        && ((message.content.match(/\n/g) || []).length >= client.config.newlineLimit
-        || (message.attachments.size + (message.content.match(/https?:\/\//gi) || []).length) >= client.config.imageLinkLimit)
+    // Delete posts with too many new lines or charactersto prevent spammy messages
+    if (message.guild && ((message.content.match(/\n/g) || []).length >= client.config.newlineLimit
+        || (message.content.length > client.config.charLimit))
+        && !client.config.newlineAndCharProtectedChannels.includes(message.channel.id)
         && level[1] < 2) {
       // Message is in the guild, in a channel that has a limit on newline characters, and has too many or too many links + attachments, and is not a mod's message, so delete
       if (!message.deleted && message.deletable) {
@@ -200,10 +198,24 @@ module.exports = async (client, message) => {
         client.newlineLimitFilterCount += 1;
         if (client.newlineLimitFilterCount === 5) {
           client.newlineLimitFilterCount = 0;
-          const autoMsg = await message.channel.send('Too Many New Lines or Attachments + Links!\nThis channel only allows posts with less than 10 newline characters and less than 3 attachments + links in them. Messages with more than that are automatically deleted.');
-          setTimeout(() => {
-            autoMsg.delete();
-          }, 30000);
+          const autoMsg = await message.channel.send('Too Many New Lines or Characters!\nThis channel only allows posts with less than 10 new lines and less than 1000 characters. Messages with more than that are automatically deleted.');
+          autoMsg.delete({ timeout: 30000 });
+        }
+      }
+      return;
+    }
+
+    // Delete posts with too many attachments or links
+    if (message.guild && (message.attachments.size + (message.content.match(/https?:\/\//gi) || []).length) >= client.config.imageLinkLimit
+       && !client.config.imageAndLinkProtectedChannels.includes(message.channel.id)
+       && level[1] < 2) {
+      if (!message.deleted && message.deletable) {
+        message.delete();
+        client.imageAndLinkFilterCount += 1;
+        if (client.imageAndLinkFilterCount === 5) {
+          client.imageAndLinkFilterCount = 0;
+          const autoMsg = await message.channel.send('Too Many Attachments + Links!\nThis channel only allows posts with less 3 attachments + links. Messages with more than that are automatically deleted.');
+          autoMsg.delete({ timeout: 30000 });
         }
       }
       return;
@@ -220,9 +232,7 @@ module.exports = async (client, message) => {
         if (client.noMentionFilterCount === 5) {
           client.noMentionFilterCount = 0;
           const autoMsg = await message.channel.send('No Mention Channel!\nThis channel is to be kept clear of @ mentions of any members. Any message mentioning another member will be automatically deleted.');
-          setTimeout(() => {
-            autoMsg.delete();
-          }, 30000);
+          autoMsg.delete({ timeout: 30000 });
         }
       }
       return;
