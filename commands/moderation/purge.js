@@ -28,7 +28,7 @@ module.exports.run = async (client, message, args, level) => {
        return
     }
     
-    for(var i = deleteCount; i != 0; i = i - 100) {
+    for(var i = deleteCount; i > 0; i = i - 100) {
        if(i < 100) {
           message.channel.bulkDelete(i).catch((error) => client.error(message.channel, 'Purge Failed!', `Couldn't delete messages because: \`${error}\``));
        }
