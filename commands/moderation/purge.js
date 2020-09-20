@@ -23,8 +23,8 @@ module.exports.run = async (client, message, args, level) => {
   const descision = await client.reactPrompt(message, `Would you like to delete ${deleteCount} messages from <#${message.channel.id}>?`);
 
   if (descision) {
-    for(var i = 0; i >= deleteCount; i++) {
-       message.channel.bulkDelete(deleteCount).catch((error) => client.error(message.channel, 'Purge Failed!', `Couldn't delete messages because: \`${error}\``));
+    for(var i = 0; i != 0; i = i - 100) {
+       message.channel.bulkDelete(100).catch((error) => client.error(message.channel, 'Purge Failed!', `Couldn't delete messages because: \`${error}\``));
        sleep(0.2); // No more ratelimits pls.
     };
   }
