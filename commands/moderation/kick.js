@@ -19,7 +19,7 @@ module.exports.run = async (client, message, args, level) => {
   // Kicks the member
   await member.kick(reason).catch((error) => client.error(message.channel, 'Kick Failed!', `I've failed to kick this member! Error: ${error}`));
   // If kick is successful, display this
-  return client.success(message.channel, 'Kick Successful!', `I've successfully kicked **${member.tag}**!`);
+  return client.success(message.channel, 'Kick Successful!', `I've successfully kicked **${member.user.tag}**!`);
 };
 
 module.exports.conf = {

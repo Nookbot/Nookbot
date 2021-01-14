@@ -6,7 +6,7 @@ module.exports = (client) => {
     let counter = 1;
     client.firstReady = true;
     console.log('First ready event triggered, loading the guild.');
-    const intv = setInterval(() => {
+    const intv = setInterval(async () => {
       const mainGuild = client.guilds.cache.get(client.config.mainGuild);
       const modMailGuild = client.guilds.cache.get(client.config.modMailGuild);
       if (!mainGuild || !modMailGuild) {
@@ -90,32 +90,42 @@ module.exports = (client) => {
       const data = client.reactionSignUp.get('data');
       client.channels.cache.get(data.channelID).messages.fetch(data.messageID);
 
+      // Cache middleman sheet and request channel message
+      const middlemanChannel = client.channels.cache.get('776980847273967626');
+      const requestChannel = client.channels.cache.get('750150303692619817');
+      const middlemanMsg = await middlemanChannel.messages.fetch('781387060807729192');
+      await middlemanMsg.reactions.cache.first().users.fetch();
+      await requestChannel.messages.fetch('782464950798516244');
+
       // Schedule reset of signup stats
       schedule.scheduleJob({ dayOfWeek: 0, hour: 0, minute: 0 }, async () => {
-        const mods = client.reactionSignUp.map((v, k) => ({ id: k, hours: v.hoursThisWeek })).sort((a, b) => b.hours - a.hours);
-        let msg = `**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nRank - Name - Hours`;
+        const mods = client.reactionSignUp.map((v, k) => ({ id: k, hours: v.hours ? v.hours.total : undefined })).sort((a, b) => b.hours - a.hours);
+        let msg = `**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nRank - Name - Hours\nChannel/Category - Hours`;
         await client.asyncForEach(mods, async (k, i) => {
           if (k.id !== 'data') {
             const guild = client.guilds.cache.get(client.config.mainGuild);
             const modMember = guild.members.cache.get(k.id) || await guild.members.fetch(k.id);
+            msg += `\n#${i + 1} - **${modMember.displayName}** (${k.id}) - \`${k.hours} hours\``;
+
+            const mod = client.reactionSignUp.get(k.id);
+            const { channelHours } = client.addHours(mod);
+            msg += channelHours.length === 0 ? '\n' : `\n${channelHours.join('\n')}\n`;
 
             try {
               const dmChannel = await modMember.createDM();
-              await dmChannel.send(`**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nName - Hours\n**${modMember ? modMember.displayName : 'Unknown Mod'}** (${k.id}) - ${k.hours} hours`);
+              await dmChannel.send(`**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nName - Hours\nChannel/Category - Hours\n**${modMember ? modMember.displayName : 'Unknown Mod'}** (${k.id}) - ${k.hours} hours\n\n${channelHours.join('\n')}`);
               client.success(dmChannel, 'Reset Sign Up Statistics!', "I've reset sign up statistics! Above is your clocked hours for the week!");
             } catch (e) {
               // Nothing to do here
             }
 
-            msg += `\n#${i + 1} - **${modMember ? modMember.displayName : 'Unknown Mod'}** (${k.id}) - ${k.hours} hours`;
-            client.reactionSignUp.set(k.id, 0, 'signUpsThisWeek');
-            client.reactionSignUp.set(k.id, 0, 'hoursThisWeek');
+            client.reactionSignUp.set(k.id, { total: 0 }, 'hours');
           }
         });
 
-        const HMChannel = client.channels.cache.get('693638950404882473') || await client.channels.fetch('693638950404882473');
-        await HMChannel.send(msg, { split: true });
-        return client.success(HMChannel, 'Successfully Reset Sign Up Statistics!', "I've successfully reset sign up statistics for the week!");
+        const HMCmdsCh = client.channels.cache.get('776571947546443796') || await client.channels.fetch('776571947546443796');
+        await HMCmdsCh.send(msg, { split: true });
+        return client.success(HMCmdsCh, 'Successfully Reset Sign Up Statistics!', "I've successfully reset sign up statistics for the week!");
       });
 
       try {

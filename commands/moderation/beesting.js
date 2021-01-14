@@ -23,7 +23,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
     return client.error(message.channel, 'Invalid Number!', 'Please provide a valid number for the stings to give!');
   }
 
-  const reason = args[2] ? args.slice(2).join(' ') : 'No reason given.';
+  const noDelete = !!(args[2] === 'nodelete' || args[2] === 'nd');
+  const reason = args[noDelete ? 3 : 2] ? args.slice(noDelete ? 3 : 2).join(' ') : 'No reason provided.';
 
   let curPoints = 0;
   const time = Date.now();
@@ -125,7 +126,7 @@ For more information about why you were warned, please read #rules-you-must-read
 
   // Perform the required action
   if (ban) {
-    await client.guilds.cache.get(client.config.mainGuild).members.ban(member, { reason: '[Auto] Beestings', days: 1 }).catch((err) => {
+    await client.guilds.cache.get(client.config.mainGuild).members.ban(member, { reason: '[Auto] Beestings', days: noDelete ? 0 : 1 }).catch((err) => {
       client.error(client.channels.cache.get(client.config.modLog), 'Ban Failed!', `I've failed to ban this member! ${err}`);
     });
   } else if (mute) {

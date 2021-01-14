@@ -25,6 +25,25 @@ module.exports = async (client, message) => {
     await message.react(innocent);
   }
 
+  // Ping in #request-a-middleman
+  if (message.channel.id === '750150303692619817') {
+    let ping = false;
+    if (!cooldowns.has('middlemanping')) {
+      ping = true;
+      cooldowns.set('middlemanping', Date.now());
+    } else if ((Date.now() - cooldowns.get('middlemanping')) > 300000) {
+      ping = true;
+      cooldowns.set('middlemanping', Date.now());
+    }
+
+    if (ping) {
+      const mmChannel = client.channels.cache.get('776980847273967626');
+      const mmSignUp = mmChannel.messages.cache.get('781387060807729192');
+      const mmToPing = mmSignUp.reactions.cache.first().users.cache.filter((mm) => mm.id !== client.user.id).map((mm) => `<@${mm.id}>`);
+      message.channel.send(mmToPing.join(', '));
+    }
+  }
+
   if (message.guild && !message.member) {
     await message.guild.members.fetch(message.author);
   }
@@ -297,7 +316,9 @@ module.exports = async (client, message) => {
   message.author.permLevel = level[1];
 
   if (level[1] < client.levelCache[cmd.conf.permLevel]) {
-    client.error(message.channel, 'Invalid Permissions!', `You do not currently have the proper permssions to run this command!\n**Current Level:** \`${level[0]}: Level ${level[1]}\`\n**Level Required:** \`${cmd.conf.permLevel}: Level ${client.levelCache[cmd.conf.permLevel]}\``);
+    if (level[1] > 2) {
+      client.error(message.channel, 'Invalid Permissions!', `You do not currently have the proper permssions to run this command!\n**Current Level:** \`${level[0]}: Level ${level[1]}\`\n**Level Required:** \`${cmd.conf.permLevel}: Level ${client.levelCache[cmd.conf.permLevel]}\``);
+    }
     return console.log(`${message.author.tag} (${message.author.id}) tried to use cmd '${cmd.help.name}' without proper perms!`);
   }
 

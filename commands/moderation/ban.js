@@ -18,7 +18,8 @@ module.exports.run = async (client, message, args, level) => {
   }
 
   // Sets reason shown in audit logs
-  const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided.';
+  const noDelete = !!(args[1] === 'nodelete' || args[1] === 'nd');
+  const reason = args[noDelete ? 2 : 1] ? args.slice(noDelete ? 2 : 1).join(' ') : 'No reason provided.';
 
   try {
     const dmChannel = await member.createDM();
@@ -31,7 +32,7 @@ ${client.config.banAppealLink}`);
   }
 
   // Bans the member
-  return message.guild.members.ban(member, { reason, days: 1 }).then((memberBanned) => {
+  return message.guild.members.ban(member, { reason, days: noDelete ? 0 : 1 }).then((memberBanned) => {
     // If ban is successful, display this
     client.success(message.channel, 'Ban Successful!', `${message.author}, I've successfully banned **${memberBanned.guild ? memberBanned.user.tag : `${memberBanned.username}#${memberBanned.discriminator}` || memberBanned}**!`);
   }).catch((error) => client.error(message.channel, 'Ban Failed!', `${message.author}, I've failed to ban this member! ${error}`));
