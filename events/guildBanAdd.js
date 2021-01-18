@@ -1,6 +1,10 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, guild, user) => {
+  if (guild.id !== client.config.mainGuild) {
+    return;
+  }
+
   const embed = new Discord.MessageEmbed()
     .setAuthor(user.tag, user.displayAvatarURL())
     .setColor('#ff9292')

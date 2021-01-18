@@ -1,32 +1,55 @@
 /* eslint-disable consistent-return */
 
 const ytdl = require('ytdl-core-discord');
-const ytpl = require('ytpl');
+const { google } = require('googleapis');
 const { findBestMatch: findBest } = require('string-similarity');
 
 module.exports.run = async (client, message, args, level, Discord) => {
   // Secret update command to redownload the update
   if (args[0] === 'update') {
     if (level >= 9) {
-      return ytpl('PLmJ4dQSfFie-81me0jlzewxPIxKuO2-sI', { limit: 0 }, (err, playlistObj) => {
-        if (err) {
-          console.error(err);
-          return client.error(message.channel, 'Error Loading Playlist!', 'The playlist failed to load and the song was not added.');
-        }
+      const youtube = google.youtube({
+        version: 'v3',
+        auth: client.config.youtubeAPIKey,
+      });
 
-        // Clear the database of old videos
-        client.playlist.deleteAll();
+      let nextPageToken = '';
+      const waitMsg = await message.channel.send('Retrieving playlist. Please wait until this has completed.');
 
-        // Add the new playlist to the database
-        playlistObj.items.forEach((video) => {
-          client.playlist.set(video.id, video.title.toLowerCase()
-            .replace(/animal|crossing|ost|orginal|soundtrack|[^\w]/gi, ' ')
-            .replace(/\s+/g, ' ')
-            .trim());
+      // Clear the database of old videos
+      client.playlist.deleteAll();
+
+      while (nextPageToken !== undefined) {
+        // eslint-disable-next-line no-await-in-loop
+        const res = await youtube.playlistItems.list({
+          part: 'id,snippet',
+          playlistId: 'PLmJ4dQSfFie-81me0jlzewxPIxKuO2-sI',
+          maxResults: 50,
+          pageToken: nextPageToken,
         });
 
-        return client.success(message.channel, 'Playlist Database Updated!', 'The newest version of the playlist has been loaded into the bot\'s database!');
-      });
+        if (res.status !== 200) {
+          console.error(res.statusText);
+          return waitMsg.edit(`${client.emoji.redX} **Error Loading Playlist!**\nThe playlist failed to load and the song was not added.`);
+        }
+
+        try {
+          // Add the new playlist to the database
+          res.data.items.forEach((video) => {
+            client.playlist.set(video.snippet.resourceId.videoId, video.snippet.title.toLowerCase()
+              .replace(/animal|crossing|ost|orginal|soundtrack|[^\w]/gi, ' ')
+              .replace(/\s+/g, ' ')
+              .trim());
+          });
+        } catch (e) {
+          console.error(e);
+          return waitMsg.edit(`${client.emoji.redX} **Error Updating Database!**\nThe playlist failed to update properly.`);
+        }
+
+        nextPageToken = res.data.nextPageToken;
+      }
+
+      return waitMsg.edit(`${client.emoji.checkMark} **Playlist Database Update!**\nThe newest version of the playlist has been loaded into the bot's database!`);
     }
     return client.error(message.channel, 'Permission Denied!', 'You do not have permission to update the playlist database!');
   }
@@ -179,17 +202,46 @@ Playing: ${client.songQueue.playing ? client.emoji.checkMark : client.emoji.redX
         return updateInfo('Song Already Playing!', 'A song is already playing, you can add new songs with \`.music play <song name>\`.');
       }
       return;
-    case 'skip':
+    case 'skip': {
       // Check if there's a song to skip
       if (client.songQueue.songs.length === 0) {
         return client.error(message.channel, 'No Song To Skip!', 'No song is currently playing, so there is nothing to skip!');
       }
 
-      // End the current song, and this will load the next song if any are in the queue
-      if (client.songQueue.connection && client.songQueue.connection.dispatcher) {
+      const songToSkip = client.songQueue.songs[0].title;
+
+      const vote = await message.channel.send(`Skip **${songToSkip}**?\nA **60% majority** is required for a vote to pass.`);
+      await vote.react(client.emoji.checkMark);
+      await vote.react(client.emoji.redX);
+
+      const filter = (reaction, user) => [client.emoji.checkMark, client.emoji.redX].includes(reaction.emoji.name)
+          && voiceChannel.members.has(user.id);
+
+      let decision = false;
+      let percent;
+      await vote.awaitReactions(filter, { max: voiceChannel.members.size, time: 10000 })
+        .then((collected) => {
+          const voteToSkip = collected.get(client.emoji.checkMark) ? collected.get(client.emoji.checkMark).count - 1 : 0;
+          const voteNotToSkip = collected.get(client.emoji.redX) ? collected.get(client.emoji.redX).count - 1 : 0;
+          const total = voteToSkip + voteNotToSkip;
+          percent = voteToSkip / total;
+
+          if (percent >= 0.6) {
+            decision = true;
+          }
+        })
+        .catch(console.error);
+
+      if (client.songQueue.connection && client.songQueue.connection.dispatcher && decision && songToSkip === client.songQueue.songs[0].title) {
         client.songQueue.connection.dispatcher.end('skip');
+        await vote.edit(`Skipped **${songToSkip}**!`);
+      } else {
+        await vote.edit(`${percent !== undefined ? `Vote **failed** with **${(percent * 100).toFixed(2)}%** in favor of skipping.` : 'Vote failed.'} Not skipping **${songToSkip}**.`);
       }
-      return;
+
+      await vote.reactions.removeAll();
+      break;
+    }
     case 'pause':
       // Check if a song is currently playing to pause
       if (client.songQueue.playing) {

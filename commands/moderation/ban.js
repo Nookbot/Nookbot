@@ -12,26 +12,14 @@ module.exports.run = async (client, message, args, level) => {
     }
   }
 
-  if (!member) {
-    const searchedMember = client.searchMember(args[0]);
-    if (searchedMember) {
-      const decision = await client.reactPrompt(message, `Would you like to ban \`${searchedMember.user.tag}\`?`);
-      if (decision) {
-        member = searchedMember;
-      } else {
-        message.delete().catch((err) => console.error(err));
-        return client.error(message.channel, 'Member Not Banned!', 'The prompt timed out, or you selected no.');
-      }
-    }
-  }
-
   // If no user mentioned, display this
   if (!member) {
     return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
   }
 
   // Sets reason shown in audit logs
-  const reason = args[1] ? args.slice(1).join(' ') : 'No reason provided.';
+  const noDelete = !!(args[1] === 'nodelete' || args[1] === 'nd');
+  const reason = args[noDelete ? 2 : 1] ? args.slice(noDelete ? 2 : 1).join(' ') : 'No reason provided.';
 
   try {
     const dmChannel = await member.createDM();
@@ -44,15 +32,15 @@ ${client.config.banAppealLink}`);
   }
 
   // Bans the member
-  return message.guild.members.ban(member, { reason, days: 1 }).then((memberBanned) => {
+  return message.guild.members.ban(member, { reason, days: noDelete ? 0 : 1 }).then((memberBanned) => {
     // If ban is successful, display this
-    client.success(message.channel, 'Ban Successful!', `I've successfully banned **${memberBanned.guild ? memberBanned.user.tag : `${memberBanned.username}#${memberBanned.discriminator}` || memberBanned}**!`);
-  }).catch((error) => client.error(message.channel, 'Ban Failed!', `I've failed to ban this member! ${error}`));
+    client.success(message.channel, 'Ban Successful!', `${message.author}, I've successfully banned **${memberBanned.guild ? memberBanned.user.tag : `${memberBanned.username}#${memberBanned.discriminator}` || memberBanned}**!`);
+  }).catch((error) => client.error(message.channel, 'Ban Failed!', `${message.author}, I've failed to ban this member! ${error}`));
 };
 
 module.exports.conf = {
   guildOnly: true,
-  aliases: ['b'],
+  aliases: [],
   permLevel: 'Mod',
   args: 1,
 };

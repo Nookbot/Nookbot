@@ -49,4 +49,7 @@ module.exports = {
   redX: '❌',
   warning: '⚠',
   gameDie: '🎲',
+  thumbsUp: '👍',
+  thumbsDown: '👎',
+  neutral: '↔️',
 };

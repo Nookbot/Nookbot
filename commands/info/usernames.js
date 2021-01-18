@@ -1,28 +1,19 @@
+/* eslint-disable no-restricted-globals */
 const moment = require('moment');
 
 // eslint-disable-next-line consistent-return
 module.exports.run = async (client, message, args, level, Discord) => {
-  let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || client.searchMember(args.join(' '));
-
-  if (!member) {
-    if (!args[0]) {
-      member = message.member;
-    } else if (client.userDB.get(parseInt(args[0], 10))) {
-      member = parseInt(args[0], 10);
-    } else {
-      return client.error(message.channel, 'Member Not Found!', 'This member may have left the server or the id provided is not a member id!');
-    }
-  }
+  const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || !isNaN(args[0]) ? args[0] : message.member;
 
   const userArray = [];
-  client.userDB.ensure(member === parseInt(args[0], 10) ? member : member.id, client.config.userDBDefaults).usernames.forEach((u) => {
+  client.userDB.ensure(member === args[0] ? member : member.id, client.config.userDBDefaults).usernames.forEach((u) => {
     userArray.unshift(`${moment.utc(u.timestamp).format('DD MMM YY HH:mm')} UTC: ${u.username}`);
   });
 
   let currentPage = 1;
   const maxPage = Math.ceil(userArray.length / 15) || 1;
   const embed = new Discord.MessageEmbed()
-    .setTitle(`Past usernames of ${member === parseInt(args[0], 10) ? member : member.user.tag}`)
+    .setTitle(`Past usernames of ${member === args[0] ? member : member.user.tag}`)
     .setDescription(`\`\`\`${userArray.slice(0, 15).join('\n') || 'No stored usernames.'}\`\`\``)
     .setFooter(`Page ${currentPage}/${maxPage}`)
     .setTimestamp();

@@ -1,6 +1,10 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, member) => {
+  if (member.guild.id !== client.config.mainGuild) {
+    return;
+  }
+
   // Raid checking
   // Add this member to the list of raid joins.
   client.raidJoins.push(member);
@@ -26,7 +30,10 @@ module.exports = async (client, member) => {
   if (storedMember.roles.length !== 0) {
     storedMember.roles.forEach((r) => {
       const role = member.guild.roles.cache.get(r);
-      if (role && !role.managed && role.id !== member.guild.id) {
+      if (role && !role.managed && role.id !== member.guild.id
+        && role.id !== client.config.reddRole && role.id !== client.config.headReddRole
+        && role.id !== client.config.modRole && role.id !== client.config.headModRole
+        && role.id !== client.config.adminRole) {
         member.roles.add(role);
       }
     });

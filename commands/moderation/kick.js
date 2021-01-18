@@ -1,20 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   // Setting member to first member memntioned
-  let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
-
-  if (!member) {
-    const searchedMember = client.searchMember(args[0]);
-    if (searchedMember) {
-      const decision = await client.reactPrompt(message, `Would you like to kick \`${searchedMember.user.tag}\`?`);
-      if (decision) {
-        member = searchedMember;
-      } else {
-        message.delete().catch((err) => console.error(err));
-        return client.error(message.channel, 'Member Not Kicked!', 'The prompt timed out, or you selected no.');
-      }
-    }
-  }
+  const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || await message.guild.members.fetch(args[0]);
 
   // If no member mentioned, display this message
   if (!member) {
@@ -32,7 +19,7 @@ module.exports.run = async (client, message, args, level) => {
   // Kicks the member
   await member.kick(reason).catch((error) => client.error(message.channel, 'Kick Failed!', `I've failed to kick this member! Error: ${error}`));
   // If kick is successful, display this
-  return client.success(message.channel, 'Kick Successful!', `I've successfully kicked **${member.tag}**!`);
+  return client.success(message.channel, 'Kick Successful!', `I've successfully kicked **${member.user.tag}**!`);
 };
 
 module.exports.conf = {

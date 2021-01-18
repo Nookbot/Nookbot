@@ -4,6 +4,12 @@ module.exports.run = (client, message, args) => {
     return;
   }
 
+  const member = message.guild.members.cache.get(message.author.id);
+  if (!member || !member.roles.cache.has(client.config.voiceRole)) {
+    client.error(message.channel, 'Not A Member Long Enough!', 'You must have the \`Voice\` role in order to use this command! Head to the <#722517717411823747> channel to acquire this role and use this command!');
+    return;
+  }
+
   // Number between 2 and 8
   const size = Math.max(Math.min(8, parseInt(args[0], 10) || 8), 2);
 

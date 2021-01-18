@@ -37,21 +37,22 @@ module.exports.run = async (client, message, args, level, Discord) => {
     }
     case 'user': {
       // Setting the member to the mentioned user
-      let member = message.mentions.members.first() || message.guild.members.cache.get(args[1]) || client.searchMember(args.slice(1).join(' '));
+      let member = message.mentions.members.first() || client.guilds.cache.get(client.config.mainGuild).members.cache.get(args[0]);
 
       if (!member && !args[1]) {
         member = message.member;
-      } else if (!member) {
-        return client.error(message.channel, 'Member Not Found!', 'This member may have left the server or the id provided is not a member id!');
       }
 
-      // Block everyone but mods or higher from using this command to show other users info.
-      if (member !== message.member && level < 2) {
-        return client.error(message.channel, 'Not Allowed!', 'You are not allowed to show user information on other users!');
+      if (!member) {
+        try {
+          member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(args[1]);
+        } catch (e) {
+          return client.error(message.channel, 'Member Not Found!', 'This member may have left the server or the id provided is not a member id!');
+        }
       }
 
-      const roles = member.roles.cache.filter((r) => r.id !== message.guild.id).map((r) => r.name).join(', ') || 'No Roles';
-      const roleSize = member.roles.cache.filter((r) => r.id !== message.guild.id).size;
+      const roles = member.roles.cache.filter((r) => r.id !== member.guild.id).map((r) => r.name).join(', ') || 'No Roles';
+      const roleSize = member.roles.cache.filter((r) => r.id !== member.guild.id).size;
 
       let activity = member.presence.status;
 
@@ -70,7 +71,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField('ID', member.user.id, true)
         .addField('Nickname', member.displayName, true)
         .addField('Account Created', moment(member.user.createdAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
-        .addField(`Joined *${message.guild.name}*`, moment(member.joinedAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
+        .addField(`Joined *${client.guilds.cache.get(client.config.mainGuild).name}*`, moment(member.joinedAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
         .addField(`Roles (${roleSize})`, roles, true)
         .addField('Status', activity, true);
 

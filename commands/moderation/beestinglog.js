@@ -1,5 +1,7 @@
 const moment = require('moment');
+const timezones = require('../../src/timezones.json');
 
+// eslint-disable-next-line consistent-return
 module.exports.run = async (client, message, args, level) => {
   let member;
   if (args.length > 0 && level >= 2) {
@@ -13,9 +15,6 @@ module.exports.run = async (client, message, args, level) => {
           // Don't need to send a message here
         }
       }
-    }
-    if (!member) {
-      member = client.searchMember(args[0]);
     }
 
     // If no user mentioned, display this
@@ -32,17 +31,32 @@ module.exports.run = async (client, message, args, level) => {
   let expMsg = '';
   let curPoints = 0;
   let curMsg = '';
+
   const time = Date.now();
+  let tz = args.find((arg) => timezones[arg.toUpperCase()]);
+  tz = tz ? tz.toUpperCase() : 'UTC';
+  let offset = timezones[tz];
+
+  if (offset === undefined) {
+    offset = 0;
+  }
+
+  // eslint-disable-next-line no-restricted-globals
+  let timeToUse = args.find((arg) => client.timeRegex.test(arg) && arg !== member.id);
+  if (!timeToUse || (timeToUse.toLowerCase() !== '24h' && timeToUse.toLowerCase() !== '12h')) {
+    timeToUse = '24h';
+  }
+
   infractions.forEach((i) => {
     // Only allow mods to see zero point stings, called notes, on a user
     if (i.points > 0 || level >= 2) {
       const moderator = client.users.cache.get(i.moderator);
       if ((i.points * 604800000) + i.date > time) {
         curPoints += i.points;
-        curMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+        curMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).add(offset, 'hours').format(`DD MMM YYYY ${timeToUse === '12h' ? 'hh:mm:ss a' : 'HH:mm:ss'}`)} ${tz}) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
       } else {
         expPoints += i.points;
-        expMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+        expMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).add(offset, 'hours').format(`DD MMM YYYY ${timeToUse === '12h' ? 'hh:mm:ss a' : 'HH:mm:ss'}`)} ${tz}) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
       }
     }
   });
@@ -70,7 +84,9 @@ module.exports.run = async (client, message, args, level) => {
     } else {
       await dmChannel.send('You do not have any bee stings!');
     }
-    return message.channel.send("I've sent you a DM!");
+    if (message.channel.type !== 'dm') {
+      return message.channel.send("I've sent you a DM!");
+    }
   } catch (e) {
     // Send basic version in channel
     if (curMsg || expMsg) {
@@ -92,6 +108,6 @@ module.exports.help = {
   name: 'beestinglog',
   category: 'moderation',
   description: 'Shows a list of bee stings given to a member',
-  usage: 'beestinglog <@member>',
-  details: '<@member> The member to list bee stings for.',
+  usage: 'beestinglog <@member> <timezone> <time to use>',
+  details: '<@member> => The member to list bee stings for.\n<timezone> => The timezone used to display the time stings were issued. Defaults to UTC.\n<time to use> => 12 or 24. Whether to use 12 or 24 hour time. Defaults to 24.',
 };

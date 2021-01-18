@@ -17,7 +17,8 @@ module.exports.run = (client, message, args) => {
         .sort((a, b) => b.uses - a.uses)
         .slice(0, num1)
         .forEach((e, i) => {
-          msg += `\n#${i + 1} - ${message.guild.emojis.cache.get(e.id).name} - ${e.uses}`;
+          const emoji = message.guild.emojis.cache.get(e.id);
+          msg += `\n#${i + 1} - ${emoji} (${emoji.name}) - ${e.uses}`;
         });
 
       if (!msg) {
@@ -34,7 +35,8 @@ module.exports.run = (client, message, args) => {
         .sort((a, b) => b.uses - a.uses)
         .slice(-num1)
         .forEach((e, i) => {
-          msg += `\n#${emojiDBSize - num1 + i + 1} - ${message.guild.emojis.cache.get(e.id).name} - ${e.uses}`;
+          const emoji = message.guild.emojis.cache.get(e.id);
+          msg += `\n#${emojiDBSize - num1 + i + 1} - ${emoji} (${emoji.name}) - ${e.uses}`;
         });
 
       if (!msg) {
@@ -51,7 +53,8 @@ module.exports.run = (client, message, args) => {
         .sort((a, b) => b.uses - a.uses)
         .filter((e) => e.uses >= num1)
         .forEach((e, i) => {
-          msg += `\n#${i + 1} - ${message.guild.emojis.cache.get(e.id).name} - ${e.uses}`;
+          const emoji = message.guild.emojis.cache.get(e.id);
+          msg += `\n#${i + 1} - ${emoji} (${emoji.name}) - ${e.uses}`;
         });
 
       if (!msg) {
@@ -68,7 +71,8 @@ module.exports.run = (client, message, args) => {
         .sort((a, b) => b.uses - a.uses)
         .filter((e) => e.uses <= num1)
         .forEach((e, i, a) => {
-          msg += `\n#${emojiDBSize - a.length + i + 1} - ${message.guild.emojis.cache.get(e.id).name} - ${e.uses}`;
+          const emoji = message.guild.emojis.cache.get(e.id);
+          msg += `\n#${emojiDBSize - a.length + i + 1} - ${emoji} (${emoji.name}) - ${e.uses}`;
         });
 
       if (!msg) {
@@ -91,7 +95,8 @@ module.exports.run = (client, message, args) => {
           .sort((a, b) => b.uses - a.uses)
           .slice(num1 - 1, num0)
           .forEach((e, i) => {
-            msg += `\n#${num1 + i} - ${message.guild.emojis.cache.get(e.id).name} - ${e.uses}`;
+            const emoji = message.guild.emojis.cache.get(e.id);
+            msg += `\n#${num1 + i} - ${emoji} (${emoji.name}) - ${e.uses}`;
           });
 
         if (!msg) {
@@ -114,7 +119,8 @@ module.exports.run = (client, message, args) => {
           .sort((a, b) => b.uses - a.uses)
           .forEach((e, i) => {
             if (emojiIDs.includes(e.id)) {
-              msg += `\n#${i + 1} - ${message.guild.emojis.cache.get(e.id).name} - ${e.uses}`;
+              const emoji = message.guild.emojis.cache.get(e.id);
+              msg += `\n#${i + 1} - ${emoji} (${emoji.name}) - ${e.uses}`;
             }
           });
 

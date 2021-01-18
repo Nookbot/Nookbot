@@ -1,6 +1,10 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, member) => {
+  if (member.guild.id !== client.config.mainGuild) {
+    return;
+  }
+
   client.userDB.ensure(member.id, client.config.userDBDefaults);
 
   member.roles.cache.forEach((r) => {

@@ -9,52 +9,67 @@ const config = {
   twitterAccessTokenSecret: '',
   followedTwitterUsers: [],
 
+  // YouTube
+  youtubeAPIKey: '',
+
   // Webhooks
   twitterHookID: '',
   twitterHookToken: '',
 
   // Raid Settings
   raidJoinsPerSecond: 10,
-  raidJoinCount: 10,
+  raidJoinCount: 30,
 
   // Settings
   prefix: '.',
-  verifiedRole: 'role ID',
-  reddRole: 'role ID',
-  headReddRole: 'role ID',
-  modRole: 'role ID',
-  headModRole: 'role ID',
-  adminRole: 'role ID',
-  staffChat: 'channel ID',
-  modMail: 'channel ID',
-  reportMail: 'channel ID',
-  actionLog: 'channel ID',
-  joinLeaveLog: 'channel ID',
-  modLog: 'channel ID',
-  musicText: 'channel ID',
-  music: 'channel ID',
-  sesReqText: 'channel ID',
-  sesCategory: 'channel ID',
-  calendar: 'channel ID',
+  verifiedRole: 'roleID',
+  mutedRole: 'roleID',
+  tradeRole: 'roleID',
+  voiceRole: 'roleID',
+  copperBookerRole: 'roleID',
+  reddRole: 'roleID',
+  headReddRole: 'roleID',
+  modRole: 'roleID',
+  headModRole: 'roleID',
+  adminRole: 'roleID',
+  staffChat: 'channelID',
+  actionLog: 'channelID',
+  joinLeaveLog: 'channelID',
+  modLog: 'channelID',
+  musicText: 'channelID',
+  music: 'channelID',
+  sesReqText: 'channelID',
+  sesCategory: 'categoryID',
+  calendar: 'channelID',
+  mainGuild: 'guildID',
+  modMailGuild: 'guildID',
+  modMailCopperBookerRole: 'roleID',
+  modMailReddRole: 'roleID',
+  modMailHeadReddRole: 'roleID',
+  modMailModRole: 'roleID',
+  modMailHeadModRole: 'roleID',
+  modMailAdminRole: 'roleID',
 
   // Image-Only channels
   imageOnlyChannels: ['channelID'],
 
-  // Newline Limit Settings
-  newlineLimitChannels: [],
+  imageAndTextOnlyChannels: ['channelID'],
+
+  // Newline Limit and Char Settings
+  newlineAndCharProtectedChannels: ['channelID'],
   newlineLimit: 10,
+  charLimit: 1000,
+
+  // Image and Link Settings
+  imageAndLinkProtectedChannels: ['channelID'],
   imageLinkLimit: 3,
 
   // No-Mention channels
   noMentionChannels: ['channelID'],
 
-  // Reputation Settings
-  negativeRepLimit: 20,
-  positiveRepLimit: 20,
-
   banAppealLink: 'LINK',
 
-  // UserDB
+  // UserDB Settings
   userDBDefaults: {
     friendcode: '',
     island: {
@@ -63,6 +78,8 @@ const config = {
       characterName: '',
       hemisphere: '',
       profileName: '',
+      dreamAddress: '',
+      creatorCode: '',
     },
     positiveRep: 0,
     negativeRep: 0,
@@ -78,13 +95,13 @@ const config = {
   // Bot Perms and Stuff
   ownerID: 'userID',
 
-  admins: ['userID', 'userID'],
+  admins: ['userID'],
 
   ignoreMember: ['userID'],
 
   ignoreChannel: ['channelID'],
 
-  support: ['userID', 'userID'],
+  support: ['userID'],
 
   // Guild Perms and Stuff
   permLevels: [
@@ -109,10 +126,24 @@ const config = {
     },
     {
       level: 2,
+      name: 'Copper & Booker',
+      check: (client, message) => {
+        if (message.guild) {
+          const copperBookerObj = message.guild.roles.cache.get((message.guild.id === config.modMailGuild) ? config.modMailCopperBookerRole : config.copperBookerRole);
+
+          if (copperBookerObj && message.member.roles.cache.has(copperBookerObj.id)) {
+            return true;
+          }
+        }
+        return false;
+      },
+    },
+    {
+      level: 3,
       name: 'Redd',
       check: (client, message) => {
         if (message.guild) {
-          const reddObj = message.guild.roles.cache.get(config.reddRole);
+          const reddObj = message.guild.roles.cache.get((message.guild.id === config.modMailGuild) ? config.modMailReddRole : config.reddRole);
 
           if (reddObj && message.member.roles.cache.has(reddObj.id)) {
             return true;
@@ -122,11 +153,11 @@ const config = {
       },
     },
     {
-      level: 3,
+      level: 4,
       name: 'Head Redd',
       check: (client, message) => {
         if (message.guild) {
-          const headReddObj = message.guild.roles.cache.get(config.headReddRole);
+          const headReddObj = message.guild.roles.cache.get((message.guild.id === config.modMailGuild) ? config.modMailHeadReddRole : config.headReddRole);
 
           if (headReddObj && message.member.roles.cache.has(headReddObj.id)) {
             return true;
@@ -136,11 +167,11 @@ const config = {
       },
     },
     {
-      level: 4,
+      level: 5,
       name: 'Mod',
       check: (client, message) => {
         if (message.guild) {
-          const modRoleObj = message.guild.roles.cache.get(config.modRole);
+          const modRoleObj = message.guild.roles.cache.get((message.guild.id === config.modMailGuild) ? config.modMailModRole : config.modRole);
 
           if (modRoleObj && message.member.roles.cache.has(modRoleObj.id)) {
             return true;
@@ -150,11 +181,11 @@ const config = {
       },
     },
     {
-      level: 5,
+      level: 6,
       name: 'Head Mod',
       check: (client, message) => {
         if (message.guild) {
-          const headModRoleObj = message.guild.roles.cache.get(config.headModRole);
+          const headModRoleObj = message.guild.roles.cache.get((message.guild.id === config.modMailGuild) ? config.modMailHeadModRole : config.headModRole);
 
           if (headModRoleObj && message.member.roles.cache.has(headModRoleObj.id)) {
             return true;
@@ -164,11 +195,11 @@ const config = {
       },
     },
     {
-      level: 6,
+      level: 7,
       name: 'Admin',
       check: (client, message) => {
         if (message.guild) {
-          const adminRoleObj = message.guild.roles.cache.get(config.adminRole);
+          const adminRoleObj = message.guild.roles.cache.get((message.guild.id === config.modMailGuild) ? config.modMailAdminRole : config.adminRole);
 
           if ((adminRoleObj && message.member.roles.cache.has(adminRoleObj.id)) || message.member.hasPermission('ADMINISTRATOR')) {
             return true;
@@ -178,7 +209,7 @@ const config = {
       },
     },
     {
-      level: 7,
+      level: 8,
       name: 'Server Owner',
       check: (client, message) => {
         if (message.guild && message.author.id === message.guild.ownerID) {
@@ -186,11 +217,6 @@ const config = {
         }
         return false;
       },
-    },
-    {
-      level: 8,
-      name: 'Bot Support',
-      check: (client, message) => config.support.includes(message.author.id),
     },
     {
       level: 9,

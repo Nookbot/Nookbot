@@ -1,37 +1,16 @@
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
-  // Sets the role to the Muted role
-  const role = message.guild.roles.cache.find((r) => r.name === 'Muted');
-
   // Sets the member to the user mentioned
-  let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
+  let member = message.mentions.members.first() || client.guilds.cache.get(client.config.mainGuild).members.cache.get(args[0]);
 
   if (!member) {
     if (parseInt(args[0], 10)) {
       try {
-        member = await message.guild.members.fetch(args[0]);
+        member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(args[0]);
       } catch (err) {
-        // Don't need to send a message here
+        return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
       }
     }
-  }
-
-  if (!member) {
-    const searchedMember = client.searchMember(args[0]);
-    if (searchedMember) {
-      const decision = await client.reactPrompt(message, `Would you like to mute \`${searchedMember.user.tag}\`?`);
-      if (decision) {
-        member = searchedMember;
-      } else {
-        message.delete().catch((err) => console.error(err));
-        return client.error(message.channel, 'Member Not Muted!', 'The prompt timed out, or you selected no.');
-      }
-    }
-  }
-
-  // If no user mentioned, display this
-  if (!member) {
-    return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
   }
 
   // Kick member if in voice
@@ -39,15 +18,20 @@ module.exports.run = async (client, message, args, level) => {
     member.voice.kick();
   }
 
-  // Adds the role to the member and deletes the message that initiated the command
-  member.roles.add(role).catch((err) => console.error(err));
-  message.delete().catch((err) => console.error(err));
-  return message.channel.send(`Successfully muted ${member}!`).catch((err) => console.error(err));
+  try {
+  // Adds the role to the member and removes the trade and voice roles
+    const mutedMember = await member.roles.add(client.config.mutedRole);
+    await mutedMember.roles.remove([client.config.tradeRole, client.config.voiceRole]);
+  } catch (e) {
+    return client.error(message.channel, 'Error!', `Failed to mute member! Error: ${e}`);
+  }
+
+  return client.success(message.channel, 'Success!', `${message.author}, I've successfully muted ${member}!`);
 };
 
 module.exports.conf = {
   guildOnly: true,
-  aliases: ['m'],
+  aliases: [],
   permLevel: 'Redd',
   args: 1,
 };
