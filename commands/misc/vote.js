@@ -15,9 +15,12 @@ module.exports.run = async (client, message, args, level) => {
     }
   }
 
+  const noNeutral = !!(args[1] === 'nn' || args[1] === 'noneutral');
   await msgToReact.react(client.emoji.thumbsUp);
   await msgToReact.react(client.emoji.thumbsDown);
-  await msgToReact.react(client.emoji.neutral);
+  if (!noNeutral) {
+    await msgToReact.react(client.emoji.neutral);
+  }
   return message.delete({ timeout: 1000 });
 };
 

@@ -175,7 +175,7 @@ module.exports = async (client, message) => {
   The member **${message.author.tag}** just mentioned ${message.mentions.members.size} members and was automatically muted for 10 minutes!
   They have been a member of the server for ${client.humanTimeBetween(Date.now(), message.member.joinedTimestamp)}.
   If you believe this member is a mention spammer bot, please ban them with the command:
-  \`.ban ${message.author.id} Raid Mention Spammer\``);
+  \`.sting ${message.author.id} 25 Raid Mention Spammer\``);
       }
     }
 
