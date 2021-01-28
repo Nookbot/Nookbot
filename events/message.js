@@ -261,6 +261,22 @@ module.exports = async (client, message) => {
       }
       return;
     }
+
+    // Delete posts with links in link blacklisted channels
+    if (message.guild && message.content.match(/https?:\/\//gi)
+        && client.config.linkBlacklistChannels.includes(message.channel.id)
+        && level[1] < 2) {
+      if (!message.deleted && message.deletable) {
+        message.delete();
+        client.linkBlacklistFilterCount += 1;
+        if (client.linkBlacklistFilterCount === 5) {
+          client.linkBlacklistFilterCount = 0;
+          const autoMsg = await message.channel.send('Links Not Allowed!\nThis channel prohibits messages with links. Messages with links are automatically deleted.');
+          autoMsg.delete({ timeout: 30000 });
+        }
+      }
+      return;
+    }
   }
 
   // Ignore messages not starting with the prefix
