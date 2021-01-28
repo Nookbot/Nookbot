@@ -1,3 +1,5 @@
+const emojiRegex = require('emoji-regex/RGI_Emoji');
+
 // eslint-disable-next-line no-unused-vars
 module.exports.run = async (client, message, args, level) => {
   let msgToReact = message.channel.messages.cache.get(args[0]);
@@ -15,12 +17,37 @@ module.exports.run = async (client, message, args, level) => {
     }
   }
 
-  const noNeutral = !!(args[1] === 'nn' || args[1] === 'noneutral');
-  await msgToReact.react(client.emoji.thumbsUp);
-  await msgToReact.react(client.emoji.thumbsDown);
-  if (!noNeutral) {
-    await msgToReact.react(client.emoji.neutral);
+  switch (args[1]) {
+    case undefined:
+      await msgToReact.react(client.emoji.thumbsUp);
+      await msgToReact.react(client.emoji.thumbsDown);
+      await msgToReact.react(client.emoji.neutral);
+      break;
+    case 'nn':
+    case 'noneutral':
+      await msgToReact.react(client.emoji.thumbsUp);
+      await msgToReact.react(client.emoji.thumbsDown);
+      break;
+    default: {
+      const customEmojiRegex = /<a?:\w+:([\d]+)>/g;
+      let regMatch;
+      // eslint-disable-next-line no-cond-assign
+      while ((regMatch = customEmojiRegex.exec(message.content)) !== null) {
+        // eslint-disable-next-line no-await-in-loop
+        await msgToReact.react(regMatch[1]);
+      }
+
+      const emojiregex = emojiRegex();
+      let match;
+      // eslint-disable-next-line no-cond-assign
+      while ((match = emojiregex.exec(message.content)) !== null) {
+        const emoji = match[0];
+        // eslint-disable-next-line no-await-in-loop
+        await msgToReact.react(emoji);
+      }
+    }
   }
+
   return message.delete({ timeout: 1000 });
 };
 
