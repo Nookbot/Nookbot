@@ -23,7 +23,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     return client.error(message.channel, 'Invalid Number!', 'Please provide a valid number for the stings to give!');
   }
 
-  const noDelete = !!(args[2] === 'nodelete' || args[2] === 'nd');
+  const noDelete = args[2] ? !!(args[2].toLowerCase() === 'nodelete' || args[2].toLowerCase() === 'nd') : false;
   const reason = args[noDelete ? 3 : 2] ? args.slice(noDelete ? 3 : 2).join(' ') : 'No reason provided.';
 
   let curPoints = 0;

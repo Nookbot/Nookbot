@@ -17,7 +17,7 @@ module.exports = async (client, messageReaction, user) => {
       namesToEdit.splice(indexOfRemoval, 1);
       idsToEdit.splice(indexOfRemoval, 1);
 
-      let newSignUp = '';
+      let newSignUp = '__**•• Sign Up Sheet ••**__\n\n';
       for (let i = 0; i < reactionData.signUpSheet.length; i++) {
         if (i === index) {
           newSignUp += `${reactionData.signUpSheet[i]}${namesToEdit.join(', ').trim()}\n`;
@@ -64,7 +64,7 @@ module.exports = async (client, messageReaction, user) => {
     const mmChannel = client.channels.cache.get('776980847273967626');
     const reactionMenu = mmChannel.messages.cache.get('781387060807729192');
     await reactionMenu.reactions.cache.first().users.fetch();
-    if (reactionMenu.reactions.cache.first().count <= 1) {
+    if (reactionMenu.reactions.cache.first().users.cache.size <= 1) {
       requestChannel.updateOverwrite(client.config.tradeRole, { SEND_MESSAGES: false }, 'Locking middleman channel.');
       const msg = requestChannel.messages.cache.get('782464950798516244');
       const { content } = msg;

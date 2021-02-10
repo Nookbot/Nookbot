@@ -15,7 +15,7 @@ module.exports = async (client, messageReaction, user) => {
       names.push(member.displayName);
       ids.push(user.id);
 
-      let newSignUp = '';
+      let newSignUp = '__**•• Sign Up Sheet ••**__\n\n';
       for (let i = 0; i < reactionData.signUpSheet.length; i++) {
         if (i === index) {
           newSignUp += `${reactionData.signUpSheet[i]}${names.join(', ')}\n`;
