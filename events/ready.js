@@ -117,6 +117,28 @@ module.exports = (client) => {
         return client.success(HMCmdsCh, 'Successfully Reset Sign Up Statistics!', "I've successfully reset sign up statistics for the week!");
       });
 
+      // Schedule remind events
+      const eventsToSchedule = client.remindDB.keyArray();
+      eventsToSchedule.forEach((key) => {
+        const event = client.remindDB.get(key);
+        schedule.scheduleJob(event.date, async () => {
+          const text = `${client.emoji.clock} __**•• Reminder ••**__\n<@${event.member}> ${event.messageToSend}`;
+          if (event.channel === 'DMs') {
+            try {
+              const member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(event.member);
+              const dmChannel = await member.createDM();
+              await dmChannel.send(text);
+            } catch (e) {
+              // Nothing to do
+            }
+          } else {
+            await client.channels.cache.get(event.channel).send(text);
+          }
+
+          client.remindDB.delete(key);
+        });
+      });
+
       try {
         client.startTwitterFeed();
       } catch (err) {

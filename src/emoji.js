@@ -52,4 +52,5 @@ module.exports = {
   thumbsUp: '👍',
   thumbsDown: '👎',
   neutral: '↔️',
+  clock: '⏰',
 };
