@@ -37,7 +37,7 @@ module.exports = async (client, member) => {
         member.roles.add(role);
       }
     });
-    client.userDB.setProp(member.id, 'roles', []);
+    client.userDB.set(member.id, [], 'roles');
   }
 
   const time = Date.now();

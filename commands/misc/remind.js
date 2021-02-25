@@ -59,5 +59,5 @@ module.exports.help = {
   category: 'misc',
   description: 'Remind the user of whatever specified.',
   usage: 'remind <time> <channel> <message>',
-  details: '<time> => Valid amount of time. \`1d\`, \`3h\`, \`6m50s\`, etc. <channel> => The channel to send the message to. If no channel is specified, message is sent to the user\'s DMs. <message> => The message to send to the user.',
+  details: "<time> => Valid amount of time. '1d', '3h', '6m50s', etc.\n<channel> => The channel to send the message to. If no channel is specified, message is sent to the user's DMs.\n<message> => The message to send to the user.",
 };

@@ -110,8 +110,8 @@ For more information about why you were warned, please read #rules-you-must-read
   }
 
   // Create infraction in the infractionDB to get case number
-  const caseNum = client.infractionDB.autonum;
-  client.infractionDB.set(caseNum, member.id);
+  const caseNum = parseInt(client.infractionDB.autonum, 10);
+  client.infractionDB.set(caseNum.toString(), member.id);
 
   // Create infraction in the userDB to store important information
   client.userDB.push(member.id, {

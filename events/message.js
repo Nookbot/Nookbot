@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable consistent-return */
 const Discord = require('discord.js');
+const moment = require('moment');
+const { scheduleJob } = require('node-schedule');
 
 const cooldowns = new Discord.Collection();
 
@@ -11,6 +13,32 @@ module.exports = async (client, message) => {
     if (message.author.id === '695145674081042443' && message.channel.id === '680479301857968237') {
       await message.react(client.emoji.checkMark);
       await message.react(client.emoji.redX);
+    }
+
+    if (message.author.id === '774523954286034965' && message.channel.id === '808142064180133939') {
+      if (message.embeds[0] && message.embeds[0].title.toLowerCase().includes('upcoming')) {
+        await message.channel.send('__**•• Trivia Battle ••**__\n<@&811251712987365417> Battle starting in **1 hour**!');
+
+        const dateWhenGameStarts = moment().add(1, 'h').toDate();
+        const gameStart = async () => {
+          await message.channel.send('__**•• Trivia Battle ••**__\n<@&811251712987365417> Battle starting now!');
+          await message.channel.updateOverwrite(message.guild.id, { SEND_MESSAGES: true }, 'Unlock channel for trivia');
+        };
+        client.timers.set('gameStart', { date: dateWhenGameStarts, run: gameStart });
+        scheduleJob(dateWhenGameStarts, gameStart);
+      } else if (message.embeds[0] && message.embeds[0].title.toLowerCase().includes('winner')) {
+        setTimeout(async () => {
+          await message.channel.send('__**•• Channel Is About to Lock! ••**__\nThis channel will be locked in 1 minute.');
+        }, 2000);
+
+        const dateToLockChannel = moment().add(1, 'm').toDate();
+        const lockchannel = async () => {
+          await message.channel.updateOverwrite(message.guild.id, { SEND_MESSAGES: false }, 'Lock trivia channel');
+          await message.channel.send('__**•• Channel Locked! ••**__\nThis channel has been locked as there is no game currently ongoing. It will be unlocked prior to the next trivia battle. Thanks for playing!');
+        };
+        client.timers.set('lockTriviaChannel', { date: dateToLockChannel, run: lockchannel });
+        scheduleJob(dateToLockChannel, lockchannel);
+      }
     }
     return;
   }
@@ -28,10 +56,7 @@ module.exports = async (client, message) => {
   // Ping in #request-a-middleman
   if (message.channel.id === '750150303692619817') {
     let ping = false;
-    if (!cooldowns.has('middlemanping')) {
-      ping = true;
-      cooldowns.set('middlemanping', Date.now());
-    } else if ((Date.now() - cooldowns.get('middlemanping')) > 300000) {
+    if (!cooldowns.has('middlemanping') || (Date.now() - cooldowns.get('middlemanping')) > 300000) {
       ping = true;
       cooldowns.set('middlemanping', Date.now());
     }
@@ -308,7 +333,8 @@ module.exports = async (client, message) => {
     && cmd.help.name !== 'usernames'
     && cmd.help.name !== 'mute'
     && cmd.help.name !== 'unmute'
-    && cmd.help.name !== 'medicine') {
+    && cmd.help.name !== 'medicine'
+    && cmd.help.name !== 'remind') {
     return;
   }
 

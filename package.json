@@ -23,7 +23,7 @@
     "cheerio": "^1.0.0-rc.3",
     "discord.js": "^12.0.1",
     "emoji-regex": "^9.2.0",
-    "enmap": "^5.1.2",
+    "enmap": "^5.8.4",
     "fast-fuzzy": "^1.10.2",
     "ffmpeg": "0.0.4",
     "ffmpeg-static": "^2.7.0",
