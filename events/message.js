@@ -16,8 +16,9 @@ module.exports = async (client, message) => {
     }
 
     if (message.author.id === '774523954286034965' && message.channel.id === '808142064180133939') {
-      if (message.embeds[0] && message.embeds[0].title.toLowerCase().includes('upcoming')) {
+      if (message.embeds[0] && message.embeds[0].title !== null && message.embeds[0].title.toLowerCase().includes('upcoming')) {
         await message.channel.send('__**•• Trivia Battle ••**__\n<@&811251712987365417> Battle starting in **1 hour**!');
+        await message.pin();
 
         const dateWhenGameStarts = moment().add(1, 'h').toDate();
         const gameStart = async () => {
@@ -26,7 +27,7 @@ module.exports = async (client, message) => {
         };
         client.timers.set('gameStart', { date: dateWhenGameStarts, run: gameStart });
         scheduleJob(dateWhenGameStarts, gameStart);
-      } else if (message.embeds[0] && message.embeds[0].title.toLowerCase().includes('winner')) {
+      } else if (message.embeds[0] && message.embeds[0].title !== null && message.embeds[0].title.toLowerCase().includes('winner')) {
         setTimeout(async () => {
           await message.channel.send('__**•• Channel Is About to Lock! ••**__\nThis channel will be locked in 1 minute.');
         }, 2000);
@@ -35,6 +36,8 @@ module.exports = async (client, message) => {
         const lockchannel = async () => {
           await message.channel.updateOverwrite(message.guild.id, { SEND_MESSAGES: false }, 'Lock trivia channel');
           await message.channel.send('__**•• Channel Locked! ••**__\nThis channel has been locked as there is no game currently ongoing. It will be unlocked prior to the next trivia battle. Thanks for playing!');
+          const pinned = await message.channel.messages.fetchPinned();
+          await pinned.find((p) => p.embeds[0].title.toLowerCase().includes('upcoming')).unpin();
         };
         client.timers.set('lockTriviaChannel', { date: dateToLockChannel, run: lockchannel });
         scheduleJob(dateToLockChannel, lockchannel);
