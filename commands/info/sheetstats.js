@@ -23,7 +23,7 @@ module.exports.run = async (client, message, args, level) => {
       await dmChannel.send(`**Sign Up Sheet Statistics**\nName - Hours\nChannel/Category - Hours\n**${message.member.displayName}** (${message.member.id}) - \`${totalHours} hours\`\n\n${channelHours.join('\n')}`);
       return client.success(message.channel, 'Hours Sent!', "I've successfully sent you your current hours for the week!");
     } catch (e) {
-      return client.error(message.channel, 'Failed to DM Hours!', "I've failed to DM your hours! Please esnure you have your DMs open!");
+      return client.error(message.channel, 'Failed to DM Hours!', "I've failed to DM your hours! Please ensure you have your DMs open!");
     }
   } else {
     switch (args[0]) {

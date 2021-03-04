@@ -371,36 +371,28 @@ module.exports = async (client, message) => {
     return client.error(message.channel, 'Invalid Arguments!', `The proper usage for this command is \`${client.config.prefix}${cmd.help.usage}\`! For more information, please see the help command by using \`${client.config.prefix}help ${cmd.help.name}\`!`);
   }
 
-  if (!cooldowns.has(cmd.help.name)) {
-    cooldowns.set(cmd.help.name, new Discord.Collection());
-  }
+  if (level[1] < 2) {
+    if (!cooldowns.has(cmd.help.name)) {
+      cooldowns.set(cmd.help.name, new Discord.Collection());
+    }
 
-  const now = Date.now();
-  const timestamps = cooldowns.get(cmd.help.name);
-  const cooldownAmount = (cmd.conf.cooldown || 0) * 1000;
+    const now = Date.now();
+    const channels = cooldowns.get(cmd.help.name);
+    const cooldownAmount = 5000;
 
-  if (timestamps.has(message.author.id)) {
-    if (level[1] < 2) {
-      const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+    if (channels.has(message.channel.id)) {
+      const expirationTime = channels.get(message.channel.id) + cooldownAmount;
 
       if (now < expirationTime) {
-        let timeLeft = (expirationTime - now) / 1000;
-        let time = 'second(s)';
-        if (cmd.conf.cooldown > 60) {
-          timeLeft = (expirationTime - now) / 60000;
-          time = 'minute(s)';
-        }
-        return client.error(message.channel, 'Woah There Bucko!', `Please wait **${timeLeft.toFixed(2)} more ${time}** before reusing the \`${cmd.help.name}\` command!`);
+        return client.error(message.channel, 'Command Already In Use!', 'This command is currently in use in this channel!');
       }
     }
+
+    channels.set(message.channel.id, now);
+    setTimeout(() => channels.delete(message.channel.id), cooldownAmount);
   }
 
-  timestamps.set(message.author.id, now);
-  setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-
   // Run the command
-  const guildUsed = message.guild ? `#${message.channel.name}` : 'DMs';
-
-  console.log(`${message.author.tag} (${message.author.id}) ran cmd '${cmd.help.name}' in ${guildUsed}!`);
+  console.log(`${message.author.tag} (${message.author.id}) ran cmd '${cmd.help.name}' in ${message.guild ? `#${message.channel.name}` : 'DMs'}!`);
   cmd.run(client, message, args, level[1], Discord);
 };
