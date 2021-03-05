@@ -2,7 +2,7 @@
 /* eslint-disable consistent-return */
 const Discord = require('discord.js');
 const moment = require('moment');
-const { scheduleJob } = require('node-schedule');
+const schedule = require('node-schedule');
 
 const cooldowns = new Discord.Collection();
 
@@ -25,8 +25,13 @@ module.exports = async (client, message) => {
           await message.channel.send('__**•• Trivia Battle ••**__\n<@&811251712987365417> Battle starting now!');
           await message.channel.updateOverwrite(message.guild.id, { SEND_MESSAGES: true }, 'Unlock channel for trivia');
         };
-        client.timers.set('gameStart', { date: dateWhenGameStarts, run: gameStart });
-        scheduleJob(dateWhenGameStarts, gameStart);
+        client.timers.set('triviaGameStart', { date: dateWhenGameStarts, run: gameStart });
+
+        if (!schedule.scheduledJobs.trivaGameStart) {
+          schedule.scheduleJob('triviaGameStart', dateWhenGameStarts, gameStart);
+        } else {
+          schedule.rescheduleJob('triviaGameStart', dateWhenGameStarts);
+        }
       } else if (message.embeds[0] && message.embeds[0].title !== null && message.embeds[0].title.toLowerCase().includes('winner')) {
         setTimeout(async () => {
           await message.channel.send('__**•• Channel Is About to Lock! ••**__\nThis channel will be locked in 1 minute.');
@@ -40,7 +45,12 @@ module.exports = async (client, message) => {
           await pinned.find((p) => p.embeds[0].title.toLowerCase().includes('upcoming')).unpin();
         };
         client.timers.set('lockTriviaChannel', { date: dateToLockChannel, run: lockchannel });
-        scheduleJob(dateToLockChannel, lockchannel);
+
+        if (!schedule.scheduledJobs.lockTriviaChannel) {
+          schedule.scheduleJob('lockTriviaChannel', dateToLockChannel, lockchannel);
+        } else {
+          schedule.rescheduleJob('lockTriviaChannel', dateToLockChannel);
+        }
       }
     }
     return;

@@ -87,7 +87,7 @@ module.exports = (client) => {
       }, 3600000);
 
       // Schedule reset of signup stats
-      scheduleJob({ dayOfWeek: 0, hour: 0, minute: 0 }, async () => {
+      scheduleJob('resetSignUp', { dayOfWeek: 0, hour: 0, minute: 0 }, async () => {
         const mods = client.reactionSignUp.map((v, k) => ({ id: k, hours: v.hours ? v.hours.total : undefined })).sort((a, b) => b.hours - a.hours);
         let msg = `**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nRank - Name - Hours\nChannel/Category - Hours`;
         await client.asyncForEach(mods, async (k, i) => {
@@ -121,7 +121,7 @@ module.exports = (client) => {
       const remindEventsToSchedule = client.remindDB.keyArray();
       remindEventsToSchedule.forEach((key) => {
         const event = client.remindDB.get(key);
-        scheduleJob(event.date, async () => {
+        scheduleJob(`Remind ${event.member}-${key}`, event.date, async () => {
           const text = `${client.emoji.clock} __**•• Reminder ••**__\n<@${event.member}> ${event.messageToSend}`;
           if (event.channel === 'DMs') {
             try {
@@ -143,7 +143,7 @@ module.exports = (client) => {
       const timerEventsToSchedule = client.timers.keyArray();
       timerEventsToSchedule.forEach((key) => {
         const event = client.timers.get(key);
-        scheduleJob(event.date, event.run);
+        scheduleJob(key, event.date, event.run);
       });
 
       try {
