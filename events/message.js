@@ -45,12 +45,10 @@ module.exports = async (client, message) => {
           await pinned.find((p) => p.embeds[0].title.toLowerCase().includes('upcoming')).unpin();
         };
         client.timers.set('lockTriviaChannel', { date: dateToLockChannel, run: lockchannel });
-
-        if (!schedule.scheduledJobs.lockTriviaChannel) {
-          schedule.scheduleJob('lockTriviaChannel', dateToLockChannel, lockchannel);
-        } else {
-          schedule.rescheduleJob('lockTriviaChannel', dateToLockChannel);
+        if (schedule.scheduledJobs.lockTriviaChannel) {
+          schedule.cancelJob('lockTriviaChannel');
         }
+        schedule.scheduleJob('lockTriviaChannel', dateToLockChannel, lockchannel);
       }
     }
     return;
