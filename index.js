@@ -24,6 +24,9 @@ const client = new Discord.Client({
       Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
     ],
   },
+  allowedMentions: {
+    parse: ["users"]
+  }
 });
 const config = require('./config');
 const { version } = require('./package.json');
