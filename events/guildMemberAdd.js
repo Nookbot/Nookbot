@@ -30,11 +30,14 @@ module.exports = async (client, member) => {
   if (storedMember.roles.length !== 0) {
     storedMember.roles.forEach((r) => {
       const role = member.guild.roles.cache.get(r);
-      if (role && !role.managed && role.id !== member.guild.id) {
+      if (role && !role.managed && role.id !== member.guild.id
+        && role.id !== client.config.reddRole && role.id !== client.config.headReddRole
+        && role.id !== client.config.modRole && role.id !== client.config.headModRole
+        && role.id !== client.config.adminRole) {
         member.roles.add(role);
       }
     });
-    client.userDB.setProp(member.id, 'roles', []);
+    client.userDB.set(member.id, [], 'roles');
   }
 
   const time = Date.now();

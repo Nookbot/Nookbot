@@ -1,39 +1,22 @@
-// eslint-disable-next-line no-unused-vars
-module.exports.run = async (client, message, args, level) => {
+// eslint-disable-next-line consistent-return
+module.exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
   // Sets the member to the user mentioned
-  let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
+  let member = message.mentions.members.first() || client.guilds.cache.get(client.config.mainGuild).members.cache.get(args[0]);
 
   if (!member) {
     if (parseInt(args[0], 10)) {
       try {
-        member = await message.guild.members.fetch(args[0]);
+        member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(args[0]);
       } catch (err) {
-        // Don't need to send a message here
+        return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
       }
     }
   }
 
-  if (!member) {
-    const searchedMember = client.searchMember(args[0]);
-    if (searchedMember) {
-      const decision = await client.reactPrompt(message, `Would you like to unmute \`${searchedMember.user.tag}\`?`);
-      if (decision) {
-        member = searchedMember;
-      } else {
-        message.delete().catch((err) => console.error(err));
-        return client.error(message.channel, 'Member Not Unmuted!', 'The prompt timed out, or you selected no.');
-      }
-    }
-  }
-
-  // If no user mentioned, display this
-  if (!member) {
-    return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
-  }
-
-  // Removes the role from the member and deletes the message that initiated the command
-  member.roles.remove(client.config.mutedRole).catch((err) => console.error(err));
-  return client.success(message.channel, 'Success!', `${message.author}, I've successfully unmuted ${member}!`);
+  // Removes the role from the member
+  member.roles.remove(client.config.mutedRole)
+    .then(() => client.success(message.channel, 'Success!', `${message.author}, I've successfully unmuted ${member}!`))
+    .catch((err) => client.error(message.channel, 'Error!', `Failed to unmute member! Error: ${err}`));
 };
 
 module.exports.conf = {

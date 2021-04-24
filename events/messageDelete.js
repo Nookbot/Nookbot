@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const moment = require('moment-timezone');
 
 module.exports = async (client, message) => {
   // Ignore all bots, ignoreMembers, and ignoreChannels
@@ -33,5 +34,6 @@ module.exports = async (client, message) => {
       embed.addField('**Attachments Deleted**', attachList.slice(1));
     }
   }
+  embed.addField('**Posted**', moment.utc(message.createdAt).format('MMMM Do YYYY, HH:mm:ss z'));
   message.guild.channels.cache.get(client.config.actionLog).send(embed);
 };

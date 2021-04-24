@@ -1,9 +1,12 @@
+const { scheduleJob } = require('node-schedule');
+const moment = require('moment');
+
 module.exports = (client) => {
   if (!client.firstReady) {
     let counter = 1;
     client.firstReady = true;
     console.log('First ready event triggered, loading the guild.');
-    const intv = setInterval(() => {
+    const intv = setInterval(async () => {
       const mainGuild = client.guilds.cache.get(client.config.mainGuild);
       const modMailGuild = client.guilds.cache.get(client.config.modMailGuild);
       if (!mainGuild || !modMailGuild) {
@@ -77,10 +80,70 @@ module.exports = (client) => {
         });
       });
 
-      // Cache messages for reaction roles
-      client.reactionRoleDB.keyArray().forEach((msgID) => {
-        const { channel } = client.reactionRoleDB.get(msgID);
-        client.channels.cache.get(channel).messages.fetch(msgID);
+      // Fetch reaction modules
+      await client.fetchReactionModules();
+      setInterval(async () => {
+        await client.fetchReactionModules();
+      }, 3600000);
+
+      // Schedule reset of signup stats
+      scheduleJob('resetSignUp', { dayOfWeek: 0, hour: 0, minute: 0 }, async () => {
+        const mods = client.reactionSignUp.map((v, k) => ({ id: k, hours: v.hours ? v.hours.total : undefined })).sort((a, b) => b.hours - a.hours);
+        let msg = `**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nRank - Name - Hours\nChannel/Category - Hours`;
+        await client.asyncForEach(mods, async (k, i) => {
+          if (k.id !== 'data') {
+            const guild = client.guilds.cache.get(client.config.mainGuild);
+            const modMember = guild.members.cache.get(k.id) || await guild.members.fetch(k.id);
+            msg += `\n#${i + 1} - **${modMember.displayName}** (${k.id}) - \`${k.hours} hours\``;
+
+            const mod = client.reactionSignUp.get(k.id);
+            const { channelHours } = client.addHours(mod);
+            msg += channelHours.length === 0 ? '\n' : `\n${channelHours.join('\n')}\n`;
+
+            try {
+              const dmChannel = await modMember.createDM();
+              await dmChannel.send(`**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nName - Hours\nChannel/Category - Hours\n**${modMember ? modMember.displayName : 'Unknown Mod'}** (${k.id}) - ${k.hours} hours\n\n${channelHours.join('\n')}`);
+              client.success(dmChannel, 'Reset Sign Up Statistics!', "I've reset sign up statistics! Above is your clocked hours for the week!");
+            } catch (e) {
+              // Nothing to do here
+            }
+
+            client.reactionSignUp.set(k.id, { total: 0 }, 'hours');
+          }
+        });
+
+        const HMCmdsCh = client.channels.cache.get('776571947546443796') || await client.channels.fetch('776571947546443796');
+        await HMCmdsCh.send(msg, { split: true });
+        return client.success(HMCmdsCh, 'Successfully Reset Sign Up Statistics!', "I've successfully reset sign up statistics for the week!");
+      });
+
+      // Schedule remind events
+      const remindEventsToSchedule = client.remindDB.keyArray();
+      remindEventsToSchedule.forEach((key) => {
+        const event = client.remindDB.get(key);
+        scheduleJob(`Remind ${event.member}-${key}`, event.date, async () => {
+          const text = `${client.emoji.clock} __**•• Reminder ••**__\n<@${event.member}> ${event.messageToSend}`;
+          if (event.channel === 'DMs') {
+            try {
+              const member = await client.guilds.cache.get(client.config.mainGuild).members.fetch(event.member);
+              const dmChannel = await member.createDM();
+              await dmChannel.send(text);
+            } catch (e) {
+              // Nothing to do
+            }
+          } else {
+            await client.channels.cache.get(event.channel).send(text);
+          }
+
+          client.remindDB.delete(key);
+        });
+      });
+
+      // Schedule timers
+      const timerEventsToSchedule = client.timers.keyArray();
+      timerEventsToSchedule.forEach((key) => {
+        const event = client.timers.get(key);
+        scheduleJob(key, event.date, event.run);
       });
 
       try {

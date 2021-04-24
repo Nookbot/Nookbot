@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const moment = require('moment-timezone');
 
 module.exports = async (client, oldMessage, newMessage) => {
   // Ignore all bots and make sure the content of the message changed.
@@ -21,7 +22,8 @@ module.exports = async (client, oldMessage, newMessage) => {
     .setDescription(`[Jump to message in](${newMessage.url} 'Jump') <#${newMessage.channel.id}>`)
     .setTimestamp()
     .setFooter(`ID: ${newMessage.author.id}`)
-    .addField('**Message Edited**', `**Before:** ${oldMsg}\n**+After:** ${newMsg}`);
+    .addField('**Message Edited**', `**Before:** ${oldMsg}\n**+After:** ${newMsg}`)
+    .addField('**Posted**', moment.utc(oldMessage.createdAt).format('MMMM Do YYYY, HH:mm:ss z'));
 
   newMessage.guild.channels.cache.get(client.config.actionLog).send(embed);
 };
