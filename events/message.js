@@ -10,7 +10,9 @@ module.exports = async (client, message) => {
   // Ignore all bots
   if (message.author.bot) {
     // If message sent by ban appeal webhook bot account, and in the ban appeals channel
-    if (message.author.id === '695145674081042443' && message.channel.id === '680479301857968237') {
+    // Or message sent by promo app webhook and in promo app channel
+    if ((message.author.id === '695145674081042443' && message.channel.id === '680479301857968237')
+    || (message.author.id === '823029874553913384' && message.channel.id === '823026976083279883')) {
       await message.react(client.emoji.checkMark);
       await message.react(client.emoji.redX);
     }
@@ -74,7 +76,7 @@ module.exports = async (client, message) => {
 
     if (ping) {
       const mmChannel = client.channels.cache.get('776980847273967626');
-      const mmSignUp = mmChannel.messages.cache.get('781387060807729192');
+      const mmSignUp = mmChannel.messages.cache.get('826305438277697567');
       const mmToPing = mmSignUp.reactions.cache.first().users.cache.filter((mm) => mm.id !== client.user.id).map((mm) => `<@${mm.id}>`);
       message.channel.send(mmToPing.join(', '));
     }
@@ -207,7 +209,7 @@ module.exports = async (client, message) => {
         }, 600000);
         // Notify mods so they may ban if it was a raider.
         message.guild.channels.cache.get(client.config.staffChat).send(`**Mass Mention Attempt!**
-  <@&495865346591293443> <@&494448231036747777>
+  <@&495865346591293443> <@&693636228695720038>
   The member **${message.author.tag}** just mentioned ${message.mentions.members.size} members and was automatically muted for 10 minutes!
   They have been a member of the server for ${client.humanTimeBetween(Date.now(), message.member.joinedTimestamp)}.
   If you believe this member is a mention spammer bot, please ban them with the command:
@@ -217,7 +219,9 @@ module.exports = async (client, message) => {
 
     // Delete non-image containing messages from image only channels
     if (message.guild && client.config.imageOnlyChannels.includes(message.channel.id)
-        && message.attachments.size === 0 && level[1] < 2) {
+        && message.attachments.size === 0
+        && !message.content.match(/https?:\/\//gi)
+        && level[1] < 2) {
       // Message is in the guild's image only channels, without an image or link in it, and is not a mod's message, so delete
       if (!message.deleted && message.deletable) {
         message.delete();
