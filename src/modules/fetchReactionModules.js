@@ -14,7 +14,7 @@ module.exports = (client) => {
     // Cache middleman sheet and request channel message
     const middlemanChannel = client.channels.cache.get('776980847273967626');
     const requestChannel = client.channels.cache.get('750150303692619817');
-    const middlemanMsg = await middlemanChannel.messages.fetch('781387060807729192');
+    const middlemanMsg = await middlemanChannel.messages.fetch('826305438277697567');
     await middlemanMsg.reactions.cache.first().users.fetch();
     await requestChannel.messages.fetch('782464950798516244');
   };

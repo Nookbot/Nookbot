@@ -86,8 +86,9 @@ module.exports = (client) => {
         await client.fetchReactionModules();
       }, 3600000);
 
-      // Schedule reset of signup stats
+      // Schedule reset of signup stats for mods and middlemen
       scheduleJob('resetSignUp', { dayOfWeek: 0, hour: 0, minute: 0 }, async () => {
+        // Mod stats
         const mods = client.reactionSignUp.map((v, k) => ({ id: k, hours: v.hours ? v.hours.total : undefined })).sort((a, b) => b.hours - a.hours);
         let msg = `**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nRank - Name - Hours\nChannel/Category - Hours`;
         await client.asyncForEach(mods, async (k, i) => {
@@ -114,7 +115,32 @@ module.exports = (client) => {
 
         const HMCmdsCh = client.channels.cache.get('776571947546443796') || await client.channels.fetch('776571947546443796');
         await HMCmdsCh.send(msg, { split: true });
-        return client.success(HMCmdsCh, 'Successfully Reset Sign Up Statistics!', "I've successfully reset sign up statistics for the week!");
+        client.success(HMCmdsCh, 'Successfully Reset Sign Up Statistics!', "I've successfully reset sign up statistics for the week!");
+
+        // Middleman stats
+        const mm = client.mmSignUp.map((v, k) => ({ id: k, hours: v.hours })).sort((a, b) => b.hours - a.hours);
+        let msgMM = `**Middleman Sign Up Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nRank - Name - Hours`;
+        await client.asyncForEach(mm, async (k, i) => {
+          if (k.id !== 'data') {
+            const guild = client.guilds.cache.get(client.config.mainGuild);
+            const mmMember = guild.members.cache.get(k.id) || await guild.members.fetch(k.id);
+            msgMM += `\n#${i + 1} - **${mmMember.displayName}** (${k.id}) - \`${k.hours} hours\``;
+
+            try {
+              const dmChannel = await mmMember.createDM();
+              await dmChannel.send(`**Midleman Sign Up Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nName - Hours\n**${mmMember ? mmMember.displayName : 'Unknown Middleman'}** (${k.id}) - ${k.hours} hours`);
+              client.success(dmChannel, 'Reset Sign Up Statistics!', "I've reset middleman sign up statistics! Above is your clocked hours for the week!");
+            } catch (e) {
+              // Nothing to do here
+            }
+
+            client.mmSignUp.set(k.id, 0, 'hours');
+          }
+        });
+
+        const HMMCh = client.channels.cache.get('776571947546443796') || await client.channels.fetch('776571947546443796');
+        await HMMCh.send(msgMM, { split: true });
+        client.success(HMMCh, 'Successfully Reset Middleman Sign Up Statistics!', "I've successfully reset middleman sign up statistics for the week!");
       });
 
       // Schedule remind events

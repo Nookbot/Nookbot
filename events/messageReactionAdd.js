@@ -23,6 +23,7 @@ module.exports = async (client, messageReaction, user) => {
           newSignUp += `${reactionData.signUpSheet[i]}${reactionData.names[i].join(', ')}\n`;
         }
       }
+      newSignUp += '\n* *Please sign up with other channels.*';
 
       client.reactionSignUp.set('data', names, `names[${index}]`);
       client.reactionSignUp.set('data', ids, `ids[${index}]`);
@@ -45,7 +46,18 @@ module.exports = async (client, messageReaction, user) => {
     }
   }
 
-  if (messageReaction.message.id === '781387060807729192') {
+  if (messageReaction.message.id === '826305438277697567' && messageReaction.emoji.id === '756701911163600977') {
+    client.mmSignUp.ensure(user.id, { hours: 0, start: null });
+    client.mmSignUp.set(user.id, Date.now(), 'start');
+
+    await messageReaction.users.fetch();
+    const names = messageReaction.users.cache.filter((u) => !u.bot).map((u) => messageReaction.message.guild.members.cache.get(u.id).displayName);
+    const mmAvailableNum = names.length;
+    const signUpMsgContent = messageReaction.message.content;
+    const splitSignUpContent = signUpMsgContent.split(') ••__**');
+    await messageReaction.message.edit(`${splitSignUpContent[0].replace(/\(\d+/, `(${mmAvailableNum}`)}) ••__**\n${names.join('\n')}`);
+
+    // Request channel unlocking and editing
     const requestChannel = client.channels.cache.get('750150303692619817');
     if (!requestChannel.permissionsFor(client.config.tradeRole).has('SEND_MESSAGES')) {
       requestChannel.updateOverwrite(client.config.tradeRole, { SEND_MESSAGES: true }, 'Unlocking middleman channel.');
@@ -54,13 +66,13 @@ module.exports = async (client, messageReaction, user) => {
       const splitContent = content.split('🔐');
       const contentToEdit = splitContent[1].split('\n\n');
       const newContent = '🔓 This channel is currently **unlocked**.';
-      msg.edit(`${splitContent[0]}🔐 ${contentToEdit[0].trim()}\n\n${newContent}\n\`\`\` \n\`\`\``);
+      await msg.edit(`${splitContent[0]}🔐 ${contentToEdit[0].trim()}\n\n${newContent}\n\`\`\` \n\`\`\``);
     }
   }
 
   const reactionRoleMenu = client.reactionRoleDB.get(messageReaction.message.id);
 
-  // If not there isn't a type, then this is not a reaction role message.
+  // If there isn't a type, then this is not a reaction role message.
   if (!reactionRoleMenu) {
     return;
   }
