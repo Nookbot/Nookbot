@@ -70,7 +70,16 @@ module.exports = async (client, messageReaction, user) => {
     }
 
     await messageReaction.users.fetch();
-    const names = messageReaction.users.cache.filter((u) => !u.bot).map((u) => messageReaction.message.guild.members.cache.get(u.id).displayName);
+    const names = messageReaction.users.cache.filter((u) => !u.bot).map((u) => {
+      let mmMember = messageReaction.message.guild.members.cache.get(u.id);
+      if (!mmMember) {
+        messageReaction.message.guild.members.fetch(u.id)
+          .then((mm) => {
+            mmMember = mm;
+          });
+      }
+      return mmMember.displayName;
+    });
     const mmAvailableNum = names.length;
     const signUpMsgContent = messageReaction.message.content;
     const splitSignUpContent = signUpMsgContent.split(') ••__**');
