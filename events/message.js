@@ -209,7 +209,7 @@ module.exports = async (client, message) => {
         }, 600000);
         // Notify mods so they may ban if it was a raider.
         message.guild.channels.cache.get(client.config.staffChat).send(`**Mass Mention Attempt!**
-  <@&495865346591293443> <@&494448231036747777>
+  <@&495865346591293443> <@&693636228695720038>
   The member **${message.author.tag}** just mentioned ${message.mentions.members.size} members and was automatically muted for 10 minutes!
   They have been a member of the server for ${client.humanTimeBetween(Date.now(), message.member.joinedTimestamp)}.
   If you believe this member is a mention spammer bot, please ban them with the command:
