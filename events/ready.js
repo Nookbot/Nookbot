@@ -1,5 +1,5 @@
 const { scheduleJob } = require('node-schedule');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 module.exports = (client) => {
   if (!client.firstReady) {
@@ -170,6 +170,13 @@ module.exports = (client) => {
       timerEventsToSchedule.forEach((key) => {
         const event = client.timers.get(key);
         scheduleJob(key, event.date, event.run);
+      });
+
+      // Schedule post for date in #daily-summary
+      const nowET = moment().tz('America/New_York');
+      scheduleJob('dailySumPost', { hour: nowET.isDST() ? 4 : 5 }, () => {
+        const dailySum = mainGuild.channels.cache.get('672949637359075339');
+        dailySum.send(`__**${nowET.format('MMMM D, YYYY')}`);
       });
 
       try {
