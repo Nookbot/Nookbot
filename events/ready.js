@@ -173,10 +173,10 @@ module.exports = (client) => {
       });
 
       // Schedule post for date in #daily-summary
-      const nowET = moment().tz('America/New_York');
-      scheduleJob('dailySumPost', { hour: nowET.isDST() ? 4 : 5 }, () => {
+      scheduleJob('dailySumPost', { hour: moment().tz('America/New_York').isDST() ? 4 : 5, minute: 0 }, () => {
         const dailySum = mainGuild.channels.cache.get('672949637359075339');
-        dailySum.send(`__**${nowET.format('MMMM D, YYYY')}`);
+        const newPostNow = moment();
+        dailySum.send(`__**${newPostNow.format('MMMM D, YYYY')}**__`);
       });
 
       try {
