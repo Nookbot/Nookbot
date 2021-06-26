@@ -128,7 +128,7 @@ module.exports = (client) => {
 
             try {
               const dmChannel = await mmMember.createDM();
-              await dmChannel.send(`**Midleman Sign Up Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nName - Hours\n**${mmMember ? mmMember.displayName : 'Unknown Middleman'}** (${k.id}) - ${k.hours} hours`);
+              await dmChannel.send(`**Middleman Sign Up Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nName - Hours\n**${mmMember ? mmMember.displayName : 'Unknown Middleman'}** (${k.id}) - ${k.hours} hours`);
               client.success(dmChannel, 'Reset Sign Up Statistics!', "I've reset middleman sign up statistics! Above is your clocked hours for the week!");
             } catch (e) {
               // Nothing to do here
