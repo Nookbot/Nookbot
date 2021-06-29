@@ -138,7 +138,7 @@ module.exports = (client) => {
           }
         });
 
-        const HMMCh = client.channels.cache.get('776571947546443796') || await client.channels.fetch('776571947546443796');
+        const HMMCh = client.channels.cache.get('784961291948654663') || await client.channels.fetch('776571947546443796');
         await HMMCh.send(msgMM, { split: true });
         client.success(HMMCh, 'Successfully Reset Middleman Sign Up Statistics!', "I've successfully reset middleman sign up statistics for the week!");
       });
