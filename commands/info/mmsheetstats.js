@@ -88,7 +88,7 @@ module.exports.run = async (client, message, args, level) => {
           return client.error(message.channel, 'Middleman Not Found!', 'The middleman was not found in the database and therefore hours could not be set!');
         }
 
-        if (hoursToSet) {
+        if (!hoursToSet) {
           return client.error(message.channel, 'Invalid Hours!', 'Please provide a valid number of hours!');
         }
 
