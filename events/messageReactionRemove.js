@@ -25,7 +25,7 @@ module.exports = async (client, messageReaction, user) => {
           newSignUp += `${reactionData.signUpSheet[i]}${reactionData.names[i].join(', ')}\n`;
         }
       }
-      newSignUp += '\n* *Please sign up with other channels.*';
+      newSignUp += "\n* *Please sign up with other channels.*\n** *If the reactions aren't showing correctly, refreshing your client (CTRL + R) may solve the issue!*";
 
       client.reactionSignUp.set('data', namesToEdit, `names[${index}]`);
       client.reactionSignUp.set('data', idsToEdit, `ids[${index}]`);

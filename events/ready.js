@@ -172,11 +172,14 @@ module.exports = (client) => {
         scheduleJob(key, event.date, event.run);
       });
 
-      // Schedule post for date in #daily-summary
+      // Schedule post for date in #daily-summary and #trainee-summary
       scheduleJob('dailySumPost', { hour: moment().tz('America/New_York').isDST() ? 4 : 5, minute: 0 }, () => {
         const dailySum = mainGuild.channels.cache.get('672949637359075339');
+        const traineeDailySum = mainGuild.channels.cache.get('858901245540696084');
         const newPostNow = moment();
-        dailySum.send(`__**${newPostNow.format('MMMM D, YYYY')}**__`);
+        const dateString = `__**${newPostNow.format('MMMM D, YYYY')}**__`;
+        dailySum.send(dateString);
+        traineeDailySum.send(dateString);
       });
 
       try {
