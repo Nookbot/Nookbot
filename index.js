@@ -7,31 +7,31 @@ const fs = require('fs');
 const Twitter = require('twitter-lite');
 const { Searcher } = require('fast-fuzzy');
 
-const client = new Discord.Client({
-  messageCacheMaxSize: 500,
-  fetchAllMembers: false,
-  disableMentions: 'everyone',
-  ws: {
-    intents: [
-      Discord.Intents.FLAGS.GUILDS,
-      Discord.Intents.FLAGS.GUILD_MEMBERS,
-      Discord.Intents.FLAGS.GUILD_BANS,
-      Discord.Intents.FLAGS.GUILD_EMOJIS,
-      Discord.Intents.FLAGS.GUILD_VOICE_STATES,
-      Discord.Intents.FLAGS.GUILD_PRESENCES,
-      Discord.Intents.FLAGS.GUILD_MESSAGES,
-      Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-      Discord.Intents.FLAGS.DIRECT_MESSAGES,
-      Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-    ],
-  },
-});
 const config = require('./config');
-const { version } = require('./package.json');
 const emoji = require('./src/emoji');
 
+const client = new Discord.Client({
+  messageCacheLifetime: 3600,
+  messageSweepInterval: 3600,
+  allowedMentions: {
+    parse: ['users', 'roles'],
+    repliedUser: true,
+  },
+  intents: [
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_MEMBERS,
+    Discord.Intents.FLAGS.GUILD_BANS,
+    Discord.Intents.FLAGS.GUILD_EMOJIS,
+    Discord.Intents.FLAGS.GUILD_VOICE_STATES,
+    Discord.Intents.FLAGS.GUILD_PRESENCES,
+    Discord.Intents.FLAGS.GUILD_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Discord.Intents.FLAGS.DIRECT_MESSAGES,
+    Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+  ],
+});
+
 client.config = config;
-client.version = `v${version}`;
 client.emoji = emoji;
 
 fs.readdir('./src/modules/', (err, files) => {
@@ -108,21 +108,6 @@ client.raidBanning = false;
 client.raidJoins = [];
 client.raidMessage = null;
 client.raidMembersPrinted = 0;
-
-// Music Feature
-client.songQueue = {
-  infoMessage: null,
-  voiceChannel: null,
-  connection: null,
-  songs: [],
-  playing: false,
-  shuffle: true,
-  stopping: false,
-  played: 0,
-  timePlayed: 0,
-  lastUpdateTitle: '',
-  lastUpdateDesc: '',
-};
 
 // Auto-Filter Message Reminder Counts
 client.imageOnlyFilterCount = 0;
