@@ -330,10 +330,7 @@ module.exports = async (client, message) => {
 
   // Grab the command data and aliases from the client.commands Enmap
   const cmd = client.commands.get(command) || client.commands.get(client.aliases.get(command));
-  let enabledCmds = client.enabledCmds.get(command);
-  if (enabledCmds === undefined) {
-    enabledCmds = client.enabledCmds.get(client.aliases.get(command));
-  }
+  const enabledCmds = client.enabledCmds.get(command) || client.enabledCmds.get(client.aliases.get(command));
 
   // If that command doesn't exist, silently exit and do nothing
   if (!cmd) {
@@ -365,8 +362,14 @@ module.exports = async (client, message) => {
     return client.error(message.channel, 'Command Not Available in this Channel!', 'You will have to use this command in the <#549858839994826753> channel!');
   }
 
-  if (cmd.conf.allowedChannels && !cmd.conf.allowedChannels.includes(message.channel.id) && level[1] < 4) {
-    return client.error(message.channel, 'Command Not Available in this Channel!', `You will have to use this command in one of the allowed channels: ${cmd.conf.allowedChannels.map((ch) => `<#${ch}>`).join(', ')}.`);
+  if (cmd.conf.allowedChannels && !cmd.conf.allowedChannels.includes(message.channel.id) && !cmd.conf.allowedChannels.includes(message.channel.parentID)) {
+    if (level[1] < 4) {
+      return client.error(message.channel, 'Command Not Available in this Channel!', `You will have to use this command in one of the allowed channels: ${cmd.conf.allowedChannels.map((ch) => `<#${ch}>`).join(', ')}.`);
+    }
+
+    if (message.guild.id !== client.config.modMailGuild) {
+      return;
+    }
   }
 
   // eslint-disable-next-line prefer-destructuring

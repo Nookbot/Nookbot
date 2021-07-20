@@ -102,6 +102,13 @@ module.exports.conf = {
   guildOnly: false,
   aliases: ['beelog', 'bslog', 'stinglog', 'bl'],
   permLevel: 'User',
+  allowedChannels: [
+    '744634458283442236', // head staff
+    '495899336664809492', // resident services
+    '858900696555847721', // trainee
+    '744633499033534504', // applications
+    '625186314253238272', // logs
+  ],
 };
 
 module.exports.help = {
