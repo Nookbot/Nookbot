@@ -363,14 +363,14 @@ module.exports = async (client, message) => {
   }
 
   if (cmd.conf.allowedChannels && !cmd.conf.allowedChannels.includes(message.channel.id) && !cmd.conf.allowedChannels.includes(message.channel.parentID)) {
-    if (cmd.help.name === 'beestinglog') {
-      if (message.guild.id !== client.config.modMailGuild || level[1] >= 4) {
-        return;
+    if (message.guild.id !== client.config.modMailGuild) {
+      if (cmd.help.name === 'beestinglog') {
+        if (level[1] >= 4 && args.length > 0) {
+          return;
+        }
+      } else if (level[1] < 4) {
+        return client.error(message.channel, 'Command Not Available in this Channel!', `You will have to use this command in one of the allowed channels: ${cmd.conf.allowedChannels.map((ch) => `<#${ch}>`).join(', ')}.`);
       }
-    }
-
-    if (level[1] < 4) {
-      return client.error(message.channel, 'Command Not Available in this Channel!', `You will have to use this command in one of the allowed channels: ${cmd.conf.allowedChannels.map((ch) => `<#${ch}>`).join(', ')}.`);
     }
   }
 
