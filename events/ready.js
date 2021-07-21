@@ -173,13 +173,15 @@ module.exports = (client) => {
       });
 
       // Schedule post for date in #daily-summary and #trainee-summary
-      scheduleJob('dailySumPost', { hour: moment().tz('America/New_York').isDST() ? 4 : 5, minute: 0 }, () => {
-        const dailySum = mainGuild.channels.cache.get('672949637359075339');
-        const traineeDailySum = mainGuild.channels.cache.get('858901245540696084');
+      scheduleJob('dailySumPost', { hour: moment().tz('America/New_York').isDST() ? 4 : 5, minute: 0 }, async () => {
+        const dailySums = ['672949637359075339', '858901245540696084', '867205089905999902'];
         const newPostNow = moment();
         const dateString = `__**${newPostNow.format('MMMM D, YYYY')}**__`;
-        dailySum.send(dateString);
-        traineeDailySum.send(dateString);
+
+        for (let i = 0; i < dailySums.length; i++) {
+          // eslint-disable-next-line no-await-in-loop
+          await mainGuild.channels.cache.get(dailySums[i]).send(dateString);
+        }
       });
 
       try {
