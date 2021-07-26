@@ -1,6 +1,3 @@
-const moment = require('moment');
-const timezones = require('../../src/timezones.json');
-
 // eslint-disable-next-line consistent-return
 module.exports.run = async (client, message, args, level) => {
   let member;
@@ -25,6 +22,7 @@ module.exports.run = async (client, message, args, level) => {
     member = message.author;
   }
 
+  const time = Date.now();
   const { infractions } = client.userDB.ensure(member.id, client.config.userDBDefaults);
   let msg = `__**${member.guild ? member.user.tag : `${member.username}#${member.discriminator}`}'s Bee Stings**__`;
   let expPoints = 0;
@@ -32,31 +30,16 @@ module.exports.run = async (client, message, args, level) => {
   let curPoints = 0;
   let curMsg = '';
 
-  const time = Date.now();
-  let tz = args.find((arg) => timezones[arg.toUpperCase()]);
-  tz = tz ? tz.toUpperCase() : 'UTC';
-  let offset = timezones[tz];
-
-  if (offset === undefined) {
-    offset = 0;
-  }
-
-  // eslint-disable-next-line no-restricted-globals
-  let timeToUse = args.find((arg) => client.timeRegex.test(arg) && arg !== member.id);
-  if (!timeToUse || (timeToUse.toLowerCase() !== '24h' && timeToUse.toLowerCase() !== '12h')) {
-    timeToUse = '24h';
-  }
-
   infractions.forEach((i) => {
     // Only allow mods to see zero point stings, called notes, on a user
     if (i.points > 0 || level >= 2) {
       const moderator = client.users.cache.get(i.moderator);
       if ((i.points * 604800000) + i.date > time) {
         curPoints += i.points;
-        curMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).add(offset, 'hours').format(`DD MMM YYYY ${timeToUse === '12h' ? 'hh:mm:ss a' : 'HH:mm:ss'}`)} ${tz}) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+        curMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (<t:${Math.floor(new Date(i.date).getTime() / 1000)}>) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
       } else {
         expPoints += i.points;
-        expMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (${moment.utc(i.date).add(offset, 'hours').format(`DD MMM YYYY ${timeToUse === '12h' ? 'hh:mm:ss a' : 'HH:mm:ss'}`)} ${tz}) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+        expMsg += `\n• Case ${i.case} -${level >= 2 ? ` ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} -` : ''} (<t:${Math.floor(new Date(i.date).getTime() / 1000)}>) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
       }
     }
   });
@@ -115,6 +98,6 @@ module.exports.help = {
   name: 'beestinglog',
   category: 'moderation',
   description: 'Shows a list of bee stings given to a member',
-  usage: 'beestinglog <@member> <timezone> <time to use>',
-  details: '<@member> => The member to list bee stings for.\n<timezone> => The timezone used to display the time stings were issued. Defaults to UTC.\n<time to use> => 12 or 24. Whether to use 12 or 24 hour time. Defaults to 24.',
+  usage: 'beestinglog <member id>',
+  details: '<member id> => The id of the member to list bee stings for.',
 };
