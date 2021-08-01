@@ -363,7 +363,7 @@ module.exports = async (client, message) => {
   }
 
   if (cmd.conf.allowedChannels && !cmd.conf.allowedChannels.includes(message.channel.id) && !cmd.conf.allowedChannels.includes(message.channel.parentID)) {
-    if (message.guild.id !== client.config.modMailGuild) {
+    if (message.guild ? message.guild.id !== client.config.modMailGuild : true) {
       if (cmd.help.name === 'beestinglog') {
         if (level[1] >= 4 && args.length > 0) {
           return;

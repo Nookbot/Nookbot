@@ -90,6 +90,7 @@ const config = {
     usernames: [],
     infractions: [],
     lastMessageTimestamp: 0,
+    headStaffNotes: [],
   },
 
   // Bot Perms and Stuff
