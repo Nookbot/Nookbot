@@ -80,7 +80,7 @@ module.exports.conf = {
 module.exports.help = {
   name: 'note',
   category: 'misc',
-  description: '',
-  usage: '',
-  details: '',
+  description: 'Manage notes applied by head staff.',
+  usage: 'note <id> <type> <reason>',
+  details: '<id> => The id of the member to apply a note to.\n<type> => The type of note to apply: note (n), warning (w), and absence (a).\n<reason> => The reason the note was applied. Supports attachments.',
 };

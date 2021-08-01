@@ -75,7 +75,7 @@ module.exports.conf = {
 module.exports.help = {
   name: 'notelog',
   category: 'misc',
-  description: '',
-  usage: '',
-  details: '',
+  description: 'View head staff notes on a user.',
+  usage: 'notelog <id>',
+  details: '<id> => The id of the member to view notes of.',
 };
