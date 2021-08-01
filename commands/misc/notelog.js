@@ -26,17 +26,17 @@ module.exports.run = async (client, message, args, level) => {
       return -1;
     }
 
-    if (a.type === 'absence') {
-      if (b.type === 'absence') {
+    if (a.type === 'warning') {
+      if (b.type === 'warning') {
         return 0;
       }
-      if (b.type === 'warning') {
+      if (b.type === 'absence') {
         return -1;
       }
       return 1;
     }
 
-    if (b.type === a.type) {
+    if (a.type === b.type) {
       return 0;
     }
 
@@ -45,7 +45,7 @@ module.exports.run = async (client, message, args, level) => {
 
 
   // eslint-disable-next-line array-callback-return
-  headStaffNotes.map((n, i, arr) => {
+  headStaffNotes.forEach((n, i, arr) => {
     if (arr[i - 1]) {
       if (n.type !== arr[i - 1].type) {
         if (n.type === 'absence') {
