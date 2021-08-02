@@ -39,18 +39,29 @@ module.exports.run = async (client, message, args, level) => {
           .catch(() => client.error(message.channel, 'Confirmation Prompt Timed Out!', 'Please rerun the command to attempt to send feedback again!'));
 
         if (decision) {
+          // Try to send dm to recipient
           try {
-            const dmChannel = await recipient.createDM();
+            const dmChannelRecip = await recipient.createDM();
             const newEmbed = new Discord.MessageEmbed()
               .setColor('RANDOM')
               .setTimestamp()
               .setTitle("You've Been Sent Feedback!")
               .setDescription(feedback);
 
-            await dmChannel.send(newEmbed);
-            return client.success(message.channel, 'Feedback Sent!', `I've successfully sent **${recipient.tag}** feedback!`);
+            await dmChannelRecip.send(newEmbed);
+            client.success(message.channel, 'Feedback Sent!', `I've successfully sent **${recipient.tag}** feedback!`);
           } catch (e) {
             return client.error(message.channel, 'Failed to Send DM!', "I've failed to send the requested feedback! The recipient may have DMs off!");
+          }
+
+          // try to send dm to original sender
+          try {
+            const originalSender = await client.users.fetch(originalEmbed.author.name.split('(')[1].split(')')[0]);
+            const dmChannelOriginal = await originalSender.createDM();
+
+            return client.success(dmChannelOriginal, 'Feedback Confirmed and Sent!', `Your feedback for **${recipient.tag}** was confirmed and sent successfully!`);
+          } catch (e) {
+            return console.error(e);
           }
         } else {
           return client.error(message.channel, 'Not Sending Feedback!', `Feedback was not sent to **${recipient.tag}**!`);
@@ -90,7 +101,7 @@ module.exports.run = async (client, message, args, level) => {
     const feedbackEmbed = new Discord.MessageEmbed()
       .setColor(displayColor)
       .setTimestamp()
-      .setAuthor(message.author.tag, message.author.avatarURL({ dynamic: true }))
+      .setAuthor(`${message.author.tag} (${message.author.id})`, message.author.avatarURL({ dynamic: true }))
       .setTitle(`From ${message.author.tag} to ${user.tag}`)
       .setDescription(feedbackMsg)
       .setFooter(user.id);
