@@ -327,6 +327,14 @@ module.exports.run = async (client, message, args, level, Discord) => {
   }
 };
 
+module.exports.data = {
+  name: 'island',
+  description: 'Display information about your island.',
+  options: [
+
+  ],
+};
+
 module.exports.conf = {
   guildOnly: true,
   aliases: ['is'],

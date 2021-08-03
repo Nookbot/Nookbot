@@ -48,10 +48,10 @@ fs.readdir('./events/', (err, files) => {
   if (err) {
     return console.error(err);
   }
+
   return files.forEach((file) => {
     const event = require(`./events/${file}`);
-    const eventName = file.split('.')[0];
-    client.on(eventName, event.bind(null, client));
+    client.on(file.split('.')[0], event.bind(null, client));
   });
 });
 
@@ -64,20 +64,21 @@ fs.readdir('./commands/', (err, folders) => {
   }
 
   // Looping over all folders to load all commands
-  for (let i = 0; i < folders.length; i++) {
-    fs.readdir(`./commands/${folders[i]}/`, (error, files) => {
+  folders.forEach((folder) => {
+    fs.readdir(`./commands/${folder}/`, (error, files) => {
       if (error) {
         return console.error(error);
       }
+
       files.forEach((file) => {
         if (!file.endsWith('.js')) {
           return;
         }
 
-        const props = require(`./commands/${folders[i]}/${file}`);
-        const commandName = props.help.name;
+        const props = require(`./commands/${folder}/${file}`);
+        const commandName = file.split('.')[0];
 
-        console.log(`Attempting to load command ${commandName}`);
+        console.log(`Reading command: ${commandName}`);
         client.commands.set(commandName, props);
 
         if (props.conf.aliases) {
@@ -89,7 +90,7 @@ fs.readdir('./commands/', (err, folders) => {
         client.enabledCmds.ensure(commandName, true);
       });
     });
-  }
+  });
 });
 
 client.levelCache = {};
@@ -128,7 +129,7 @@ client.twitter = new Twitter({
 // Start up the twitter webhook listener
 client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, client.config.twitterHookToken);
 
-Object.assign(client, Enmap.multi(['enabledCmds', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'sessionDB', 'muteDB', 'reactionRoleDB', 'bannedWordsDB', 'reactionSignUp', 'remindDB', 'timers', 'mmSignUp'], { ensureProps: true }));
+Object.assign(client, Enmap.multi(['enabledCmds', 'emojiDB', 'tags', 'sessionDB', 'muteDB', 'reactionRoleDB', 'bannedWordsDB', 'reactionSignUp', 'remindDB', 'timers', 'mmSignUp'], { ensureProps: true }));
 Object.assign(client, Enmap.multi(['userDB', 'infractionDB', 'memberStats'], { fetchAll: false, ensureProps: true }));
 
 // Banned words array and Searcher
