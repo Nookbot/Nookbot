@@ -19,7 +19,7 @@ module.exports.run = async (client, message, args, level) => {
       }
 
       const originalEmbed = feedbackMessage.embeds[0];
-      const recipient = await client.users.fetch(originalEmbed.footer.text);
+      const recipient = await client.users.fetch(originalEmbed.footer.text.split('-')[1].trim());
 
       const sendFeedback = async (feedback) => {
         const confirmPrompt = await message.channel.send(`Are you sure you want to send **${recipient.tag}** the following feedback?\n\`\`\`\n${feedback}\`\`\``);
@@ -56,7 +56,7 @@ module.exports.run = async (client, message, args, level) => {
 
           // try to send dm to original sender
           try {
-            const originalSender = await client.users.fetch(originalEmbed.author.name.split('(')[1].split(')')[0]);
+            const originalSender = await client.users.fetch(originalEmbed.footer.text.split('-')[0].trim());
             const dmChannelOriginal = await originalSender.createDM();
 
             return client.success(dmChannelOriginal, 'Feedback Confirmed and Sent!', `Your feedback for **${recipient.tag}** was confirmed and sent successfully!`);
@@ -101,10 +101,10 @@ module.exports.run = async (client, message, args, level) => {
     const feedbackEmbed = new Discord.MessageEmbed()
       .setColor(displayColor)
       .setTimestamp()
-      .setAuthor(`${message.author.tag} (${message.author.id})`, message.author.avatarURL({ dynamic: true }))
+      .setAuthor(message.author.tag, message.author.avatarURL({ dynamic: true }))
       .setTitle(`From ${message.author.tag} to ${user.tag}`)
       .setDescription(feedbackMsg)
-      .setFooter(user.id);
+      .setFooter(`${message.author.id} - ${user.id}`);
 
     await feedbackCh.send(feedbackEmbed);
     return client.success(message.channel, 'Successfully Sent Feedback!', `I've successfully sent your feedback to head staff to view! **${user.tag}** should be receiving it soon!`);
