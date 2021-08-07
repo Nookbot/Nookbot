@@ -1,5 +1,3 @@
-const moment = require('moment');
-
 module.exports = (client, channel) => {
   if (channel.type !== 'text' || (channel.guild ? channel.guild.id !== client.config.modMailGuild : true)) {
     return;
@@ -19,10 +17,10 @@ module.exports = (client, channel) => {
         const moderator = client.users.cache.get(i.moderator);
         if ((i.points * 604800000) + i.date > time) {
           curPoints += i.points;
-          curMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+          curMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (<t:${Math.floor(new Date(i.date).getTime() / 1000)}>) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
         } else {
           expPoints += i.points;
-          expMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+          expMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (<t:${Math.floor(new Date(i.date).getTime() / 1000)}>) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
         }
       });
 
