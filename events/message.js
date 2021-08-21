@@ -285,9 +285,10 @@ module.exports = async (client, message) => {
       return;
     }
 
-    // Delete posts with @ mentions in villager and turnip channels
-    if (message.guild && client.config.noMentionChannels.includes(message.channel.id)
-      && message.mentions.members.size > 0
+    // Delete posts with @ mentions in noMentionChannels
+    if (message.guild
+      && (client.config.noMentionChannels.includes(message.channel.id) || client.config.noMentionChannels.includes(message.channel.parentID))
+      && (message.mentions.members.size > 0 || message.reference)
       && level[1] < 2) {
     // Message is in the guild, in a channel that restricts mentions, and is not a mod's message, so delete
       if (!message.deleted && message.deletable) {
