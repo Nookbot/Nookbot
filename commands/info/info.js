@@ -5,10 +5,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   // embed
   const embed = new Discord.MessageEmbed()
-    .setAuthor(message.author.tag, message.author.displayAvatarURL())
     .setColor('#4199c2')
-    .setTimestamp()
-    .setFooter('Nookbot', client.user.displayAvatarURL());
+    .setTimestamp();
 
   switch (args[0]) {
     case 'bot': {
@@ -50,9 +48,6 @@ module.exports.run = async (client, message, args, level, Discord) => {
         }
       }
 
-      const roles = member.roles.cache.filter((r) => r.id !== member.guild.id).map((r) => r.name).join(', ') || 'No Roles';
-      const roleSize = member.roles.cache.filter((r) => r.id !== member.guild.id).size;
-
       let activity = member.presence.status;
 
       if (activity === 'online') {
@@ -66,13 +61,14 @@ module.exports.run = async (client, message, args, level, Discord) => {
       }
 
       embed.setAuthor(member.user.tag, member.user.displayAvatarURL())
+        .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+        .setFooter(`ID: ${member.id}`)
         .setTitle(`${member.displayName}\'s Info`)
-        .addField('ID', member.user.id, true)
         .addField('Nickname', member.displayName, true)
-        .addField('Account Created', `<t:${Math.floor(member.user.createdTimestamp / 1000)}>`, true)
+        .addField('Status', activity, true)
+        .addField('Account Created', `<t:${Math.floor(member.user.createdTimestamp / 1000)}>`)
         .addField(`Joined *${client.guilds.cache.get(client.config.mainGuild).name}*`, `<t:${Math.floor(member.joinedAt / 1000)}>`, true)
-        .addField(`Roles (${roleSize})`, roles, true)
-        .addField('Status', activity, true);
+        .addField(`Roles (${member.roles.cache.size - 1})`, member.roles.cache.filter((r) => r.id !== member.guild.id).sort((a, b) => b.position - a.position).map((r) => r.toString()).join(', ') || 'No Roles');
 
       return message.channel.send(embed);
     }
