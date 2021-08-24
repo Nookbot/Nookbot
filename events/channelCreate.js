@@ -15,12 +15,13 @@ module.exports = (client, channel) => {
       const time = Date.now();
       infractions.forEach((i) => {
         const moderator = client.users.cache.get(i.moderator);
+        const timestamp = Math.floor(new Date(i.date).getTime() / 1000);
         if ((i.points * 604800000) + i.date > time) {
           curPoints += i.points;
-          curMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (<t:${Math.floor(new Date(i.date).getTime() / 1000)}>) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+          curMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (<t:${timestamp}>; <t:${timestamp}:R>) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
         } else {
           expPoints += i.points;
-          expMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (<t:${Math.floor(new Date(i.date).getTime() / 1000)}>) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+          expMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (<t:${timestamp}>; <t:${timestamp}:R>) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
         }
       });
 
