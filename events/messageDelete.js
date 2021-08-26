@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const moment = require('moment-timezone');
 
 module.exports = async (client, message) => {
   // Ignore all bots, ignoreMembers, and ignoreChannels
@@ -22,18 +21,12 @@ module.exports = async (client, message) => {
     embed.addField('**Message Deleted**', msg);
   }
 
+  embed.addField('**Posted**', `<t:${Math.floor(message.createdTimestamp / 1000)}>`);
+
   if (message.attachments.size > 0) {
-    let attachList = '';
-
-    message.attachments.forEach((value) => {
-      const fileSize = value.size > 1048576 ? `${(value.size / 1048576).toFixed(2)} MB` : `${(value.size / 1024).toFixed(2)} KB`;
-      attachList += `\n${value.name} | ${fileSize}`;
-    });
-
-    if (attachList.length !== 0) {
-      embed.addField('**Attachments Deleted**', attachList.slice(1));
-    }
+    const attachmentsData = client.attachmentDB.get(message.id);
+    embed.addField('**Attachments Deleted**', attachmentsData ? attachmentsData.loggedAttachments.join('\n') : `${client.emoji.redX} Failed to fetch attachments data!`);
   }
-  embed.addField('**Posted**', moment.utc(message.createdAt).format('MMMM Do YYYY, HH:mm:ss z'));
+
   message.guild.channels.cache.get(client.config.actionLog).send(embed);
 };

@@ -206,6 +206,17 @@ module.exports = (client) => {
         }
       });
 
+      // Schedule clearing of attachmentDB
+      scheduleJob('clearAttachmentDB', { dayOfWeek: 0, hour: 0, minute: 0 }, () => {
+        // 1 week in milliseconds
+        const oneWeekInMS = 3600000 * 24 * 7;
+        client.attachmentDB.array()
+          .filter((a) => a.date * oneWeekInMS < Date.now())
+          .forEach((a) => {
+            client.attachmentDB.delete(client.attachmentDB.findKey((b) => b.loggedMsgId === a.loggedMsgId));
+          });
+      });
+
       try {
         client.startTwitterFeed();
       } catch (err) {

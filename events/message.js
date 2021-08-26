@@ -103,6 +103,25 @@ module.exports = async (client, message) => {
       }
     }
 
+    // Attachment tracking
+    if (message.attachments.size > 0) {
+      const attachmentLogChannel = client.channels.cache.get('880235847155331123');
+      const files = message.attachments.map((a) => ({ attachment: a.url, name: a.name }));
+      attachmentLogChannel.send({ files })
+        .then((loggedMsg) => {
+          client.attachmentDB.set(message.id, {
+            loggedMsgId: loggedMsg.id,
+            author: message.author.id,
+            date: Date.now(),
+            originalAttachments: files,
+            loggedAttachments: loggedMsg.attachments.map((a) => a.url),
+          });
+        })
+        .catch(() => {
+          client.error(attachmentLogChannel, 'Failed to Log Attachments!', `I've failed to log attachments of message ID \`${message.id}\` sent by **${message.author.tag}** (${message.author.id}).`);
+        });
+    }
+
     // Banned Words
     if (level[1] < 2) {
       const tokens = message.content.split(/ +/g);
