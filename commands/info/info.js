@@ -67,7 +67,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField('Nickname', member.displayName, true)
         .addField('Status', activity, true)
         .addField('Account Created', `<t:${Math.floor(member.user.createdTimestamp / 1000)}:F>; <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`)
-        .addField(`Joined *${client.guilds.cache.get(client.config.mainGuild).name}*`, `<t:${Math.floor(member.joinedAt / 1000)}>`, true)
+        .addField(`Joined *${client.guilds.cache.get(client.config.mainGuild).name}*`, `<t:${Math.floor(member.joinedAt / 1000)}:F>; <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`, true)
         .addField(`Roles (${member.roles.cache.size - 1})`, member.roles.cache.filter((r) => r.id !== member.guild.id).sort((a, b) => b.position - a.position).map((r) => r.toString()).join(', ') || 'No Roles');
 
       return message.channel.send(embed);
