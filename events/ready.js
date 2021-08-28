@@ -9,7 +9,8 @@ module.exports = (client) => {
     const intv = setInterval(async () => {
       const mainGuild = client.guilds.cache.get(client.config.mainGuild);
       const modMailGuild = client.guilds.cache.get(client.config.modMailGuild);
-      if (!mainGuild || !modMailGuild) {
+      const mentorGuild = client.guilds.cache.get(client.config.mentorGuild);
+      if (!mainGuild || !modMailGuild || !mentorGuild) {
         console.log(`  Attempting to wait for both guilds to load ${counter}...`);
         counter += 1;
         return;

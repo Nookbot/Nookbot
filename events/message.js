@@ -357,7 +357,8 @@ module.exports = async (client, message) => {
     return;
   }
 
-  if (message.guild && message.guild.id === client.config.modMailGuild
+  if (message.guild
+    && (message.guild.id === client.config.modMailGuild || message.guild.id === client.config.mentorGuild)
     && cmd.help.name !== 'beesting'
     && cmd.help.name !== 'beestinglog'
     && cmd.help.name !== 'info'
@@ -383,7 +384,7 @@ module.exports = async (client, message) => {
   }
 
   if (cmd.conf.allowedChannels && !cmd.conf.allowedChannels.includes(message.channel.id) && !cmd.conf.allowedChannels.includes(message.channel.parentID)) {
-    if (message.guild ? message.guild.id !== client.config.modMailGuild : true) {
+    if (message.guild ? (message.guild.id !== client.config.modMailGuild && message.guild.id !== client.config.mentorGuild) : true) {
       if (cmd.help.name === 'beestinglog') {
         if (level[1] >= 4 && args.length > 0) {
           return;
