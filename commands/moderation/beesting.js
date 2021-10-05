@@ -157,7 +157,7 @@ For more information about why you were warned, please read #rules-you-must-read
   }
 
   // Notify in channel
-  client.success(message.channel, 'Bee Sting Given!', `**${member.guild ? member.user.tag : member.tag || member}** was given **${newPoints}** bee sting${newPoints === 1 ? '' : 's'}!`);
+  client.success(message.channel, 'Bee Sting Given!', `**${member.guild ? member.user.tag : member.tag || member}** was given **${newPoints}** bee sting${newPoints === 1 ? '' : 's'}! (Case #${caseNum})`);
 
   // Send mod-log embed
   const embed = new Discord.MessageEmbed()
