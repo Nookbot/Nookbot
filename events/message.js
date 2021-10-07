@@ -322,15 +322,17 @@ module.exports = async (client, message) => {
       return;
     }
 
-    // Delete posts with links in link blacklisted channels
+    // Delete posts with links in all channels other than whitelisted channels (and whitelisted links)
     if (message.guild && message.content.match(/https?:\/\//gi)
-        && client.config.linkBlacklistChannels.includes(message.channel.id)
+        && !client.config.linkWhitelistChannels.includes(message.channel.id)
+        && (client.config.linkBlacklistChannels.includes(message.channel.id)
+        || message.content.match(/https?:\/\/([\w_-]+(?:(?:\.[\w_-]+)+))/gi).some((matchedLink) => !client.config.linkWhitelist.includes(matchedLink)))
         && level[1] < 2) {
       if (!message.deleted && message.deletable) {
         message.delete();
-        client.linkBlacklistFilterCount += 1;
-        if (client.linkBlacklistFilterCount === 5) {
-          client.linkBlacklistFilterCount = 0;
+        client.linkFilterCount += 1;
+        if (client.linkFilterCount === 5) {
+          client.linkFilterCount = 0;
           const autoMsg = await message.channel.send('Links Not Allowed!\nThis channel prohibits messages with links. Messages with links are automatically deleted.');
           autoMsg.delete({ timeout: 30000 });
         }

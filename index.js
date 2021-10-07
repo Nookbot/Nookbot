@@ -130,7 +130,7 @@ client.imageAndTextOnlyFilterCount = 0;
 client.newlineLimitFilterCount = 0;
 client.imageAndLinkFilterCount = 0;
 client.noMentionFilterCount = 0;
-client.linkBlacklistFilterCount = 0;
+client.linkFilterCount = 0;
 
 // Twitter object for listening for tweets
 client.twitter = new Twitter({
