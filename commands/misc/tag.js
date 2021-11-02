@@ -143,7 +143,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
           message.channel.send(tag);
         }
       } else {
-        client.error(message.channel, 'Tag Does Not Exist!', 'The tag you attempted to display does not exist!');
+        const incorrectTagMsg = message.channel.send(`${client.emoji.redX} **Tag Does Not Exist!**\nThe tag you attempted to display does not exist!`);
+        incorrectTagMsg.delete({ timeout: 10000 });
       }
     }
   }

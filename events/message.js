@@ -86,7 +86,7 @@ module.exports = async (client, message) => {
     await message.guild.members.fetch(message.author);
   }
 
-  const level = client.permLevel(message);
+  const level = await client.permLevel(message);
 
   if (message.guild && message.guild.id === client.config.mainGuild) {
     // User activity tracking
@@ -424,7 +424,8 @@ module.exports = async (client, message) => {
       const expirationTime = channels.get(message.channel.id) + cooldownAmount;
 
       if (now < expirationTime) {
-        return client.error(message.channel, 'Command Already In Use!', 'This command is currently in use in this channel!');
+        const inUseMsg = message.channel.send(`${client.emoji.redX} **Command Already In Use!**\nThis command is currently in use in this channel!`);
+        return inUseMsg.delete({ timeout: 10000 });
       }
     }
 
