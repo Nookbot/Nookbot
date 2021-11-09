@@ -11,8 +11,10 @@ module.exports = async (client, message) => {
   if (message.author.bot) {
     // If message sent by ban appeal webhook bot account, and in the ban appeals channel
     // Or message sent by promo app webhook and in promo app channel
+    // or message sent by blathers app webhook and in blathers app channel
     if ((message.author.id === '695145674081042443' && message.channel.id === '680479301857968237')
-    || (message.author.id === '823029874553913384' && message.channel.id === '823026976083279883')) {
+    || (message.author.id === '823029874553913384' && message.channel.id === '823026976083279883')
+    || (message.author.id === '906318585146769428' && message.channel.id === '906025792608272505')) {
       await message.react(client.emoji.checkMark);
       await message.react(client.emoji.redX);
     }
@@ -236,6 +238,9 @@ module.exports = async (client, message) => {
       }
     }
 
+    // Auto mod filters
+    let autoModReason;
+
     // Delete non-image containing messages from image only channels
     if (message.guild && client.config.imageOnlyChannels.includes(message.channel.id)
         && message.attachments.size === 0
@@ -245,13 +250,13 @@ module.exports = async (client, message) => {
       if (!message.deleted && message.deletable) {
         message.delete();
         client.imageOnlyFilterCount += 1;
+        autoModReason = 'Image Only';
         if (client.imageOnlyFilterCount === 5) {
           client.imageOnlyFilterCount = 0;
           const autoMsg = await message.channel.send('Image Only Channel!\nThis channel only allows posts with images. Everything else is automatically deleted.');
           autoMsg.delete({ timeout: 30000 });
         }
       }
-      return;
     }
 
     // Delete messages that don't contain BOTH image and text from image&text only channels
@@ -261,13 +266,13 @@ module.exports = async (client, message) => {
       if (!message.deleted && message.deletable) {
         message.delete();
         client.imageAndTextOnlyFilterCount += 1;
+        autoModReason = 'Image and Text Only';
         if (client.imageAndTextOnlyFilterCount === 5) {
           client.imageAndTextOnlyFilterCount = 0;
           const autoMsg = await message.channel.send('Image And Text Channel!\nThis channel only allows messages with both images and text. Everything else is automatically deleted. This allows for keywords to be searchable.');
           autoMsg.delete({ timeout: 30000 });
         }
       }
-      return;
     }
 
     // Delete posts with too many new lines or charactersto prevent spammy messages
@@ -279,13 +284,13 @@ module.exports = async (client, message) => {
       if (!message.deleted && message.deletable) {
         message.delete();
         client.newlineLimitFilterCount += 1;
+        autoModReason = 'Too Many New Lines/Characters';
         if (client.newlineLimitFilterCount === 5) {
           client.newlineLimitFilterCount = 0;
           const autoMsg = await message.channel.send('Too Many New Lines or Characters!\nThis channel only allows posts with less than 10 new lines and less than 1000 characters. Messages with more than that are automatically deleted.');
           autoMsg.delete({ timeout: 30000 });
         }
       }
-      return;
     }
 
     // Delete posts with too many attachments or links
@@ -295,13 +300,13 @@ module.exports = async (client, message) => {
       if (!message.deleted && message.deletable) {
         message.delete();
         client.imageAndLinkFilterCount += 1;
+        autoModReason = 'Too Many Attachments/Links';
         if (client.imageAndLinkFilterCount === 5) {
           client.imageAndLinkFilterCount = 0;
           const autoMsg = await message.channel.send('Too Many Attachments + Links!\nThis channel only allows posts with less 3 attachments + links. Messages with more than that are automatically deleted.');
           autoMsg.delete({ timeout: 30000 });
         }
       }
-      return;
     }
 
     // Delete posts with @ mentions in noMentionChannels
@@ -313,31 +318,44 @@ module.exports = async (client, message) => {
       if (!message.deleted && message.deletable) {
         message.delete();
         client.noMentionFilterCount += 1;
+        autoModReason = 'No Mention';
         if (client.noMentionFilterCount === 5) {
           client.noMentionFilterCount = 0;
           const autoMsg = await message.channel.send('No Mention Channel!\nThis channel is to be kept clear of @ mentions of any members. Any message mentioning another member will be automatically deleted.');
           autoMsg.delete({ timeout: 30000 });
         }
       }
-      return;
     }
 
     // Delete posts with links in all channels other than whitelisted channels (and whitelisted links)
     if (message.guild && message.content.match(/https?:\/\//gi)
         && !client.config.linkWhitelistChannels.includes(message.channel.id)
         && (client.config.linkBlacklistChannels.includes(message.channel.id)
-        || message.content.match(/https?:\/\/([\w_-]+(?:(?:\.[\w_-]+)+))/gi).some((matchedLink) => !client.config.linkWhitelist.includes(matchedLink)))
+        || message.content.match(/https?:\/\/([\w_-]+(?:(?:\.[\w_-]+)+))/gi).some((matchedLink) => !client.config.linkWhitelist.includes(matchedLink.split('www.'))))
         && level[1] < 2) {
       if (!message.deleted && message.deletable) {
         message.delete();
         client.linkFilterCount += 1;
+        autoModReason = 'No Links';
         if (client.linkFilterCount === 5) {
           client.linkFilterCount = 0;
           const autoMsg = await message.channel.send('Links Not Allowed!\nThis channel prohibits messages with links. Messages with links are automatically deleted.');
           autoMsg.delete({ timeout: 30000 });
         }
       }
-      return;
+    }
+
+    if (autoModReason) {
+      const embed = new Discord.MessageEmbed()
+        .setAuthor(message.author.tag, message.author.displayAvatarURL())
+        .setColor('#ff9292')
+        .setFooter(`ID: ${message.author.id}`)
+        .setTimestamp()
+        .setDescription(`**Message from ${message.author} caught in filter in ${message.channel}**\n${message.content.slice(0, 1800)}`)
+        .addField('Filter', autoModReason, true)
+        .addField('Action', 'Deleted', true);
+
+      return client.channels.cache.get(client.config.modLog).send(embed);
     }
   }
 
@@ -424,7 +442,7 @@ module.exports = async (client, message) => {
       const expirationTime = channels.get(message.channel.id) + cooldownAmount;
 
       if (now < expirationTime) {
-        const inUseMsg = message.channel.send(`${client.emoji.redX} **Command Already In Use!**\nThis command is currently in use in this channel!`);
+        const inUseMsg = await message.channel.send(`${client.emoji.redX} **Command Already In Use!**\nThis command is currently in use in this channel!`);
         return inUseMsg.delete({ timeout: 10000 });
       }
     }

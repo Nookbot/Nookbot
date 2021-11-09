@@ -196,7 +196,7 @@ module.exports = (client) => {
       });
 
       // Schedule post for date in #daily-summary and #trainee-summary
-      scheduleJob('dailySumPost', { hour: moment().tz('America/New_York').isDST() ? 4 : 5, minute: 0 }, async () => {
+      scheduleJob('dailySumPost', { hour: 5, minute: 0 }, async () => {
         const dailySums = ['672949637359075339', '858901245540696084', '867205089905999902'];
         const newPostNow = moment();
         const dateString = `__**${newPostNow.format('MMMM D, YYYY')}**__`;
