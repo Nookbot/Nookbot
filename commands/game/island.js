@@ -165,6 +165,24 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       return client.success(message.channel, 'Successfully set your Creator Code!', `Creator Code: **${code}**`);
     }
+    case 'hhp':
+    case 'showroom':
+    case 'home': {
+      if (args.length === 1) {
+        return client.error(message.channel, 'No HHP Showroom Code Given!', 'Please supply your HHP Showroom code!');
+      }
+
+      let code = args.slice(1).join().replace(/[\D]/g, '');
+
+      if (code.length !== 12) {
+        return client.error(message.channel, 'Invalid Code!', 'The code must have 12 digits!');
+      }
+
+      code = `RA-${code.slice(0, 4)}-${code.slice(4, 8)}-${code.slice(8, 12)}`;
+      client.userDB.set(message.author.id, code, 'island.hhpCode');
+
+      return client.success(message.channel, 'Successfully set your HHP Showroom Code!', `HHP Showroom Code: **${code}**`);
+    }
     case 'remove':
     case 'delete':
     case 'rm':
@@ -348,6 +366,6 @@ module.exports.help = {
   name: 'island',
   category: 'game',
   description: 'Island information display',
-  usage: 'island <islandname|fruit|charactername|hemisphere|profilename|friendcode|dreamaddress|creatorcode> <name|fruit|hemisphere|code|address>',
-  details: "<islandname> => Set the name of your island.\n<fruit> => Set the fruit that is native on your island.\n<charactername> => Set the name of your character on the island.\n<hemisphere> => Set the hemisphere your island is in.\n<profilename> => Set the name of your Switch profile.\n<friendcode> => Set your Switch friendcode.\n<dreamaddress> => Set your island's dream address.\n<creatorcode> => Set your creator code.",
+  usage: 'island <islandname|fruit|charactername|hemisphere|profilename|friendcode|dreamaddress|creatorcode|hhpcode> <name|fruit|hemisphere|code|address>',
+  details: "<islandname> => Set the name of your island.\n<fruit> => Set the fruit that is native on your island.\n<charactername> => Set the name of your character on the island.\n<hemisphere> => Set the hemisphere your island is in.\n<profilename> => Set the name of your Switch profile.\n<friendcode> => Set your Switch friendcode.\n<dreamaddress> => Set your island's dream address.\n<creatorcode> => Set your creator code.\n<hhpcode> => Set your HHP Showroom code.",
 };
