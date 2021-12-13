@@ -331,7 +331,7 @@ module.exports = async (client, message) => {
     if (message.guild && message.content.match(/https?:\/\//gi)
         && !client.config.linkWhitelistChannels.includes(message.channel.id)
         && (client.config.linkBlacklistChannels.includes(message.channel.id)
-        || message.content.match(/https?:\/\/([\w_-]+(?:(?:\.[\w_-]+)+))/gi).some((matchedLink) => !client.config.linkWhitelist.includes(matchedLink.split('www.').join(''))))
+        || message.content.match(/https?:\/\/([\w_-]+(?:(?:\.[\w_-]+)+))/gi).some((matchedLink) => !client.linkWhitelist.get('links').includes(matchedLink.split('www.').join(''))))
         && level[1] < 2) {
       if (!message.deleted && message.deletable) {
         message.delete();
