@@ -1,5 +1,10 @@
 module.exports.run = async (client, message, args, level, Discord) => {
   if (args.length === 0) {
+    if (message.channel.id === '494467780293427200') {
+      client.error(message.channel, 'Cannot Display List!', 'Displaying the full list of tags is not allowed in this channel!');
+      return;
+    }
+
     let listTags = '';
 
     client.tags.indexes.sort().forEach((t, i) => {
