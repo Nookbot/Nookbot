@@ -75,7 +75,7 @@ module.exports = async (client, messageReaction, user) => {
       const splitContent = content.split('🔐');
       const contentToEdit = splitContent[1].split('\n\n');
       const newContent = '🔓 This channel is currently **unlocked**.';
-      await msg.edit(`${splitContent[0]}🔐 ${contentToEdit[0].trim()}\n\n${newContent}\n\`\`\` \n\`\`\``);
+      await msg.edit(`${splitContent[0].replace(/[\u200B-\u200D\uFEFF]/g, '')}🔐 ${contentToEdit[0].trim()}\n\n${newContent}\n\`\`\` \n\`\`\``);
     }
   }
 
