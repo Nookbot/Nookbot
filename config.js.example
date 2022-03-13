@@ -90,6 +90,8 @@ const config = {
     usernames: [],
     infractions: [],
     lastMessageTimestamp: 0,
+    fastMessageCount: 0,
+    fastMessageList: [],
     headStaffNotes: [],
   },
 

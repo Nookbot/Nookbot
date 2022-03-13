@@ -91,8 +91,39 @@ module.exports = async (client, message) => {
   const level = await client.permLevel(message);
 
   if (message.guild && message.guild.id === client.config.mainGuild) {
-    // User activity tracking
-    client.userDB.set(message.author.id, message.createdTimestamp, 'lastMessageTimestamp');
+    // User activity tracking and fast message auto mod
+    if (level[1] < 2 && message.createdTimestamp - client.userDB.ensure(message.author.id, client.config.userDBDefaults).lastMessageTimestamp < 5000) {
+      const fastMessageCount = client.userDB.get(message.author.id, 'fastMessageCount');
+      client.userDB.push(message.author.id, [message.channelId, message.id], 'fastMessageList');
+      if (fastMessageCount == 0) {
+        // First two messages sent in 5 seconds
+        client.userDB.set(message.author.id, 2, 'fastMessageCount');
+      } else if (fastMessageCount < 4) {
+        // Either the third or fourth fast message
+        client.userDB.inc(message.author.id, 'fastMessageCount');
+      } else {
+        // The fifth or more fast message, permantently mute, delete the messages, and send a message to DM Orvbot
+        if (fastMessageCount == 4) {
+          message.member.roles.add(client.config.mutedRole, 'Fast Message Spam');
+          try {
+            const dmChannel = await message.member.createDM();
+            await dmChannel.send('You have sent five or more messages within five seconds and have been muted as a result. To be unmuted, message Orvbot to speak with moderators.');
+          } catch (e) {
+            // Nothing to do here
+          }
+        }
+        const msgs = client.userDB.get(message.author.id, 'fastMessageList');
+        client.userDB.set(message.author.id, [], 'fastMessageList');
+        client.userDB.inc(message.author.id, 'fastMessageCount');
+        msgs.forEach(m => client.channels.cache.get(m[0]).messages.cache.get(m[1]).delete().catch(e => console.error(e)));
+      }
+    } else {
+      client.userDB.update(message.author.id, {
+        'lastMessageTimestamp': message.createdTimestamp,
+        'fastMessageList': [message.channelId, message.id],
+        'fastMessageCount': 0,
+      });
+    }
 
     // Emoji finding and tracking
     const regex = /<a?:\w+:([\d]+)>/g;
@@ -124,11 +155,42 @@ module.exports = async (client, message) => {
         });
     }
 
+    // Anti Mention Spam
+    if (message.mentions.members && message.mentions.members.size > 10) {
+      // They mentioned more than 10 members, automute them for 10 mintues.
+      if (message.member && level[1] < 2) {
+        // Mute
+        message.member.roles.add(client.config.mutedRole, 'Mention Spam');
+        // Delete Message
+        if (!message.deleted) {
+          message.delete();
+        }
+        // Schedule unmute
+        setTimeout(() => {
+          try {
+            message.member.roles.remove(client.config.mutedRole, 'Unmuted after 10 mintues for Mention Spam');
+          } catch (error) {
+            // Couldn't unmute, oh well
+            console.error('Failed to unmute after Anti Mention Spam');
+            console.error(error);
+          }
+        }, 600000);
+        // Notify mods so they may ban if it was a raider.
+        message.guild.channels.cache.get(client.config.staffChat).send(`**Mass Mention Attempt!**
+  <@&495865346591293443> <@&693636228695720038>
+  The member **${message.author.tag}** just mentioned ${message.mentions.members.size} members and was automatically muted for 10 minutes!
+  They have been a member of the server for ${client.humanTimeBetween(Date.now(), message.member.joinedTimestamp)}.
+  If you believe this member is a mention spammer bot, please ban them with the command:
+  \`.sting ${message.author.id} 25 Raid Mention Spammer\``);
+      }
+    }
+
     // Banned Words
     if (level[1] < 2) {
-      const tokens = message.content.split(/ +/g);
+      const tokens = message.content.replace(/[\u200B-\u200D\uFEFF\uDB40-\uDB43\uDC00-\uDFFF]/g, '').split(/ +/g);
       let ban = false;
       let del = false;
+      let sanrio = false;
       let match;
 
       for (let index = 0; index < tokens.length; index++) {
@@ -160,6 +222,9 @@ module.exports = async (client, message) => {
             if (matchedPhrase) {
               if (chkMatch.blockedChannels && chkMatch.blockedChannels.length !== 0) {
                 if (chkMatch.blockedChannels.includes(message.channel.id)) {
+                  if (['sanrio', 'toby', 'chelsea', 'chai', 'étoile', 'etoile', 'marty', 'rilla'].includes(chkMatch.word)) {
+                    sanrio = true;
+                  }
                   chkDel = true;
                 }
               } else {
@@ -180,6 +245,11 @@ module.exports = async (client, message) => {
             }
           }
         }
+      }
+
+      // Post a message to the villager trading channel that the Sanrio villagers can't be traded.
+      if (sanrio) {
+        message.channel.send('Sanrio villagers cannot be traded!');
       }
 
       if (ban || del) {
@@ -205,36 +275,6 @@ module.exports = async (client, message) => {
 
         modLogCh.send(embed);
         return;
-      }
-    }
-
-    // Anti Mention Spam
-    if (message.mentions.members && message.mentions.members.size > 10) {
-      // They mentioned more than 10 members, automute them for 10 mintues.
-      if (message.member && level[1] < 2) {
-        // Mute
-        message.member.roles.add(client.config.mutedRole, 'Mention Spam');
-        // Delete Message
-        if (!message.deleted) {
-          message.delete();
-        }
-        // Schedule unmute
-        setTimeout(() => {
-          try {
-            message.member.roles.remove(client.config.mutedRole, 'Unmuted after 10 mintues for Mention Spam');
-          } catch (error) {
-            // Couldn't unmute, oh well
-            console.error('Failed to unmute after Anit Mention Spam');
-            console.error(error);
-          }
-        }, 600000);
-        // Notify mods so they may ban if it was a raider.
-        message.guild.channels.cache.get(client.config.staffChat).send(`**Mass Mention Attempt!**
-  <@&495865346591293443> <@&693636228695720038>
-  The member **${message.author.tag}** just mentioned ${message.mentions.members.size} members and was automatically muted for 10 minutes!
-  They have been a member of the server for ${client.humanTimeBetween(Date.now(), message.member.joinedTimestamp)}.
-  If you believe this member is a mention spammer bot, please ban them with the command:
-  \`.sting ${message.author.id} 25 Raid Mention Spammer\``);
       }
     }
 
@@ -331,7 +371,7 @@ module.exports = async (client, message) => {
     if (message.guild && message.content.match(/https?:\/\//gi)
         && !client.config.linkWhitelistChannels.includes(message.channel.id)
         && (client.config.linkBlacklistChannels.includes(message.channel.id)
-        || message.content.match(/https?:\/\/([\w_-]+(?:(?:\.[\w_-]+)+))/gi).some((matchedLink) => !client.linkWhitelist.get('links').includes(matchedLink.split('www.').join(''))))
+        || message.content.match(/https?:\/\/([\w_-]+(?:(?:\.[\w_-]+)+))/gi).some((matchedLink) => !client.linkWhitelist.get('links').includes(matchedLink.split('www.').join('').replace(/^https?/gi, 'https'))))
         && level[1] < 2) {
       if (!message.deleted && message.deletable) {
         message.delete();
