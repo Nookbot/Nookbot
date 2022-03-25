@@ -11,8 +11,9 @@ const config = require('./config');
 const emoji = require('./src/emoji');
 
 const client = new Discord.Client({
-  messageCacheLifetime: 3600,
-  messageSweepInterval: 3600,
+  makeCache: Discord.Options.cacheWithLimits({
+    MessageManager: 500,
+  }),
   allowedMentions: {
     parse: ['users', 'roles'],
     repliedUser: true,
