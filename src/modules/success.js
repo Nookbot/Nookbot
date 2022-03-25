@@ -1,6 +1,6 @@
 module.exports = (client) => {
-  client.error = (interaction, err, msg, followUp = false, ephemeral = false) => {
-    const options = { content: `${client.emoji.checkMark} **${err}**\n${msg}`, ephemeral };
+  client.success = (interaction, suc, msg, followUp = false, ephemeral = false) => {
+    const options = { content: `${client.emoji.checkMark} **${suc}**\n${msg}`, ephemeral };
     if (interaction.replied) {
       if (followUp) {
         interaction.followUp(options);
