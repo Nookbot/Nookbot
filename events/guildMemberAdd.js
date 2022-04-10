@@ -31,6 +31,8 @@ module.exports = async (client, member) => {
     storedMember.roles.forEach((r) => {
       const role = member.guild.roles.cache.get(r);
       if (role && !role.managed && role.id !== member.guild.id
+        && role.id !== client.config.copperBookerRole
+        && role.id !== client.config.modTraineeRole
         && role.id !== client.config.reddRole && role.id !== client.config.headReddRole
         && role.id !== client.config.modRole && role.id !== client.config.headModRole
         && role.id !== client.config.adminRole) {

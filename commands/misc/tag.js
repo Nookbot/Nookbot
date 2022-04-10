@@ -1,5 +1,10 @@
 module.exports.run = async (client, message, args, level, Discord) => {
   if (args.length === 0) {
+    if (message.channelId === '494467780293427200') {
+      client.error(message.channel, 'Cannot Display List!', 'Displaying the full list of tags is not allowed in this channel!');
+      return;
+    }
+
     let listTags = '';
 
     client.tags.indexes.sort().forEach((t, i) => {
@@ -13,9 +18,9 @@ module.exports.run = async (client, message, args, level, Discord) => {
       .setColor('#1de9b6')
       .setTitle(`Tags (${client.tags.count})`)
       .setDescription(listTags.slice(0, 2000) || 'No tags.')
-      .setFooter('Use ".t name" to show a tag');
+      .setFooter({ text: 'Use ".t name" to show a tag' });
 
-    message.channel.send(embed);
+    message.channel.send({ embeds: [embed] });
     return;
   }
 
@@ -143,7 +148,10 @@ module.exports.run = async (client, message, args, level, Discord) => {
           message.channel.send(tag);
         }
       } else {
-        client.error(message.channel, 'Tag Does Not Exist!', 'The tag you attempted to display does not exist!');
+        const incorrectTagMsg = await message.channel.send(`${client.emoji.redX} **Tag Does Not Exist!**\nThe tag you attempted to display does not exist!`);
+        setTimeout(() => {
+          incorrectTagMsg.delete();
+        }, 10000);
       }
     }
   }

@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const moment = require('moment-timezone');
 
 module.exports = async (client, message) => {
   // Ignore all bots, ignoreMembers, and ignoreChannels
