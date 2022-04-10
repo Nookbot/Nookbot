@@ -131,24 +131,32 @@ For more information about why you were warned, please read #rules-you-must-read
     });
   } else if (mute) {
     try {
-      // Update unmuteTime on userDB
+      // Update unmuteTime on muteDB
       client.muteDB.set(member.id, (mute * 60000) + time);
       const guildMember = await client.guilds.cache.get(client.config.mainGuild).members.fetch(member);
-      const mutedMember = await guildMember.roles.add(client.config.mutedRole, '[Auto] Beestings');
-      await mutedMember.roles.remove([client.config.tradeRole, client.config.voiceRole], '[Auto] Beestings');
+      guildMember.timeout(mute * 60000, '[Auto] Beestings');
+      await guildMember.roles.remove([client.config.tradeRole, client.config.voiceRole], '[Auto] Beestings');
 
-      // Kick member from voice
-      if (guildMember.voice.channel) {
-        guildMember.voice.kick();
-      }
+      // Send mute embed
+      const muteEmbed = new Discord.MessageEmbed()
+        .setAuthor({ name: guildMember.user.tag, iconURL: guildMember.user.displayAvatarURL() })
+        .setTimestamp()
+        .setColor('#ff9292')
+        .setFooter({ text: `ID: ${guildMember.id}` })
+        .addField(`**Member Muted**`, `<@${guildMember.id}>`);
+      client.channels.cache.get(client.config.modLog).send({ embeds: [muteEmbed] });
 
-      // Schedule unmute
+      // Schedule unmute embed
       setTimeout(() => {
-        if ((client.muteDB.get(member.id) || 0) < Date.now()) {
+        if (client.muteDB.has(member.id) && (client.muteDB.get(member.id) || 0) < Date.now()) {
           client.muteDB.delete(member.id);
-          mutedMember.roles.remove(client.config.mutedRole, `Scheduled unmute after ${mute} minutes.`).catch((err) => {
-            client.error(client.channels.cache.get(client.config.modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}\nID: ${member.id}`);
-          });
+          const unmuteEmbed = new Discord.MessageEmbed()
+              .setAuthor({ name: guildMember.user.tag, iconURL: guildMember.user.displayAvatarURL() })
+              .setTimestamp()
+              .setColor('#1de9b6')
+              .setFooter({ text: `ID: ${guildMember.id}` })
+              .addField(`**Member Unmuted**`, `<@${guildMember.id}>`);
+            client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
         }
       }, mute * 60000);
     } catch (err) {
@@ -161,7 +169,7 @@ For more information about why you were warned, please read #rules-you-must-read
 
   // Send mod-log embed
   const embed = new Discord.MessageEmbed()
-    .setAuthor(`Case ${caseNum} | ${action} | ${member.guild ? member.user.tag : member.tag || member}`, member.guild ? member.user.displayAvatarURL() : member.displayAvatarURL())
+    .setAuthor({ name: `Case ${caseNum} | ${action} | ${member.guild ? member.user.tag : member.tag || member}`, iconURL: member.guild ? member.user.displayAvatarURL() : member.displayAvatarURL() })
     .setColor((mute || ban) ? '#ff9292' : '#fada5e')
     .setDescription(`Reason: ${reason}`)
     .addField('User', `<@${member.id}>`, true)
@@ -169,9 +177,9 @@ For more information about why you were warned, please read #rules-you-must-read
     .addField('Stings Given', newPoints, true)
     .addField('DM Sent?', dmSent ? `${client.emoji.checkMark} Yes` : `${client.emoji.redX} No`, true)
     .addField('Total Stings', curPoints + newPoints, true)
-    .setFooter(`ID: ${member.id}`)
+    .setFooter({ text: `ID: ${member.id}` })
     .setTimestamp();
-  return client.channels.cache.get(client.config.modLog).send(embed);
+  return client.channels.cache.get(client.config.modLog).send({ embeds: [embed] });
 };
 
 module.exports.conf = {

@@ -48,7 +48,10 @@ module.exports.run = async (client, message, args, level) => {
     }
   }
 
-  return message.delete({ timeout: 1000 });
+  setTimeout(() => {
+    message.delete();
+  }, 1000)
+  return;
 };
 
 module.exports.conf = {

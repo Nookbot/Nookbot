@@ -20,7 +20,7 @@ module.exports.run = (client, message, args, level) => {
 module.exports.conf = {
   guildOnly: false,
   aliases: [],
-  permLevel: 'Bot Admin',
+  permLevel: 'Bot Owner',
   args: 1,
 };
 
@@ -30,4 +30,18 @@ module.exports.help = {
   description: 'Deletes the cache and reloads the specified command',
   usage: 'reload <command name>',
   details: '<command name> => Any valid command name',
+};
+
+module.exports.data = {
+  name: 'reload',
+  description: 'Deletes the cache and reloads the specified command',
+  type: 1,
+  default_permission: false,
+  options: [
+    {
+      name: 'command-name',
+      description: 'Any valid command name',
+      type: 3,
+    },
+  ],
 };

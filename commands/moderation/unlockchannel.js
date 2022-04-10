@@ -5,10 +5,10 @@ module.exports.run = (client, message, args, level, Discord) => {
     client.error(message.channel, 'Channel Already Unlocked!', `Everyone already has permission to send messages in ${channel}!`);
     return;
   }
-  channel.updateOverwrite(message.guild.id, { SEND_MESSAGES: null }, 'Unlock Channel')
+  channel.permissionOverwrites.edit(message.guild.id, { SEND_MESSAGES: null })
     .then(() => {
       if (channel.id !== message.channel.id) {
-        client.success(message.channel, 'Channel Unlocked!', 'Members can now send messages in that channel!');
+        client.success(message.channel, 'Channel Unlocked!', `Members can now send messages in ${channel}!`);
       }
       channel.send("**Channel Unlocked**!\nWe've determined that it's safe to lift channel lock precautions and allow everyone to send messages again, yes yes!");
     })

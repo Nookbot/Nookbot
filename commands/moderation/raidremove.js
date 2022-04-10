@@ -1,8 +1,11 @@
 module.exports.run = (client, message, args) => {
   // Check if raid mode is active.
   if (!client.raidMode) {
-    client.error(message.guild.channels.cache.get(client.config.staffChat),
-      'Raid Mode is Not Activated!', 'The server must be in Raid Mode to use this command.');
+    client.error(
+      message.guild.channels.cache.get(client.config.staffChat),
+      'Raid Mode is Not Activated!',
+      'The server must be in Raid Mode to use this command.',
+    );
     return;
   }
 
@@ -11,11 +14,17 @@ module.exports.run = (client, message, args) => {
   if (index > -1) {
     const removed = client.raidJoins.splice(index, 1);
     client.raidMembersPrinted -= 1;
-    client.success(message.guild.channels.cache.get(client.client.staffChat),
-      'Member Removed From Raid!', `${removed.user.tag} (${removed.id}) was removed from the list of raid members and will not be banned.`);
+    client.success(
+      message.guild.channels.cache.get(client.client.staffChat),
+      'Member Removed From Raid!',
+      `${removed.user.tag} (${removed.id}) was removed from the list of raid members and will not be banned.`,
+    );
   } else {
-    client.error(message.guild.channels.cache.get(client.config.staffChat),
-      'Member Not in Raid!', 'The User ID you provided is was not found in the raid.');
+    client.error(
+      message.guild.channels.cache.get(client.config.staffChat),
+      'Member Not in Raid!',
+      'The User ID you provided is was not found in the raid.',
+    );
   }
 };
 

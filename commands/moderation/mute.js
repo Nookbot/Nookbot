@@ -13,20 +13,42 @@ module.exports.run = async (client, message, args, level) => {
     }
   }
 
-  // Kick member if in voice
-  if (member.voice.channel) {
-    member.voice.kick();
+  let muteTime = 86400000; // 1 Day
+  if (parseInt(args[1], 10)) {
+    muteTime = 60000 * parseInt(args[1], 10);
   }
 
   try {
-  // Adds the role to the member and removes the trade and voice roles
-    const mutedMember = await member.roles.add(client.config.mutedRole);
+    // Times out the member and removes the trade and voice roles
+    const mutedMember = await member.timeout(muteTime);
     await mutedMember.roles.remove([client.config.tradeRole, client.config.voiceRole]);
+    // Send mute embed
+    const muteEmbed = new Discord.MessageEmbed()
+      .setAuthor({ name: mutedMember.user.tag, iconURL: mutedMember.user.displayAvatarURL() })
+      .setTimestamp()
+      .setColor('#ff9292')
+      .setFooter({ text: `ID: ${mutedMember.id}` })
+      .addField(`**Member Muted**`, `<@${mutedMember.id}>`);
+    client.channels.cache.get(client.config.modLog).send({ embeds: [muteEmbed] });
+    // Schedule unmute embed
+    client.muteDB.set(mutedMember.id, muteTime + Date.now());
+    setTimeout(() => {
+      if (client.muteDB.has(mutedMember.id) && (client.muteDB.get(mutedMember.id) || 0) < Date.now()) {
+        client.muteDB.delete(mutedMember.id);
+        const unmuteEmbed = new Discord.MessageEmbed()
+          .setAuthor({ name: mutedMember.user.tag, iconURL: mutedMember.user.displayAvatarURL() })
+          .setTimestamp()
+          .setColor('#1de9b6')
+          .setFooter({ text: `ID: ${mutedMember.id}` })
+          .addField(`**Member Unmuted**`, `<@${mutedMember.id}>`);
+        client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
+      }
+    }, muteTime);
   } catch (e) {
     return client.error(message.channel, 'Error!', `Failed to mute member! Error: ${e}`);
   }
 
-  return client.success(message.channel, 'Success!', `${message.author}, I've successfully muted ${member}!`);
+  return client.success(message.channel, 'Success!', `${message.author}, I've successfully muted ${member} for ${client.humanTimeBetween(muteTime, 0)}!`);
 };
 
 module.exports.conf = {
@@ -40,6 +62,6 @@ module.exports.help = {
   name: 'mute',
   category: 'moderation',
   description: 'Gives the mentioned user the Muted role',
-  usage: 'mute <@user>',
-  details: '<@user> => Any valid member of the server',
+  usage: 'mute <@user> <time>',
+  details: '<@user> => Any valid member of the server\n<time> => Time to mute for, in minutes',
 };

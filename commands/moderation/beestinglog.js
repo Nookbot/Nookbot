@@ -71,7 +71,7 @@ module.exports.run = async (client, message, args, level) => {
   // Where to send message
   if (args.length > 0 && level >= 2) {
     if (curMsg || expMsg) {
-      return message.channel.send(msg, { split: true });
+      return client.sendLongMessage(message.channel, msg);
     }
     // No infractions
     return message.channel.send(`${member.guild ? member.user.tag : `${member.username}#${member.discriminator}`} doesn't have any bee stings!`);
@@ -80,7 +80,7 @@ module.exports.run = async (client, message, args, level) => {
   try {
     const dmChannel = await member.createDM();
     if (curMsg || expMsg) {
-      await dmChannel.send(msg, { split: true });
+      await client.sendLongMessage(dmChannel, msg);
     } else {
       await dmChannel.send('You do not have any bee stings!');
     }

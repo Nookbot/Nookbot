@@ -6,10 +6,10 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   // embed
   const embed = new Discord.MessageEmbed()
-    .setAuthor(message.author.tag, message.author.displayAvatarURL())
+    .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
     .setColor('#4199c2')
     .setTimestamp()
-    .setFooter('Nookbot', client.user.displayAvatarURL());
+    .setFooter({ text: 'Nookbot', iconURL: client.user.displayAvatarURL() });
 
   switch (args[0]) {
     case 'bot': {
@@ -33,7 +33,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField('Created On', moment(client.user.createdAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
         .addField('Uptime', uptime, true);
 
-      return message.channel.send(embed);
+      return message.channel.send({ embeds: [embed] });
     }
     case 'user': {
       // Setting the member to the mentioned user
@@ -66,7 +66,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         activity = `${client.emoji.offline} Offline/Invisible`;
       }
 
-      embed.setAuthor(member.user.tag, member.user.displayAvatarURL())
+      embed.setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
         .setTitle(`${member.displayName}\'s Info`)
         .addField('ID', member.user.id, true)
         .addField('Nickname', member.displayName, true)
@@ -75,7 +75,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField(`Roles (${roleSize})`, roles, true)
         .addField('Status', activity, true);
 
-      return message.channel.send(embed);
+      return message.channel.send({ embeds: [embed] });
     }
     case 'server':
       embed.setTitle('Server Information')
@@ -87,7 +87,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField('Created On', moment(message.guild.createdAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
         .addField('Member Count', message.guild.memberCount, true);
 
-      return message.channel.send(embed);
+      return message.channel.send({ embeds: [embed] });
     default:
       return client.error(message.channel, 'Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`bot\`, \`server\`, or \`user\`! For further details, use \`${client.config.prefix}help info\`!`);
   }

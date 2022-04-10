@@ -51,7 +51,7 @@ module.exports.run = async (client, message, args, level) => {
         if (!msg) {
           return client.error(message.channel, 'No Matches!', 'No mods matched your search critera!');
         }
-        return message.channel.send(`**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`, { split: true });
+        return client.sendLongMessage(message.channel, `**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`);
       }
       case 'b':
       case 'bottom': {
@@ -77,7 +77,7 @@ module.exports.run = async (client, message, args, level) => {
         if (!msg) {
           return client.error(message.channel, 'No Matches!', 'No mods matched your search critera!');
         }
-        return message.channel.send(`**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`, { split: true });
+        return client.sendLongMessage(message.channel, `**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`);
       }
       case 'remove':
       case 'delete':
@@ -135,7 +135,7 @@ module.exports.run = async (client, message, args, level) => {
           if (!msg) {
             return client.error(message.channel, 'No Matches!', 'No mods matched your search critera!');
           }
-          return message.channel.send(`**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`, { split: true });
+          return client.sendLongMessage(message.channel, `**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`);
         }
 
         if (args.length === 0) {
@@ -168,7 +168,7 @@ module.exports.run = async (client, message, args, level) => {
           msg += `\n#${(mods.findIndex((s) => s.id === args[0])) + 1} - **${member.displayName}** (${args[0]}) - \`${mod.hours.total} hours\``;
 
           const { channelHours } = client.addHours(mod);
-          return message.channel.send(`**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}\n\n${channelHours.join('\n')}`, { split: true });
+          return client.sendLongMessage(message.channel, `**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}\n\n${channelHours.join('\n')}`);
         }
       }
     }

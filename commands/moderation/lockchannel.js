@@ -5,10 +5,10 @@ module.exports.run = (client, message, args, level, Discord) => {
     client.error(message.channel, 'Channel Already Locked!', `Everyone already does not have permission to send messages in ${channel}!`);
     return;
   }
-  channel.updateOverwrite(message.guild.id, { SEND_MESSAGES: false }, 'Lock Channel')
+  channel.permissionOverwrites.edit(message.guild.id, { SEND_MESSAGES: false })
     .then(() => {
       if (channel.id !== message.channel.id) {
-        client.success(message.channel, 'Channel Locked!', 'No one can send messages until the channel is unlocked! To unlock the channel, use \`.unlockchannel\`.');
+        client.success(message.channel, 'Channel Locked!', `No one can send messages in ${channel} until the channel is unlocked! To unlock the channel, use \`.unlockchannel\`.`);
       }
       channel.send("**Channel Locked**!\nWe're sorry to inconvenience everyone, but we've restricted all message sending capabilities in this channel for now. Don't worry though, you'll be back to chatting about your favorite game in no time, yes yes!");
     })

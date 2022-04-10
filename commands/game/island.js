@@ -318,11 +318,11 @@ module.exports.run = async (client, message, args, level, Discord) => {
       }
 
       const embed = new Discord.MessageEmbed()
-        .setAuthor(`${member.displayName}'s Island`, member.user.displayAvatarURL())
+        .setAuthor({ name: `${member.displayName}'s Island`, iconURL: member.user.displayAvatarURL() })
         .setColor('#0ba47d')
         .setDescription(`${msg.join('\n')}`);
 
-      return message.channel.send(embed);
+      return message.channel.send({ embeds: [embed] });
     }
   }
 };

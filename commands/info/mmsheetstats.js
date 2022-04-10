@@ -45,7 +45,7 @@ module.exports.run = async (client, message, args, level) => {
         if (!msg) {
           return client.error(message.channel, 'No Matches!', 'No middlemen matched your search critera!');
         }
-        return message.channel.send(`**Middleman Sign Up Statistics**\nRank - Name - Hours${msg}`, { split: true });
+        return client.sendLongMessage(message.channel, `**Middleman Sign Up Statistics**\nRank - Name - Hours${msg}`);
       }
       case 'b':
       case 'bottom': {
@@ -67,7 +67,7 @@ module.exports.run = async (client, message, args, level) => {
         if (!msg) {
           return client.error(message.channel, 'No Matches!', 'No middlemen matched your search critera!');
         }
-        return message.channel.send(`**Middleman Sign Up Statistics**\nRank - Name - Hours${msg}`, { split: true });
+        return client.sendLongMessage(message.channel, `**Middleman Sign Up Statistics**\nRank - Name - Hours${msg}`);
       }
       case 'remove':
       case 'delete':
@@ -121,7 +121,7 @@ module.exports.run = async (client, message, args, level) => {
           if (!msg) {
             return client.error(message.channel, 'No Matches!', 'No middlemen matched your search critera!');
           }
-          return message.channel.send(`**Middleman Sign Up Statistics**\nRank - Name - Hours${msg}`, { split: true });
+          return client.sendLongMessage(message.channel, `**Middleman Sign Up Statistics**\nRank - Name - Hours${msg}`);
         }
 
         if (args.length === 0) {
@@ -150,7 +150,7 @@ module.exports.run = async (client, message, args, level) => {
           const mm = client.mmSignUp.map((v, k) => ({ id: k, hours: v.hours }))
             .sort((a, b) => b.hours - a.hours);
           msg += `\n#${(mm.findIndex((s) => s.id === args[0])) + 1} - **${member.displayName}** (${args[0]}) - \`${hours} hours\``;
-          return message.channel.send(`**Middleman Sign Up Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`, { split: true });
+          return client.sendLongMessage(message.channel, `**Middleman Sign Up Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`);
         }
       }
     }

@@ -15,32 +15,32 @@ module.exports.run = async (client, message, args, level, Discord) => {
   const embed = new Discord.MessageEmbed()
     .setTitle(`Past usernames of ${member === args[0] ? member : member.user.tag}`)
     .setDescription(`\`\`\`${userArray.slice(0, 15).join('\n') || 'No stored usernames.'}\`\`\``)
-    .setFooter(`Page ${currentPage}/${maxPage}`)
+    .setFooter({ text: `Page ${currentPage}/${maxPage}` })
     .setTimestamp();
 
-  const infoMessage = await message.channel.send(embed);
+  const infoMessage = await message.channel.send({ embeds: [embed] });
   if (userArray.length > 15) {
     await infoMessage.react('⬅️');
     await infoMessage.react('➡️');
     const filter = (reaction, user) => (reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️') && !user.bot;
-    const collector = infoMessage.createReactionCollector(filter, { time: 120000 });
+    const collector = infoMessage.createReactionCollector({ filter, time: 120000 });
     collector.on('collect', (r) => {
       if (r.emoji.name === '⬅️' && currentPage !== 1) {
         currentPage -= 1;
         embed.setDescription(`\`\`\`${userArray.slice((currentPage - 1) * 15, currentPage * 15).join('\n')}\`\`\``);
-        embed.setFooter(`Page ${currentPage}/${maxPage}`);
-        infoMessage.edit(embed);
+        embed.setFooter({ text: `Page ${currentPage}/${maxPage}` });
+        infoMessage.edit({ embeds: [embed] });
       } else if (r.emoji.name === '➡️' && currentPage !== maxPage) {
         currentPage += 1;
         embed.setDescription(`\`\`\`${userArray.slice((currentPage - 1) * 15, currentPage * 15).join('\n')}\`\`\``);
-        embed.setFooter(`Page ${currentPage}/${maxPage}`);
-        infoMessage.edit(embed);
+        embed.setFooter({ text: `Page ${currentPage}/${maxPage}` });
+        infoMessage.edit({ embeds: [embed] });
       }
     });
     collector.on('end', () => {
-      embed.setFooter('No longer listening to reactions.');
+      embed.setFooter({ text: 'No longer listening to reactions.' });
       infoMessage.reactions.removeAll();
-      infoMessage.edit(embed);
+      infoMessage.edit({ embeds: [embed] });
     });
   }
 };
