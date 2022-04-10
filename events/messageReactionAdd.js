@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 module.exports = async (client, messageReaction, user) => {
-  if (user.bot || !messageReaction.message.guild) {
+  if (user.bot || !messageReaction.message.inGuild()) {
     return;
   }
 
@@ -69,13 +69,13 @@ module.exports = async (client, messageReaction, user) => {
     // Request channel unlocking and editing
     const requestChannel = client.channels.cache.get('750150303692619817');
     if (!requestChannel.permissionsFor(client.config.tradeRole).has('SEND_MESSAGES')) {
-      requestChannel.updateOverwrite(client.config.tradeRole, { SEND_MESSAGES: true }, 'Unlocking middleman channel.');
+      requestChannel.permissionOverwrites.edit(client.config.tradeRole, { SEND_MESSAGES: true });
       const msg = requestChannel.messages.cache.get('782464950798516244');
       const { content } = msg;
       const splitContent = content.split('🔐');
       const contentToEdit = splitContent[1].split('\n\n');
       const newContent = '🔓 This channel is currently **unlocked**.';
-      await msg.edit(`${splitContent[0]}🔐 ${contentToEdit[0].trim()}\n\n${newContent}\n\`\`\` \n\`\`\``);
+      await msg.edit(`${splitContent[0].replace(/[\u200B-\u200D\uFEFF]/g, '')}🔐 ${contentToEdit[0].trim()}\n\n${newContent}\n\`\`\` \n\`\`\``);
     }
   }
 
@@ -93,7 +93,7 @@ module.exports = async (client, messageReaction, user) => {
 
       if (roleID) {
         // This reaction corresponds to a role
-        const member = await client.guilds.cache.get(messageReaction.message.guild.id === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
+        const member = await client.guilds.cache.get(messageReaction.message.guildId === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
         if (member && member.roles.cache.has(roleID)) {
           member.roles.remove(roleID, '[Auto] Remove Reaction Role');
         }
@@ -105,7 +105,7 @@ module.exports = async (client, messageReaction, user) => {
       const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
       if (roleID) {
-        const member = await client.guilds.cache.get(messageReaction.message.guild.id === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
+        const member = await client.guilds.cache.get(messageReaction.message.guildId === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
         if (member) {
           // Check if they have any of the other roles in this list and remove them.
           const rolesToRemove = [];
@@ -130,7 +130,7 @@ module.exports = async (client, messageReaction, user) => {
       const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
       if (roleID) {
-        const member = await client.guilds.cache.get(messageReaction.message.guild.id === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
+        const member = await client.guilds.cache.get(messageReaction.message.guildId === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
         if (member && !member.roles.cache.has(roleID)) {
           member.roles.add(roleID, '[Auto] Multiple Reaction Role Add');
         }
@@ -142,7 +142,7 @@ module.exports = async (client, messageReaction, user) => {
       const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
       if (roleID) {
-        const member = await client.guilds.cache.get(messageReaction.message.guild.id === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
+        const member = await client.guilds.cache.get(messageReaction.message.guildId === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
         if (member && (Date.now() - member.joinedTimestamp) > reactionRoleMenu.time) {
           member.roles.add(roleID, '[Auto] Restricted Reaction Role Add');
         }
@@ -160,7 +160,7 @@ module.exports = async (client, messageReaction, user) => {
     // Remove all reactions.
     messageReaction.message.reactions.removeAll()
       .then((message) => {
-        console.log(`Removed ${totalReactions} reactions from message ${message.id}(msgID) in ${message.channel.id}(chID) and reset them.`);
+        console.log(`Removed ${totalReactions} reactions from message ${message.id}(msgID) in ${message.channelId}(chID) and reset them.`);
         // Add back one of each reaction.
         client.asyncForEach(Object.keys(reactionRoleMenu.reactions), async (emoji) => {
           await message.react(emoji);

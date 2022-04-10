@@ -3,8 +3,8 @@ const moment = require('moment-timezone');
 
 module.exports = async (client, oldMessage, newMessage) => {
   // Ignore all bots and make sure the content of the message changed.
-  if (!newMessage.guild || newMessage.author.bot || oldMessage.content === newMessage.content
-      || client.config.ignoreChannel.includes(newMessage.channel.id)
+  if (!newMessage.inGuild() || newMessage.author.bot || oldMessage.content === newMessage.content
+      || client.config.ignoreChannel.includes(newMessage.channelId)
       || client.config.ignoreMember.includes(newMessage.author.id)
       || newMessage.guild.id !== client.config.mainGuild) {
     return;
@@ -18,12 +18,12 @@ module.exports = async (client, oldMessage, newMessage) => {
 
   const embed = new Discord.MessageEmbed()
     .setColor('#00e5ff')
-    .setAuthor(newMessage.author.tag, newMessage.author.displayAvatarURL())
-    .setDescription(`[Jump to message in](${newMessage.url} 'Jump') <#${newMessage.channel.id}>`)
+    .setAuthor({ name: newMessage.author.tag, iconURL: newMessage.author.displayAvatarURL() })
+    .setDescription(`[Jump to message in](${newMessage.url} 'Jump') <#${newMessage.channelId}>`)
     .setTimestamp()
-    .setFooter(`ID: ${newMessage.author.id}`)
+    .setFooter({ text: `ID: ${newMessage.author.id}` })
     .addField('**Message Edited**', `**Before:** ${oldMsg}\n**+After:** ${newMsg}`)
-    .addField('**Posted**', moment.utc(oldMessage.createdAt).format('MMMM Do YYYY, HH:mm:ss z'));
+    .addField('**Posted**', `<t:${Math.floor(oldMessage.createdTimestamp / 1000)}>`);
 
-  newMessage.guild.channels.cache.get(client.config.actionLog).send(embed);
+  newMessage.guild.channels.cache.get(client.config.actionLog).send({ embeds: [embed] });
 };

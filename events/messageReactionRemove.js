@@ -2,7 +2,7 @@ const moment = require('moment');
 
 /* eslint-disable consistent-return */
 module.exports = async (client, messageReaction, user) => {
-  if (user.bot || !messageReaction.message.guild) {
+  if (user.bot || !messageReaction.message.inGuild()) {
     return;
   }
 
@@ -91,13 +91,13 @@ module.exports = async (client, messageReaction, user) => {
     const reactionMenu = mmChannel.messages.cache.get('826305438277697567');
     await reactionMenu.reactions.cache.first().users.fetch();
     if (reactionMenu.reactions.cache.first().users.cache.size <= 1) {
-      requestChannel.updateOverwrite(client.config.tradeRole, { SEND_MESSAGES: false }, 'Locking middleman channel.');
+      requestChannel.permissionOverwrites.edit(client.config.tradeRole, { SEND_MESSAGES: false });
       const msg = requestChannel.messages.cache.get('782464950798516244');
       const { content } = msg;
       const splitContent = content.split('🔐');
       const contentToEdit = splitContent[1].split('\n\n');
       const newContent = '🔐 This channel is currently **locked**.';
-      msg.edit(`${splitContent[0]}🔐 ${contentToEdit[0].trim()}\n\n${newContent}\n\`\`\` \n\`\`\``);
+      msg.edit(`${splitContent[0].replace(/[\u200B-\u200D\uFEFF]/g, '')}🔐 ${contentToEdit[0].trim()}\n\n${newContent}\n\`\`\` \n\`\`\``);
     }
   }
 
@@ -111,8 +111,8 @@ module.exports = async (client, messageReaction, user) => {
   const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
   if (roleID) {
-    const member = await client.guilds.cache.get(messageReaction.message.guild.id === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
-    if (member && member.roles.cache.has(roleID)) {
+    const member = await client.guilds.cache.get(messageReaction.message.guildId === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
+    if (member?.roles.cache.has(roleID)) {
       member.roles.remove(roleID, '[Auto] Reaction Role Remove');
     }
   }

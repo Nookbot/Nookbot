@@ -9,8 +9,9 @@ module.exports = (client) => {
     const intv = setInterval(async () => {
       const mainGuild = client.guilds.cache.get(client.config.mainGuild);
       const modMailGuild = client.guilds.cache.get(client.config.modMailGuild);
-      if (!mainGuild || !modMailGuild) {
-        console.log(`  Attempting to wait for both guilds to load ${counter}...`);
+      const mentorGuild = client.guilds.cache.get(client.config.mentorGuild);
+      if (!mainGuild || !modMailGuild || !mentorGuild) {
+        console.log(`  Attempting to wait for all guilds to load ${counter}...`);
         counter += 1;
         return;
       }
@@ -29,7 +30,6 @@ module.exports = (client) => {
 
       setInterval(() => {
         try {
-          client.memberStats.set(client.memberStats.autonum, { time: Date.now(), members: mainGuild.memberCount });
           client.user.setActivity(`ACNH with ${mainGuild.memberCount} users!`);
         } catch (e) {
           // Don't need any handling
@@ -44,8 +44,8 @@ module.exports = (client) => {
       // Clear any session channels from the server if they have no members
       client.sessionDB.keyArray().forEach((sesID) => {
         const sessionChannel = client.channels.cache.get(sesID);
-        if (sessionChannel && sessionChannel.members.size === 0
-            && !sessionChannel.deleted && sessionChannel.deletable) {
+        if (sessionChannel?.members.size === 0
+            && sessionChannel.deletable) {
           // Session is empty, delete the channel and database entry
           sessionChannel.delete('[Auto] Purged empty session channels on ready event.').then((delChannel) => {
             // Delete sessionDB entry
@@ -56,26 +56,38 @@ module.exports = (client) => {
         }
       });
 
-      // Reschedule any unmutes from muteDB
+      // Reschedule any unmute embeds from muteDB
       const now = Date.now();
       client.muteDB.keyArray().forEach((memID) => {
         const unmuteTime = client.muteDB.get(memID);
         mainGuild.members.fetch(memID).then((member) => {
           if (unmuteTime < now) {
-            // Immediately unmute
+            // Immediately send unmute embed
             client.muteDB.delete(memID);
-            member.roles.remove(client.config.mutedRole, 'Scheduled unmute through reboot.');
+            const unmuteEmbed = new Discord.MessageEmbed()
+              .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
+              .setTimestamp()
+              .setColor('#1de9b6')
+              .setFooter({ text: `ID: ${member.id}` })
+              .addField(`**Member Unmuted**`, `<@${member.id}>`);
+            client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
           } else {
-            // Schedule unmute
+            // Schedule unmute embed
             setTimeout(() => {
-              if ((client.muteDB.get(memID) || 0) < Date.now()) {
+              if (client.muteDB.has(memID) && (client.muteDB.get(memID) || 0) < Date.now()) {
                 client.muteDB.delete(memID);
-                member.roles.remove(client.config.mutedRole, 'Scheduled unmute through reboot.');
+                const unmuteEmbed = new Discord.MessageEmbed()
+                  .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
+                  .setTimestamp()
+                  .setColor('#1de9b6')
+                  .setFooter({ text: `ID: ${member.id}` })
+                  .addField(`**Member Unmuted**`, `<@${member.id}>`);
+                client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
               }
             }, unmuteTime - now);
           }
         }).catch(() => {
-          // Probably no longer a member, don't schedule their unmute and remove entry from DB.
+          // Probably no longer a member, don't schedule their unmute embed and remove entry from DB.
           client.muteDB.delete(memID);
         });
       });
@@ -91,55 +103,77 @@ module.exports = (client) => {
         // Mod stats
         const mods = client.reactionSignUp.map((v, k) => ({ id: k, hours: v.hours ? v.hours.total : undefined })).sort((a, b) => b.hours - a.hours);
         let msg = `**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nRank - Name - Hours\nChannel/Category - Hours`;
+        const HMCmdsCh = client.channels.cache.get('776571947546443796') || await client.channels.fetch('776571947546443796');
         await client.asyncForEach(mods, async (k, i) => {
           if (k.id !== 'data') {
             const guild = client.guilds.cache.get(client.config.mainGuild);
-            const modMember = guild.members.cache.get(k.id) || await guild.members.fetch(k.id);
-            msg += `\n#${i + 1} - **${modMember.displayName}** (${k.id}) - \`${k.hours} hours\``;
+            let modMember = guild.members.cache.get(k.id);
 
-            const mod = client.reactionSignUp.get(k.id);
-            const { channelHours } = client.addHours(mod);
-            msg += channelHours.length === 0 ? '\n' : `\n${channelHours.join('\n')}\n`;
-
-            try {
-              const dmChannel = await modMember.createDM();
-              await dmChannel.send(`**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nName - Hours\nChannel/Category - Hours\n**${modMember ? modMember.displayName : 'Unknown Mod'}** (${k.id}) - ${k.hours} hours\n\n${channelHours.join('\n')}`);
-              client.success(dmChannel, 'Reset Sign Up Statistics!', "I've reset sign up statistics! Above is your clocked hours for the week!");
-            } catch (e) {
-              // Nothing to do here
+            if (!modMember) {
+              try {
+                modMember = await guild.members.fetch(k.id);
+              } catch (e) {
+                client.error(HMCmdsCh, 'Could Not Fetch Moderator!', `I've failed to fetch a moderator listed in the database. They may have left the server. Please remove them when possible. ID: \`${k.id}\``);
+              }
             }
 
-            client.reactionSignUp.set(k.id, { total: 0 }, 'hours');
+            if (modMember) {
+              msg += `\n#${i + 1} - **${modMember.displayName}** (${k.id}) - \`${k.hours} hours\``;
+
+              const mod = client.reactionSignUp.get(k.id);
+              const { channelHours } = client.addHours(mod);
+              msg += channelHours.length === 0 ? '\n' : `\n${channelHours.join('\n')}\n`;
+
+              try {
+                const dmChannel = await modMember.createDM();
+                await dmChannel.send(`**Sign Up Sheet Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nName - Hours\nChannel/Category - Hours\n**${modMember ? modMember.displayName : 'Unknown Mod'}** (${k.id}) - ${k.hours} hours\n\n${channelHours.join('\n')}`);
+                client.success(dmChannel, 'Reset Sign Up Statistics!', "I've reset sign up statistics! Above is your clocked hours for the week!");
+              } catch (e) {
+                // Nothing to do here
+              }
+
+              client.reactionSignUp.set(k.id, { total: 0 }, 'hours');
+            }
           }
         });
 
-        const HMCmdsCh = client.channels.cache.get('776571947546443796') || await client.channels.fetch('776571947546443796');
-        await HMCmdsCh.send(msg, { split: true });
+        await client.sendLongMessage(HMCmdsCh, msg);
         client.success(HMCmdsCh, 'Successfully Reset Sign Up Statistics!', "I've successfully reset sign up statistics for the week!");
 
         // Middleman stats
         const mm = client.mmSignUp.map((v, k) => ({ id: k, hours: v.hours })).sort((a, b) => b.hours - a.hours);
         let msgMM = `**Middleman Sign Up Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nRank - Name - Hours`;
+        const HMMCh = client.channels.cache.get('784961291948654663') || await client.channels.fetch('776571947546443796');
         await client.asyncForEach(mm, async (k, i) => {
           if (k.id !== 'data') {
             const guild = client.guilds.cache.get(client.config.mainGuild);
-            const mmMember = guild.members.cache.get(k.id) || await guild.members.fetch(k.id);
-            msgMM += `\n#${i + 1} - **${mmMember.displayName}** (${k.id}) - \`${k.hours} hours\``;
+            let mmMember = guild.members.cache.get(k.id);
 
-            try {
-              const dmChannel = await mmMember.createDM();
-              await dmChannel.send(`**Middleman Sign Up Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nName - Hours\n**${mmMember ? mmMember.displayName : 'Unknown Middleman'}** (${k.id}) - ${k.hours} hours`);
-              client.success(dmChannel, 'Reset Sign Up Statistics!', "I've reset middleman sign up statistics! Above is your clocked hours for the week!");
-            } catch (e) {
-              // Nothing to do here
+            if (!mmMember) {
+              try {
+                mmMember = await guild.members.fetch(k.id);
+              } catch (e) {
+                client.error(HMMCh, 'Could Not Fetch Middleman!', `I've failed to fetch a middleman listed in the database. They may have left the server. Please remove them when possible. ID: \`${k.id}\``);
+              }
             }
 
-            client.mmSignUp.set(k.id, 0, 'hours');
+            if (mmMember) {
+              msgMM += `\n#${i + 1} - **${mmMember.displayName}** (${k.id}) - \`${k.hours} hours\``;
+
+              try {
+                const dmChannel = await mmMember.createDM();
+                await dmChannel.send(`**Middleman Sign Up Statistics (Week ${moment().subtract(7, 'days').format('DD/MM/YYYY')} - ${moment().subtract(1, 'days').format('DD/MM/YYYY')})**\nName - Hours\n**${mmMember ? mmMember.displayName : 'Unknown Middleman'}** (${k.id}) - ${k.hours} hours`);
+                client.success(dmChannel, 'Reset Sign Up Statistics!', "I've reset middleman sign up statistics! Above is your clocked hours for the week!");
+              } catch (e) {
+                // Nothing to do here
+              }
+
+              client.mmSignUp.set(k.id, 0, 'hours');
+            }
           }
         });
 
-        const HMMCh = client.channels.cache.get('784961291948654663') || await client.channels.fetch('784961291948654663');
-        await HMMCh.send(msgMM, { split: true });
+        await client.sendLongMessage(HMMCh, msgMM);
         client.success(HMMCh, 'Successfully Reset Middleman Sign Up Statistics!', "I've successfully reset middleman sign up statistics for the week!");
       });
 
@@ -174,12 +208,25 @@ module.exports = (client) => {
 
       // Schedule post for date in #daily-summary and #trainee-summary
       scheduleJob('dailySumPost', { hour: moment().tz('America/New_York').isDST() ? 4 : 5, minute: 0 }, () => {
-        const dailySum = mainGuild.channels.cache.get('672949637359075339');
-        const traineeDailySum = mainGuild.channels.cache.get('858901245540696084');
+        const dailySums = ['672949637359075339', '858901245540696084', '867205089905999902'];
         const newPostNow = moment();
         const dateString = `__**${newPostNow.format('MMMM D, YYYY')}**__`;
-        dailySum.send(dateString);
-        traineeDailySum.send(dateString);
+
+        for (let i = 0; i < dailySums.length; i++) {
+          // eslint-disable-next-line no-await-in-loop
+          await mainGuild.channels.cache.get(dailySums[i]).send(dateString);
+        }
+      });
+
+      // Schedule clearing of attachmentDB
+      scheduleJob('clearAttachmentDB', { dayOfWeek: 0, hour: 0, minute: 0 }, () => {
+        // 1 week in milliseconds
+        const oneWeekInMS = 3600000 * 24 * 7;
+        client.attachmentDB.array()
+          .filter((a) => a.date + oneWeekInMS < Date.now())
+          .forEach((a) => {
+            client.attachmentDB.delete(client.attachmentDB.findKey((b) => b.loggedMsgId === a.loggedMsgId));
+          });
       });
 
       try {

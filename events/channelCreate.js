@@ -1,7 +1,7 @@
 const moment = require('moment');
 
 module.exports = (client, channel) => {
-  if (channel.type !== 'text' || (channel.guild ? channel.guild.id !== client.config.modMailGuild : true)) {
+  if (channel.type !== 'GUILD_TEXT' || channel.guildId !== client.config.modMailGuild) {
     return;
   }
 
@@ -33,9 +33,8 @@ module.exports = (client, channel) => {
         msg += `\n**Expired bee stings (${expPoints} total):**${expMsg}`;
       }
 
-
       if (curMsg || expMsg) {
-        channel.send(msg, { split: true });
+        client.sendLongMessage(channel, msg);
       } else {
         // No infractions
         channel.send(`${user.tag} doesn't have any bee stings!`);
