@@ -11,35 +11,14 @@ module.exports = (client) => {
     const timeDif = moment.duration(moment(time1).diff(moment(time2)));
 
     const times = [
-      timeDif.years(),
-      timeDif.months(),
-      timeDif.days(),
-      timeDif.hours(),
-      timeDif.minutes(),
-      timeDif.seconds(),
-    ];
+      [timeDif.years(), 'year'],
+      [timeDif.months(), 'month'],
+      [timeDif.days(), 'day'],
+      [timeDif.hours(), 'hour'],
+      [timeDif.minutes(), 'minute'],
+      [timeDif.seconds(), 'second'],
+    ].filter(t => t[0] > 0).slice(0,3).map(t => `${t[0]} ${t[1]}${t[0] === 1 ? '': 's'}`);
 
-    const units = ['year', 'month', 'day', 'hour', 'minute', 'second'];
-
-    // Grab the top 3 units of time that aren't 0
-    let outTimes = '';
-    let c = 0;
-    for (let t = 0; t < units.length; t++) {
-      if (times[t] > 0) {
-        outTimes += `${c === 1 ? '|' : ''}${c === 2 ? '=' : ''}${times[t]} ${units[t]}${times[t] === 1 ? '' : 's'}`;
-        c += 1;
-        if (c === 3) {
-          break;
-        }
-      }
-    }
-
-    if (outTimes.includes('=')) {
-      outTimes = outTimes.replace('|', ', ').replace('=', ', and ');
-    } else {
-      outTimes = outTimes.replace('|', ' and ');
-    }
-
-    return outTimes || '0 seconds';
+    return `${times.slice(0, times.length == 1 ? 1 : times.length - 1).join(', ')}${times.length <= 2 ? '' : ','}${times.length <= 1 ? '' : ' and ' + times.slice(-1)}` || '0 seconds';
   };
 };
