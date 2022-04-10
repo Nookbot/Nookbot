@@ -90,6 +90,8 @@ const config = {
     usernames: [],
     infractions: [],
     lastMessageTimestamp: 0,
+    fastMessageCount: 0,
+    joinedTimestamp: 0,
   },
 
   // Bot Perms and Stuff
@@ -212,7 +214,7 @@ const config = {
       level: 8,
       name: 'Server Owner',
       check: (client, message) => {
-        if (message.guild && message.author.id === message.guild.ownerID) {
+        if (message.guild && message.author.id === message.guild.ownerId) {
           return true;
         }
         return false;

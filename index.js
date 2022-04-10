@@ -8,6 +8,7 @@ const Twitter = require('twitter-lite');
 const { Searcher } = require('fast-fuzzy');
 
 const config = require('./config');
+const { version } = require('./package.json');
 const emoji = require('./src/emoji');
 
 const client = new Discord.Client({
@@ -33,6 +34,7 @@ const client = new Discord.Client({
 });
 
 client.config = config;
+client.version = `v${version}`;
 client.emoji = emoji;
 
 fs.readdir('./src/modules/', (err, files) => {
@@ -79,7 +81,7 @@ fs.readdir('./commands/', (err, folders) => {
         const props = require(`./commands/${folder}/${file}`);
         const commandName = file.split('.')[0];
 
-        console.log(`Reading command: ${commandName}`);
+        console.log(`Attempting to load command: ${commandName}`);
         client.commands.set(commandName, props);
 
         if (props.conf.aliases) {
@@ -117,7 +119,7 @@ client.imageAndTextOnlyFilterCount = 0;
 client.newlineLimitFilterCount = 0;
 client.imageAndLinkFilterCount = 0;
 client.noMentionFilterCount = 0;
-client.linkBlacklistFilterCount = 0;
+client.linkFilterCount = 0;
 
 // Twitter object for listening for tweets
 client.twitter = new Twitter({
@@ -130,8 +132,8 @@ client.twitter = new Twitter({
 // Start up the twitter webhook listener
 client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, client.config.twitterHookToken);
 
-Object.assign(client, Enmap.multi(['enabledCmds', 'emojiDB', 'tags', 'sessionDB', 'muteDB', 'reactionRoleDB', 'bannedWordsDB', 'reactionSignUp', 'remindDB', 'timers', 'mmSignUp'], { ensureProps: true }));
-Object.assign(client, Enmap.multi(['userDB', 'infractionDB', 'memberStats'], { fetchAll: false, ensureProps: true }));
+Object.assign(client, Enmap.multi(['enabledCmds', 'emojiDB', 'tags', 'sessionDB', 'muteDB', 'reactionRoleDB', 'bannedWordsDB', 'reactionSignUp', 'remindDB', 'timers', 'mmSignUp', 'attachmentDB', 'linkWhitelist'], { ensureProps: true }));
+Object.assign(client, Enmap.multi(['userDB', 'infractionDB', 'headStaffNotesDB'], { fetchAll: false, ensureProps: true }));
 
 // Banned words array and Searcher
 const bannedWordsArray = client.bannedWordsDB.array();
