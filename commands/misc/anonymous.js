@@ -1,7 +1,5 @@
-const Discord = require('discord.js');
-
 // eslint-disable-next-line no-unused-vars
-module.exports.run = async (client, message, args, level) => {
+module.exports.run = async (client, message, args, level, Discord) => {
   // If the channel is not a dm, send an error message
   if (message.channel.type !== 'DM') {
     // Delete the message for privacy reasons

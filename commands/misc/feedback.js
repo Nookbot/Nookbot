@@ -1,7 +1,5 @@
-const Discord = require('discord.js');
-
 // eslint-disable-next-line consistent-return
-module.exports.run = async (client, message, args, level) => {
+module.exports.run = async (client, message, args, level, Discord) => {
   let user;
   if (parseInt(args[0], 10)) {
     try {
@@ -56,7 +54,9 @@ module.exports.run = async (client, message, args, level) => {
                   && userReacted.id === message.author.id;
 
           let decision = false;
-          await confirmPrompt.awaitReactions({ filter, max: 1, time: 1200000, errors: ['time'] })
+          await confirmPrompt.awaitReactions({
+            filter, max: 1, time: 1200000, errors: ['time'],
+          })
             .then((collected) => {
               if (collected.first().emoji.name === client.emoji.checkMark) {
                 decision = true;

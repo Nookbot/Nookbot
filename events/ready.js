@@ -1,3 +1,4 @@
+const Discord = require('discord.js');
 const { scheduleJob } = require('node-schedule');
 const moment = require('moment-timezone');
 
@@ -28,13 +29,13 @@ module.exports = (client) => {
       // Sweep emojis from the DB that are no longer in the guild emojis
       client.emojiDB.sweep((v, k) => !mainGuild.emojis.cache.has(k));
 
-      setInterval(() => {
-        try {
-          client.user.setActivity(`ACNH with ${mainGuild.memberCount} users!`);
-        } catch (e) {
-          // Don't need any handling
-        }
-      }, 30000);
+      // Set Activity once, changed from updating every 30 seconds, because this was believed to be causing issues
+      // with blocking the API for a few seconds, which could cause interactions to be delayed by longer than 3 seconds, and give the user an interaction failed.
+      try {
+        client.user.setActivity(`ACNH with ${mainGuild.memberCount} users!`);
+      } catch (e) {
+        // Don't need any handling
+      }
 
       // Save the current collection of guild invites.
       mainGuild.invites.fetch().then((guildInvites) => {
@@ -63,25 +64,27 @@ module.exports = (client) => {
         mainGuild.members.fetch(memID).then((member) => {
           if (unmuteTime < now) {
             // Immediately send unmute embed
+            member.roles.remove(client.config.mutedRole);
             client.muteDB.delete(memID);
             const unmuteEmbed = new Discord.MessageEmbed()
               .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
               .setTimestamp()
               .setColor('#1de9b6')
               .setFooter({ text: `ID: ${member.id}` })
-              .addField(`**Member Unmuted**`, `<@${member.id}>`);
+              .addField('**Member Unmuted**', `<@${member.id}>`);
             client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
           } else {
             // Schedule unmute embed
             setTimeout(() => {
               if (client.muteDB.has(memID) && (client.muteDB.get(memID) || 0) < Date.now()) {
+                member.roles.remove(client.config.mutedRole);
                 client.muteDB.delete(memID);
                 const unmuteEmbed = new Discord.MessageEmbed()
                   .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
                   .setTimestamp()
                   .setColor('#1de9b6')
                   .setFooter({ text: `ID: ${member.id}` })
-                  .addField(`**Member Unmuted**`, `<@${member.id}>`);
+                  .addField('**Member Unmuted**', `<@${member.id}>`);
                 client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
               }
             }, unmuteTime - now);
@@ -213,8 +216,7 @@ module.exports = (client) => {
         const dateString = `__**${newPostNow.format('MMMM D, YYYY')}**__`;
 
         for (let i = 0; i < dailySums.length; i++) {
-          // eslint-disable-next-line no-await-in-loop
-          await mainGuild.channels.cache.get(dailySums[i]).send(dateString);
+          mainGuild.channels.cache.get(dailySums[i]).send(dateString);
         }
       });
 
@@ -228,13 +230,6 @@ module.exports = (client) => {
             client.attachmentDB.delete(client.attachmentDB.findKey((b) => b.loggedMsgId === a.loggedMsgId));
           });
       });
-
-      try {
-        client.startTwitterFeed();
-      } catch (err) {
-        // The stream function returned an error
-        console.error(err);
-      }
 
       // Logging a ready message on first boot
       console.log(`Ready sequence finished, with ${mainGuild.memberCount} users, in ${mainGuild.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`);

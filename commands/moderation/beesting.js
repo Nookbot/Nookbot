@@ -56,8 +56,8 @@ ${client.config.banAppealLink}`;
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 12 hours in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
-For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).
+Please note that discussing any punishments you receive in a public channel may result in additional stings. If you have any questions please DM Orvbot (<@715355702444425296>) to contact a member of staff.`;
     action = '12 Hour Mute';
     mute = 720;
   } else if (curPoints < 15 && newPoints + curPoints >= 15) {
@@ -65,8 +65,8 @@ For more information about why you were muted, please read #rules-you-must-read 
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 1 hour in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
-For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).
+Please note that discussing any punishments you receive in a public channel may result in additional stings. If you have any questions please DM Orvbot (<@715355702444425296>) to contact a member of staff.`;
     action = '1 Hour Mute';
     mute = 60;
   } else if (curPoints < 10 && newPoints + curPoints >= 10) {
@@ -74,8 +74,8 @@ For more information about why you were muted, please read #rules-you-must-read 
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 30 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
-For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).
+Please note that discussing any punishments you receive in a public channel may result in additional stings. If you have any questions please DM Orvbot (<@715355702444425296>) to contact a member of staff.`;
     action = '30 Minute Mute';
     mute = 30;
   } else if (curPoints < 5 && newPoints + curPoints >= 5) {
@@ -83,8 +83,8 @@ For more information about why you were muted, please read #rules-you-must-read 
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 10 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
-For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).
+Please note that discussing any punishments you receive in a public channel may result in additional stings. If you have any questions please DM Orvbot (<@715355702444425296>) to contact a member of staff.`;
     action = '10 Minute Mute';
     mute = 10;
   } else {
@@ -93,7 +93,8 @@ For more information about why you were muted, please read #rules-you-must-read 
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 Don't worry, 1 sting is just a warning and will expire in **1 week**.
-For more information about why you were warned, please read #rules-you-must-read (<#696239787467604008>).`;
+For more information about why you were warned, please read #rules-you-must-read (<#696239787467604008>).
+Please note that discussing any punishments you receive in a public channel may result in additional stings. If you have any questions please DM Orvbot (<@715355702444425296>) to contact a member of staff.`;
     action = 'Warn';
   }
 
@@ -135,7 +136,7 @@ For more information about why you were warned, please read #rules-you-must-read
       client.muteDB.set(member.id, (mute * 60000) + time);
       const guildMember = await client.guilds.cache.get(client.config.mainGuild).members.fetch(member);
       guildMember.timeout(mute * 60000, '[Auto] Beestings');
-      await guildMember.roles.remove([client.config.tradeRole, client.config.voiceRole], '[Auto] Beestings');
+      await guildMember.roles.add(client.config.mutedRole, '[Auto] Beestings');
 
       // Send mute embed
       const muteEmbed = new Discord.MessageEmbed()
@@ -143,20 +144,29 @@ For more information about why you were warned, please read #rules-you-must-read
         .setTimestamp()
         .setColor('#ff9292')
         .setFooter({ text: `ID: ${guildMember.id}` })
-        .addField(`**Member Muted**`, `<@${guildMember.id}>`);
+        .addField('**Member Muted**', `<@${guildMember.id}>`);
       client.channels.cache.get(client.config.modLog).send({ embeds: [muteEmbed] });
 
+      const id = guildMember.id;
       // Schedule unmute embed
-      setTimeout(() => {
-        if (client.muteDB.has(member.id) && (client.muteDB.get(member.id) || 0) < Date.now()) {
-          client.muteDB.delete(member.id);
+      setTimeout(async () => {
+        if (client.muteDB.has(id) && (client.muteDB.get(id) || 0) < Date.now()) {
+          try {
+            let unmuteMember = await client.guilds.cache.get(client.config.mainGuild).members.fetch(id);
+            if (unmuteMember && unmuteMember.roles) {
+              unmuteMember.roles.remove(client.config.mutedRole);
+            }
+          } catch (error) {
+            // Oh well, no user fetched, they left, no unmute for them.
+          }
+          client.muteDB.delete(id);
           const unmuteEmbed = new Discord.MessageEmbed()
-              .setAuthor({ name: guildMember.user.tag, iconURL: guildMember.user.displayAvatarURL() })
-              .setTimestamp()
-              .setColor('#1de9b6')
-              .setFooter({ text: `ID: ${guildMember.id}` })
-              .addField(`**Member Unmuted**`, `<@${guildMember.id}>`);
-            client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
+            .setAuthor({ name: guildMember.user.tag, iconURL: guildMember.user.displayAvatarURL() })
+            .setTimestamp()
+            .setColor('#1de9b6')
+            .setFooter({ text: `ID: ${guildMember.id}` })
+            .addField('**Member Unmuted**', `<@${guildMember.id}>`);
+          client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
         }
       }, mute * 60000);
     } catch (err) {
@@ -174,9 +184,9 @@ For more information about why you were warned, please read #rules-you-must-read
     .setDescription(`Reason: ${reason}`)
     .addField('User', `<@${member.id}>`, true)
     .addField('Moderator', `<@${message.author.id}>`, true)
-    .addField('Stings Given', newPoints, true)
+    .addField('Stings Given', `${newPoints}`, true)
     .addField('DM Sent?', dmSent ? `${client.emoji.checkMark} Yes` : `${client.emoji.redX} No`, true)
-    .addField('Total Stings', curPoints + newPoints, true)
+    .addField('Total Stings', `${curPoints + newPoints}`, true)
     .setFooter({ text: `ID: ${member.id}` })
     .setTimestamp();
   return client.channels.cache.get(client.config.modLog).send({ embeds: [embed] });

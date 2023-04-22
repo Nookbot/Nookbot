@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, ban) => {
-  if (ban.guild.id !== client.config.mainGuild) {
+  if (ban.guild.id !== client.config.mainGuild || client.raidBanning || client.raidBans.includes(ban.user.id)) {
     return;
   }
 
@@ -14,5 +14,5 @@ module.exports = async (client, ban) => {
     .setTitle('**Member Banned**')
     .setDescription(ban.user.id);
 
-  if (!client.raidBanning) guild.channels.cache.get(client.config.modLog).send({ embeds: [embed] });
+  client.channels.cache.get(client.config.modLog).send({ embeds: [embed] });
 };

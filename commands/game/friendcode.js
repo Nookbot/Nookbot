@@ -53,7 +53,15 @@ module.exports.run = async (client, message, args, level, Discord) => {
       }
 
       // Attempt to find a member using the arguments provided
-      const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || await message.guild.members.fetch(args[0]);
+      let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
+
+      if (!member && parseInt(args[0], 10)) {
+        try {
+          member = await message.guild.members.fetch(args[0]);
+        } catch (err) {
+          // Don't need to send a message here
+        }
+      }
 
       if (member) {
         const fc = client.userDB.ensure(member.user.id, client.config.userDBDefaults).friendcode;

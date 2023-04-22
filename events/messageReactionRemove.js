@@ -78,7 +78,7 @@ module.exports = async (client, messageReaction, user) => {
             mmMember = mm;
           });
       }
-      return mmMember.displayName;
+      return mmMember?.displayName || u.username;
     });
     const mmAvailableNum = names.length;
     const signUpMsgContent = messageReaction.message.content;
@@ -91,7 +91,7 @@ module.exports = async (client, messageReaction, user) => {
     const reactionMenu = mmChannel.messages.cache.get('826305438277697567');
     await reactionMenu.reactions.cache.first().users.fetch();
     if (reactionMenu.reactions.cache.first().users.cache.size <= 1) {
-      requestChannel.permissionOverwrites.edit(client.config.tradeRole, { SEND_MESSAGES: false });
+      requestChannel.permissionOverwrites.edit(client.config.mainGuild, { SEND_MESSAGES: false });
       const msg = requestChannel.messages.cache.get('782464950798516244');
       const { content } = msg;
       const splitContent = content.split('🔐');

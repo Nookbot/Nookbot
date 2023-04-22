@@ -5,15 +5,16 @@ module.exports.run = async (client, message, args, level) => {
     try {
       user = await client.users.fetch(args[0]);
     } catch (err) {
-      return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
+      client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
+      return;
     }
   }
-
 
   const { headStaffNotes } = client.userDB.ensure(user.id, client.config.userDBDefaults);
 
   if (headStaffNotes.length === 0) {
-    return client.error(message.channel, 'No Notes Found!', `I did not find any notes recorded for **${user.tag}**!`);
+    client.error(message.channel, 'No Notes Found!', `I did not find any notes recorded for **${user.tag}**!`);
+    return;
   }
 
   let msg = `__**•• Head Staff Notes for ${user.tag} ••**__`;
@@ -43,7 +44,6 @@ module.exports.run = async (client, message, args, level) => {
     return 1;
   });
 
-
   // eslint-disable-next-line array-callback-return
   headStaffNotes.forEach((n, i, arr) => {
     if (arr[i - 1]) {
@@ -63,7 +63,6 @@ module.exports.run = async (client, message, args, level) => {
   });
 
   client.sendLongMessage(message.channel, msg);
-  return;
 };
 
 module.exports.conf = {

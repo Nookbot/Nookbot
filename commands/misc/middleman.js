@@ -45,7 +45,7 @@ module.exports.run = async (client, message, args, level) => { // eslint-disable
     case 'lock':
     case 'l': {
       const requestChannel = client.channels.cache.get('750150303692619817');
-      await requestChannel.permissionOverwrites.edit(client.config.tradeRole, { SEND_MESSAGES: false });
+      await requestChannel.permissionOverwrites.edit(client.config.mainGuild, { SEND_MESSAGES: false });
       client.success(message.channel, 'Success!', `Successfully locked ${requestChannel}!`);
       break;
     }
@@ -53,7 +53,7 @@ module.exports.run = async (client, message, args, level) => { // eslint-disable
     case 'ul':
     case 'unl': {
       const requestChannel = client.channels.cache.get('750150303692619817');
-      await requestChannel.permissionOverwrites.edit(client.config.tradeRole, { SEND_MESSAGES: true });
+      await requestChannel.permissionOverwrites.edit(client.config.mainGuild, { SEND_MESSAGES: true });
       client.success(message.channel, 'Success!', `Successfully unlocked ${requestChannel}!`);
       break;
     }

@@ -23,13 +23,16 @@ const client = new Discord.Client({
     Discord.Intents.FLAGS.GUILDS,
     Discord.Intents.FLAGS.GUILD_MEMBERS,
     Discord.Intents.FLAGS.GUILD_BANS,
-    Discord.Intents.FLAGS.GUILD_EMOJIS,
+    Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
     Discord.Intents.FLAGS.GUILD_VOICE_STATES,
     Discord.Intents.FLAGS.GUILD_PRESENCES,
     Discord.Intents.FLAGS.GUILD_MESSAGES,
     Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Discord.Intents.FLAGS.DIRECT_MESSAGES,
     Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+  ],
+  partials: [
+    'MESSAGE',
   ],
 });
 
@@ -109,6 +112,7 @@ client.invites = {};
 // Raid Mode
 client.raidMode = false;
 client.raidBanning = false;
+client.raidBans = [];
 client.raidJoins = [];
 client.raidMessage = null;
 client.raidMembersPrinted = 0;
@@ -130,7 +134,7 @@ client.twitter = new Twitter({
 });
 
 // Start up the twitter webhook listener
-client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, client.config.twitterHookToken);
+client.twitterHook = new Discord.WebhookClient({ id: client.config.twitterHookID, token: client.config.twitterHookToken });
 
 Object.assign(client, Enmap.multi(['enabledCmds', 'emojiDB', 'tags', 'sessionDB', 'muteDB', 'reactionRoleDB', 'bannedWordsDB', 'reactionSignUp', 'remindDB', 'timers', 'mmSignUp', 'attachmentDB', 'linkWhitelist'], { ensureProps: true }));
 Object.assign(client, Enmap.multi(['userDB', 'infractionDB', 'headStaffNotesDB'], { fetchAll: false, ensureProps: true }));

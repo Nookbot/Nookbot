@@ -59,7 +59,7 @@ module.exports = async (client, messageReaction, user) => {
             mmMember = mm;
           });
       }
-      return mmMember.displayName;
+      return mmMember?.displayName || u.username;
     });
     const mmAvailableNum = names.length;
     const signUpMsgContent = messageReaction.message.content;
@@ -68,8 +68,8 @@ module.exports = async (client, messageReaction, user) => {
 
     // Request channel unlocking and editing
     const requestChannel = client.channels.cache.get('750150303692619817');
-    if (!requestChannel.permissionsFor(client.config.tradeRole).has('SEND_MESSAGES')) {
-      requestChannel.permissionOverwrites.edit(client.config.tradeRole, { SEND_MESSAGES: true });
+    if (!requestChannel.permissionsFor(client.config.mainGuild).has('SEND_MESSAGES')) {
+      requestChannel.permissionOverwrites.edit(client.config.mainGuild, { SEND_MESSAGES: true });
       const msg = requestChannel.messages.cache.get('782464950798516244');
       const { content } = msg;
       const splitContent = content.split('🔐');

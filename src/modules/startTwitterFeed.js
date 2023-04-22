@@ -54,7 +54,7 @@ module.exports = (client) => {
         }
 
         if (username) {
-          client.twitterHook.send(`@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttp://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, { username, avatarURL: `${tweet.user.profile_image_url_https}` });
+          client.twitterHook.send({ content: `@${tweet.user.screen_name.toLowerCase()} tweeted this on ${moment.utc(tweet.created_at, 'ddd MMM DD HH:mm:ss ZZ YYYY').format('MMMM D, YYYY [at] h:mmA [UTC:]')}\nhttp://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`, username, avatarURL: `${tweet.user.profile_image_url_https}` });
         }
       })
       .on('error', (error) => console.error(error))

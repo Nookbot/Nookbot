@@ -4,7 +4,7 @@ module.exports = (client) => {
     const reactionRoleMsgs = client.reactionRoleDB.keyArray();
     await client.asyncForEach(reactionRoleMsgs, async (msgID) => {
       const { channel } = client.reactionRoleDB.get(msgID);
-      await client.channels.cache.get(channel).messages.fetch(msgID);
+      await client.channels.cache.get(channel)?.messages.fetch(msgID);
     });
 
     // Cache signup sheet

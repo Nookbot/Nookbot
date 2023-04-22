@@ -30,7 +30,8 @@ module.exports = (client) => {
       .setCustomId('cancel')
       .setLabel('Cancel')
       .setStyle('DANGER');
-    client.raidMessage = await staffChat.send({ content: `**##### RAID MODE ACTIVATED #####**
+    client.raidMessage = await staffChat.send({
+      content: `**##### RAID MODE ACTIVATED #####**
 <@&495865346591293443> <@&494448231036747777>
 
 A list of members that joined in the raid is being updated in <#689260556460359762>.
@@ -43,7 +44,7 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
         .addComponents(
           banButton,
           cancelButton,
-        )]      
+        )],
     });
     // Listen for interactions and log which action was taken and who made the decision.
     const filter = (interaction) => ['ban', 'cancel'].includes(interaction.customId)
@@ -54,19 +55,23 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
           // A valid user has selected to ban the raid party.
           banButton.setDisabled();
           cancelButton.setStyle('SECONDARY').setDisabled();
-          interaction.update({ components: [new Discord.MessageActionRow()
-            .addComponents(
-              banButton,
-              cancelButton,
-            )
-          ]});
+          interaction.update({
+            components: [new Discord.MessageActionRow()
+              .addComponents(
+                banButton,
+                cancelButton,
+              ),
+            ],
+          });
           // Log that the banning is beginning and who approved of the action.
           client.success(staffChat, 'Banning!', `User ${interaction.user.tag} has chosen to ban the raid. It may take some time to finish banning all raid members.`);
           client.raidBanning = true;
+          client.raidBans = [];
           // Create a setInterval to ban members without rate limiting.
           const interval = setInterval(() => {
             if (client.raidJoins.length !== 0) {
-              // Ban the next member
+              // Ban the next member save the memberId to new list of bans so we don't create ban/leave logs for them.
+              client.raidBans.push(client.raidJoins[0].id);
               client.raidJoins.shift().ban({ days: 1, reason: 'Member of raid.' })
                 .catch(console.error);
             } else {
@@ -95,12 +100,14 @@ Would you like to ban all ${client.raidJoins.length} members that joined in the 
           // A valid user has selected not to ban the raid party.
           cancelButton.setDisabled();
           banButton.setStyle('SECONDARY').setDisabled();
-          interaction.update({ components: [new Discord.MessageActionRow()
-            .addComponents(
-              banButton,
-              cancelButton,
-            )
-          ]});
+          interaction.update({
+            components: [new Discord.MessageActionRow()
+              .addComponents(
+                banButton,
+                cancelButton,
+              ),
+            ],
+          });
           client.error(staffChat, 'Not Banning!', `User ${interaction.user.tag} has chosen to not ban the raid. Raid Mode is deactivated.`);
           // Reset all raid variables
           client.raidMode = false;

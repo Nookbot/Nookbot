@@ -165,6 +165,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       return client.success(message.channel, 'Successfully set your Creator Code!', `Creator Code: **${code}**`);
     }
+    case 'hhpcode':
     case 'hhp':
     case 'showroom':
     case 'home': {
@@ -273,6 +274,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         case 'cc':
           client.userDB.set(memberID, '', 'island.creatorCode');
           return client.success(message.channel, 'Successfully cleared your Creator Code!', 'To set your creator code again, use `.island creatorcode <code>`!');
+        case 'hhpcode':
         case 'hhp':
         case 'showroom':
         case 'home': {

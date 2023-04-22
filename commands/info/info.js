@@ -22,8 +22,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField('Bot ID', client.user.id, true)
         .addField('Bot Owner', owner.tag, true)
         .addField('Bot Version', client.version, true)
-        .addField('Online Users', client.users.cache.size, true)
-        .addField('Server Count', client.guilds.cache.size, true)
+        .addField('Online Users', `${client.users.cache.size}`, true)
+        .addField('Server Count', `${client.guilds.cache.size}`, true)
         .addField('Discord.js Version', `v${version}`, true)
         .addField('Mem Usage', `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
         .addField('Node.js Version', `${process.version}`, true)
@@ -48,10 +48,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         }
       }
 
-      const roles = member.roles.cache.filter((r) => r.id !== member.guild.id).map((r) => r.name).join(', ') || 'No Roles';
-      const roleSize = member.roles.cache.filter((r) => r.id !== member.guild.id).size;
-
-      let activity = member.presence.status;
+      let activity = member.presence?.status || 'offline';
 
       if (activity === 'online') {
         activity = `${client.emoji.online} Online`;
@@ -81,9 +78,9 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .setThumbnail(message.guild.iconURL({ format: 'gif', dynamic: true }))
         .addField('Server Name', message.guild.name, true)
         .addField('Server ID', message.guild.id, true)
-        .addField('Server Owner', `${message.guild.owner.user.tag} (${message.guild.owner.user.id})`, true)
+        .addField('Server Owner', `${(await message.guild.fetchOwner()).user.tag} (${message.guild.ownerId})`, true)
         .addField('Created On', `<t:${Math.floor(message.guild.createdTimestamp / 1000)}>`, true)
-        .addField('Member Count', message.guild.memberCount, true);
+        .addField('Member Count', `${message.guild.memberCount}`, true);
 
       return message.channel.send({ embeds: [embed] });
     default:

@@ -86,7 +86,7 @@ module.exports = async (client, member) => {
     .setFooter({ text: `ID: ${member.id}` })
     .setThumbnail(member.user.displayAvatarURL())
     .addField('**Member Joined**', `<@${member.id}>`, true)
-    .addField('**Join Position**', member.guild.memberCount, true)
+    .addField('**Join Position**', `${member.guild.memberCount}`, true)
     .addField('**Account Age**', accountAge, true)
     .addField('**Invite Used**', inviteField, true);
 

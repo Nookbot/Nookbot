@@ -22,12 +22,11 @@ module.exports = async (client, message) => {
     if (message.author.id === '774523954286034965' && message.channelId === '808142064180133939') {
       if (message.embeds[0] && message.embeds[0].title !== null && message.embeds[0].title.toLowerCase().includes('upcoming')) {
         await message.channel.send('__**•• Trivia Battle ••**__\n<@&811251712987365417> Battle starting in **1 hour**!');
-        await message.pin();
 
         const dateWhenGameStarts = moment().add(1, 'h').toDate();
         const gameStart = async () => {
           await message.channel.send('__**•• Trivia Battle ••**__\n<@&811251712987365417> Battle starting now!');
-          await message.channel.permissionOverwrites.edit(message.guildId, { SEND_MESSAGES: true });
+          await message.channel.permissionOverwrites.edit(message.guildId, { SEND_MESSAGES: null });
         };
         client.timers.set('triviaGameStart', { date: dateWhenGameStarts, run: gameStart });
 
@@ -45,8 +44,6 @@ module.exports = async (client, message) => {
         const lockchannel = async () => {
           await message.channel.permissionOverwrites.edit(message.guildId, { SEND_MESSAGES: false });
           await message.channel.send('__**•• Channel Locked! ••**__\nThis channel has been locked as there is no game currently ongoing. It will be unlocked prior to the next trivia battle. Thanks for playing!');
-          const pinned = await message.channel.messages.fetchPinned();
-          await pinned.find((p) => p.embeds[0].title.toLowerCase().includes('upcoming')).unpin();
         };
         client.timers.set('lockTriviaChannel', { date: dateToLockChannel, run: lockchannel });
         if (schedule.scheduledJobs.lockTriviaChannel) {
@@ -93,7 +90,6 @@ module.exports = async (client, message) => {
   if (message.guildId === client.config.mainGuild) {
     // User activity tracking
     client.userDB.set(message.author.id, message.createdTimestamp, 'lastMessageTimestamp');
-    client.userDB.ensure(message.member.id, message.member.joinedTimestamp, 'joinedTimestamp');
 
     // Emoji finding and tracking
     const regex = /<a?:\w+:([\d]+)>/g;
@@ -107,7 +103,7 @@ module.exports = async (client, message) => {
     }
 
     // Attachment tracking
-    if (message.attachments.size > 0) {
+    if (message.attachments.size > 0 && !['693638950404882473', '876285932662308866', '776571947546443796', '680479301857968237', '871526192707141653'].includes(message.channelId)) {
       const attachmentLogChannel = client.channels.cache.get('880235847155331123');
       const files = message.attachments.map((a) => ({ attachment: a.url, name: a.name }));
       attachmentLogChannel.send({ files })
@@ -131,6 +127,7 @@ module.exports = async (client, message) => {
       if (message.member && level[1] < 2) {
         // Mute
         message.member.timeout(600000, 'Mention Spam');
+        message.member.roles.add(client.config.mutedRole, 'Mention Spam');
         // Delete Message
         if (message.deletable) {
           message.delete();
@@ -141,19 +138,20 @@ module.exports = async (client, message) => {
           .setTimestamp()
           .setColor('#ff9292')
           .setFooter({ text: `ID: ${message.member.id}` })
-          .addField(`**Member Muted**`, `<@${message.member.id}>`);
+          .addField('**Member Muted**', `<@${message.member.id}>`);
         message.guild.channels.cache.get(client.config.modLog).send({ embeds: [muteEmbed] });
         // Schedule unmute embed
         client.muteDB.set(message.member.id, 600000 + Date.now());
         setTimeout(() => {
-          if (client.muteDB.has(message.member.id) && (client.muteDB.get(message.member.id) || 0) < Date.now()) {
+          if (client.muteDB.has(message.member?.id) && (client.muteDB.get(message.member.id) || 0) < Date.now()) {
+            message.member.roles.remove(client.config.mutedRole);
             client.muteDB.delete(message.member.id);
             const unmuteEmbed = new Discord.MessageEmbed()
               .setAuthor({ name: message.member.user.tag, iconURL: message.member.user.displayAvatarURL() })
               .setTimestamp()
               .setColor('#1de9b6')
               .setFooter({ text: `ID: ${message.member.id}` })
-              .addField(`**Member Unmuted**`, `<@${message.member.id}>`);
+              .addField('**Member Unmuted**', `<@${message.member.id}>`);
             message.guild.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
           }
         }, 600000);
@@ -170,7 +168,7 @@ If you believe this member is a mention spammer bot, please ban them with the co
 
     // Banned Words
     if (level[1] < 2) {
-      const tokens = message.content.replace(/[\u200B-\u200D\uFEFF\uDB40-\uDB43\uDC00-\uDFFF]/g, '').split(/ +/g);
+      const tokens = message.content.replace(/[\u200B-\u200D\uFEFF\uDB40-\uDB43\uDC00-\uDFFF]/ug, '').split(/ +/g);
       let ban = false;
       let del = false;
       let sanrio = false;
@@ -270,31 +268,25 @@ If you believe this member is a mention spammer bot, please ban them with the co
         && !message.content.match(/https?:\/\//gi)
         && level[1] < 2) {
       // Message is in the guild's image only channels, without an image or link in it, and is not a mod's message, so delete
-      if (message.deletable) {
-        message.delete();
-        client.imageOnlyFilterCount += 1;
-        autoModReason = 'Image Only';
-        if (client.imageOnlyFilterCount === 5) {
-          client.imageOnlyFilterCount = 0;
-          const autoMsg = await message.channel.send('Image Only Channel!\nThis channel only allows posts with images. Everything else is automatically deleted.');
-          setTimeout(() => autoMsg.delete(), 30000);
-        }
+      client.imageOnlyFilterCount += 1;
+      autoModReason = 'Image Only';
+      if (client.imageOnlyFilterCount === 5) {
+        client.imageOnlyFilterCount = 0;
+        const autoMsg = await message.channel.send('Image Only Channel!\nThis channel only allows posts with images. Everything else is automatically deleted.');
+        setTimeout(() => autoMsg.delete(), 30000);
       }
     }
 
     // Delete messages that don't contain BOTH image and text from image&text only channels
     if (message.inGuild() && client.config.imageAndTextOnlyChannels.includes(message.channelId)
-      && (message.attachments.size === 0 || message.content === '')
-      && level[1] < 2) {
-      if (message.deletable) {
-        message.delete();
-        client.imageAndTextOnlyFilterCount += 1;
-        autoModReason = 'Image and Text Only';
-        if (client.imageAndTextOnlyFilterCount === 5) {
-          client.imageAndTextOnlyFilterCount = 0;
-          const autoMsg = await message.channel.send('Image And Text Channel!\nThis channel only allows messages with both images and text. Everything else is automatically deleted. This allows for keywords to be searchable.');
-          setTimeout(() => autoMsg.delete(), 30000);
-        }
+        && (message.attachments.size === 0 || message.content === '')
+        && level[1] < 2) {
+      client.imageAndTextOnlyFilterCount += 1;
+      autoModReason = 'Image and Text Only';
+      if (client.imageAndTextOnlyFilterCount === 5) {
+        client.imageAndTextOnlyFilterCount = 0;
+        const autoMsg = await message.channel.send('Image And Text Channel!\nThis channel only allows messages with both images and text. Everything else is automatically deleted. This allows for keywords to be searchable.');
+        setTimeout(() => autoMsg.delete(), 30000);
       }
     }
 
@@ -304,71 +296,63 @@ If you believe this member is a mention spammer bot, please ban them with the co
         && !client.config.newlineAndCharProtectedChannels.includes(message.channelId)
         && level[1] < 2) {
       // Message is in the guild, in a channel that has a limit on newline characters, and has too many or too many links + attachments, and is not a mod's message, so delete
-      if (message.deletable) {
-        message.delete();
-        client.newlineLimitFilterCount += 1;
-        autoModReason = 'Too Many New Lines/Characters';
-        if (client.newlineLimitFilterCount === 5) {
-          client.newlineLimitFilterCount = 0;
-          const autoMsg = await message.channel.send('Too Many New Lines or Characters!\nThis channel only allows posts with less than 10 new lines and less than 1000 characters. Messages with more than that are automatically deleted.');
-          setTimeout(() => autoMsg.delete(), 30000);
-        }
+      client.newlineLimitFilterCount += 1;
+      autoModReason = 'Too Many New Lines/Characters';
+      if (client.newlineLimitFilterCount === 5) {
+        client.newlineLimitFilterCount = 0;
+        const autoMsg = await message.channel.send('Too Many New Lines or Characters!\nThis channel only allows posts with less than 10 new lines and less than 1000 characters. Messages with more than that are automatically deleted.');
+        setTimeout(() => autoMsg.delete(), 30000);
       }
     }
 
     // Delete posts with too many attachments or links
-    if (message.inGuild() && (message.attachments.size + (message.content.match(/https?:\/\//gi) || []).length) >= client.config.imageLinkLimit
-       && !client.config.imageAndLinkProtectedChannels.includes(message.channelId)
-       && level[1] < 2) {
-      if (message.deletable) {
-        message.delete();
-        client.imageAndLinkFilterCount += 1;
-        autoModReason = 'Too Many Attachments/Links';
-        if (client.imageAndLinkFilterCount === 5) {
-          client.imageAndLinkFilterCount = 0;
-          const autoMsg = await message.channel.send('Too Many Attachments + Links!\nThis channel only allows posts with less 3 attachments + links. Messages with more than that are automatically deleted.');
-          setTimeout(() => autoMsg.delete(), 30000);
-        }
+    if (message.inGuild() && ((message.content.match(/https?:\/\//gi) || []).length) >= client.config.imageLinkLimit
+        && !client.config.imageAndLinkProtectedChannels.includes(message.channelId)
+        && level[1] < 2) {
+      client.imageAndLinkFilterCount += 1;
+      autoModReason = 'Too Many Links';
+      if (client.imageAndLinkFilterCount === 5) {
+        client.imageAndLinkFilterCount = 0;
+        const autoMsg = await message.channel.send('Too Many Links!\nThis channel only allows posts with less than 3 links. Messages with more than that are automatically deleted.');
+        setTimeout(() => autoMsg.delete(), 30000);
       }
     }
 
     // Delete posts with @ mentions in noMentionChannels
     if (message.inGuild()
-      && (client.config.noMentionChannels.includes(message.channelId) || client.config.noMentionChannels.includes(message.channel.parentId))
-      && (message.mentions.members.size > 0 || message.reference)
-      && level[1] < 2) {
-    // Message is in the guild, in a channel that restricts mentions, and is not a mod's message, so delete
-      if (message.deletable) {
-        message.delete();
-        client.noMentionFilterCount += 1;
-        autoModReason = 'No Mention';
-        if (client.noMentionFilterCount === 5) {
-          client.noMentionFilterCount = 0;
-          const autoMsg = await message.channel.send('No Mention Channel!\nThis channel is to be kept clear of @ mentions of any members. Any message mentioning another member will be automatically deleted.');
-          setTimeout(() => autoMsg.delete(), 30000);
-        }
+        && (client.config.noMentionChannels.includes(message.channelId) || client.config.noMentionChannels.includes(message.channel.parentId))
+        && (message.mentions.members.size > 0 || message.reference)
+        && level[1] < 2) {
+      // Message is in the guild, in a channel that restricts mentions, and is not a mod's message, so delete
+      client.noMentionFilterCount += 1;
+      autoModReason = 'No Mention';
+      if (client.noMentionFilterCount === 5) {
+        client.noMentionFilterCount = 0;
+        const autoMsg = await message.channel.send('No Mention Channel!\nThis channel is to be kept clear of @ mentions of any members. Any message mentioning another member will be automatically deleted.');
+        setTimeout(() => autoMsg.delete(), 30000);
       }
     }
 
     // Delete posts with links in all channels other than whitelisted channels (and whitelisted links)
     if (message.inGuild() && message.content.match(/https?:\/\//gi)
         && !client.config.linkWhitelistChannels.includes(message.channelId)
-        && (client.config.linkBlacklistChannels.includes(message.channelId)
-        || message.content.match(/https?:\/\/([\w_-]+(?:(?:\.[\w_-]+)+))/gi).some((matchedLink) => !client.linkWhitelist.get('links').includes(matchedLink.split('www.').join('').replace(/^https?/gi, 'https'))))
+        && message.content.match(/https?:\/\/([\w_-]+(?:(?:\.[\w_-]+)+))/gi).some((matchedLink) => !client.linkWhitelist.get('links').includes(matchedLink.split('www.').join('').replace(/^https?/gi, 'https')))
         && level[1] < 2) {
-      if (message.deletable) {
-        message.delete();
-        client.linkFilterCount += 1;
-        autoModReason = 'No Links';
-        if (client.linkFilterCount === 5) {
-          client.linkFilterCount = 0;
-          const autoMsg = await message.channel.send('Links Not Allowed!\nThis channel prohibits messages with links. Messages with links are automatically deleted.');
-          setTimeout(() => autoMsg.delete(), 30000);
-        }
+      client.linkFilterCount += 1;
+      autoModReason = 'No Links';
+      if (client.linkFilterCount === 5) {
+        client.linkFilterCount = 0;
+        const autoMsg = await message.channel.send('Links Not Allowed!\nThis channel prohibits messages with links. Messages with links are automatically deleted.');
+        setTimeout(() => autoMsg.delete(), 30000);
       }
     }
 
     if (autoModReason) {
+      if (message.deletable) {
+        message.delete().catch(() => {
+          // Prevent spammy error logs
+        });
+      }
       const embed = new Discord.MessageEmbed()
         .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
         .setColor('#ff9292')
@@ -469,7 +453,7 @@ If you believe this member is a mention spammer bot, please ban them with the co
 
       if (now < expirationTime) {
         const inUseMsg = await message.channel.send(`${client.emoji.redX} **Command Already In Use!**\nThis command is currently in use in this channel!`);
-        setTimeout(() => inUseMsg.delete(), 10000)
+        setTimeout(() => inUseMsg.delete(), 10000);
         return;
       }
     }

@@ -10,10 +10,12 @@ module.exports.run = async (client, message, args, level) => {
       try {
         msgToReact = await message.channel.messages.fetch(args[0]);
       } catch (err) {
-        return client.error(message.channel, 'No Message Found!', 'No message was found! Please use a valid message id from **THIS** channel!');
+        client.error(message.channel, 'No Message Found!', 'No message was found! Please use a valid message id from **THIS** channel!');
+        return;
       }
     } else {
-      return client.error(message.channel, 'Not a Message ID!', 'Please use this command with a valid message id from **THIS** channel!');
+      client.error(message.channel, 'Not a Message ID!', 'Please use this command with a valid message id from **THIS** channel!');
+      return;
     }
   }
 
@@ -50,8 +52,7 @@ module.exports.run = async (client, message, args, level) => {
 
   setTimeout(() => {
     message.delete();
-  }, 1000)
-  return;
+  }, 1000);
 };
 
 module.exports.conf = {

@@ -1,11 +1,12 @@
 const Discord = require('discord.js');
 /**
- * 
- * @param {*} client 
- * @param {Discord.MessageComponentInteraction} interaction 
- * @returns 
+ *
+ * @param {*} client
+ * @param {Discord.MessageComponentInteraction} interaction
+ * @returns
  */
 module.exports = async (client, interaction) => {
+  console.error(`New Interaction Created: ${interaction.createdAt}(CreatedAt) ${interaction.id}(ID) ${interaction.customId}(CustomId) ${interaction.channelId}(ChannelId) ${interaction.message?.id}(MsgId) ${interaction.user.id}(UserId)`);
   if (interaction.isButton()) {
     const reactionRoleMenu = client.reactionRoleDB.get(interaction.message.id);
 
@@ -29,13 +30,13 @@ module.exports = async (client, interaction) => {
       }
       case 'exclusive': {
         // Members can only have one of the roles in this menu.
-        const removeRoles = interaction.message.components.flatMap(r => r.components.map(c => c.customId)).filter(f => (interaction.member.roles.cache.has(f)));
+        const removeRoles = interaction.message.components.flatMap((r) => r.components.map((c) => c.customId)).filter((f) => (interaction.member.roles.cache.has(f)));
 
         // Remove all roles in this menu that aren't the one they clicked
         if (removeRoles.length !== 0) {
           await interaction.member.roles.remove(removeRoles);
         }
-        
+
         // If they clicked Remove, reply they were removed or if they didn't have any roles from this menu.
         if (interaction.customId === 'remove') {
           if (removeRoles.length === 0) {
@@ -56,7 +57,7 @@ module.exports = async (client, interaction) => {
       case 'multiple': {
         // Members can have any number of the roles in this menu.
         if (interaction.customId === 'remove') {
-          const allRoles = interaction.message.components.flatMap(r => r.components.map(c => c.customId)).filter(f => (interaction.member.roles.cache.has(f)));
+          const allRoles = interaction.message.components.flatMap((r) => r.components.map((c) => c.customId)).filter((f) => (interaction.member.roles.cache.has(f)));
           if (allRoles.length === 0) {
             interaction.reply({ content: 'You did not have any roles from this menu to remove!', ephemeral: true });
           } else {

@@ -5,10 +5,10 @@ module.exports.run = (client, message, args, level, Discord) => {
   categories.forEach((cat) => {
     const catObj = client.channels.cache.get(cat);
 
-    if (catObj.permissionsFor(client.config.tradeRole).has('SEND_MESSAGES')) {
+    if (catObj.permissionsFor(client.config.mainGuild).has('SEND_MESSAGES')) {
       const msgToSend = args[0] ? args[0].join(' ') : '**Channel Locked**!\nThis channel has been locked due to scheduled server maintenance. It will be unlocked when maintenance is completed.';
 
-      catObj.permissionOverwrites.edit(client.config.tradeRole, { SEND_MESSAGES: false }, 'Lock Channel for Maintenance')
+      catObj.permissionOverwrites.edit(client.config.mainGuild, { SEND_MESSAGES: false }, 'Lock Channel for Maintenance')
         .then((c) => {
           c.children.forEach((channel) => {
             channel.send(msgToSend);
@@ -18,7 +18,7 @@ module.exports.run = (client, message, args, level, Discord) => {
     } else {
       const msgToSend = args[0] ? args[0].join(' ') : '**Channel Unlocked**!\nMaintenance has completed so this channel is now unlocked!';
 
-      catObj.permissionOverwrites.edit(client.config.tradeRole, { SEND_MESSAGES: true }, 'Unlock Channel After Maintenance')
+      catObj.permissionOverwrites.edit(client.config.mainGuild, { SEND_MESSAGES: true }, 'Unlock Channel After Maintenance')
         .then((c) => {
           c.children.forEach((channel) => {
             channel.send(msgToSend);

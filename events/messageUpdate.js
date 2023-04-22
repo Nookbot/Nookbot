@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const moment = require('moment-timezone');
 
 module.exports = async (client, oldMessage, newMessage) => {
   // Ignore all bots and make sure the content of the message changed.

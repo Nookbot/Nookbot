@@ -13,19 +13,36 @@ module.exports.run = async (client, message, args, level, Discord) => { // eslin
     }
   }
 
-  // Removes the timeout from the member
-  member.timeout(null)
-    .then(() => client.success(message.channel, 'Success!', `${message.author}, I've successfully unmuted ${member}!`))
-    .catch((err) => client.error(message.channel, 'Error!', `Failed to unmute member! Error: ${err}`));
-  // Create unmute embed and remove scheduled unmute embed
-  const unmuteEmbed = new Discord.MessageEmbed()
-    .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
-    .setTimestamp()
-    .setColor('#1de9b6')
-    .setFooter({ text: `ID: ${member.id}` })
-    .addField(`**Member Unmuted**`, `<@${member.id}>`);
-  client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
-  client.muteDB.delete(member.id);
+  if (!member) {
+    return client.error(message.channel, 'Invalid Member!', 'Please mention a valid member of this server!');
+  }
+
+  // If have muted role or communicationDisabled, remove role and timeout
+  if (member.roles.cache.has(client.config.mutedRole) || member.communicationDisabledUntilTimestamp > Date.now()) {
+    let success;
+    if (member.roles.cache.has(client.config.mutedRole)) {
+      success = member.roles.remove(client.config.mutedRole);
+    }
+    if (member.communicationDisabledUntilTimestamp > Date.now()) {
+      success = member.timeout(null);
+    }
+    success
+      .then(() => {
+        client.success(message.channel, 'Success!', `${message.author}, I've successfully unmuted ${member}!`);
+        // Create unmute embed and remove scheduled unmute embed
+        const unmuteEmbed = new Discord.MessageEmbed()
+          .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
+          .setTimestamp()
+          .setColor('#1de9b6')
+          .setFooter({ text: `ID: ${member.id}` })
+          .addField('**Member Unmuted**', `<@${member.id}>`);
+        client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
+        client.muteDB.delete(member.id);
+      })
+      .catch((err) => client.error(message.channel, 'Error!', `Failed to unmute member! Error: ${err}`));
+  } else {
+    client.error(message.channel, 'Not Muted!', 'The member is not currently muted!');
+  }
 };
 
 module.exports.conf = {

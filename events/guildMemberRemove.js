@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 
 module.exports = async (client, member) => {
-  if (member.guild.id !== client.config.mainGuild) {
+  if (member.guild.id !== client.config.mainGuild || client.raidBanning || client.raidBans.includes(member.id)) {
     return;
   }
 
@@ -11,7 +11,7 @@ module.exports = async (client, member) => {
     client.userDB.push(member.id, r.id, 'roles');
   });
 
-  const serverAge = client.humanTimeBetween(Date.now(), client.userDB.get('joinedTimestamp') || 0);
+  const serverAge = client.humanTimeBetween(Date.now(), member.joinedTimestamp || client.userDB.get(member.id, 'joinedTimestamp') || Date.now());
 
   const rolesArray = member.roles.cache.filter((r) => r.id !== member.guild.id);
   const roles = rolesArray.map((r) => `<@&${r.id}>`).join(', ') || 'No Roles';
