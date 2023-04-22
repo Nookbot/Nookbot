@@ -23,7 +23,7 @@ module.exports.run = async (client, message, args, level) => {
       await dmChannel.send(`**Sign Up Sheet Statistics**\nName - Hours\nChannel/Category - Hours\n**${message.member.displayName}** (${message.member.id}) - \`${totalHours} hours\`\n\n${channelHours.join('\n')}`);
       return client.success(message.channel, 'Hours Sent!', "I've successfully sent you your current hours for the week!");
     } catch (e) {
-      return client.error(message.channel, 'Failed to DM Hours!', "I've failed to DM your hours! Please esnure you have your DMs open!");
+      return client.error(message.channel, 'Failed to DM Hours!', "I've failed to DM your hours! Please ensure you have your DMs open!");
     }
   } else {
     switch (args[0]) {
@@ -51,7 +51,7 @@ module.exports.run = async (client, message, args, level) => {
         if (!msg) {
           return client.error(message.channel, 'No Matches!', 'No mods matched your search critera!');
         }
-        return message.channel.send(`**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`, { split: true });
+        return client.sendLongMessage(message.channel, `**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`);
       }
       case 'b':
       case 'bottom': {
@@ -77,7 +77,7 @@ module.exports.run = async (client, message, args, level) => {
         if (!msg) {
           return client.error(message.channel, 'No Matches!', 'No mods matched your search critera!');
         }
-        return message.channel.send(`**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`, { split: true });
+        return client.sendLongMessage(message.channel, `**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`);
       }
       case 'remove':
       case 'delete':
@@ -135,7 +135,7 @@ module.exports.run = async (client, message, args, level) => {
           if (!msg) {
             return client.error(message.channel, 'No Matches!', 'No mods matched your search critera!');
           }
-          return message.channel.send(`**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`, { split: true });
+          return client.sendLongMessage(message.channel, `**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}`);
         }
 
         if (args.length === 0) {
@@ -168,7 +168,7 @@ module.exports.run = async (client, message, args, level) => {
           msg += `\n#${(mods.findIndex((s) => s.id === args[0])) + 1} - **${member.displayName}** (${args[0]}) - \`${mod.hours.total} hours\``;
 
           const { channelHours } = client.addHours(mod);
-          return message.channel.send(`**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}\n\n${channelHours.join('\n')}`, { split: true });
+          return client.sendLongMessage(message.channel, `**Sign Up Sheet Statistics**\nRank - Name - Hours\nChannel/Category - Hours${msg}\n\n${channelHours.join('\n')}`);
         }
       }
     }

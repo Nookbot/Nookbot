@@ -1,7 +1,5 @@
-const moment = require('moment');
-
 module.exports = (client, channel) => {
-  if (channel.type !== 'text' || (channel.guild ? channel.guild.id !== client.config.modMailGuild : true)) {
+  if (channel.type !== 'GUILD_TEXT' || channel.guildId !== client.config.modMailGuild) {
     return;
   }
 
@@ -17,12 +15,13 @@ module.exports = (client, channel) => {
       const time = Date.now();
       infractions.forEach((i) => {
         const moderator = client.users.cache.get(i.moderator);
+        const timestamp = Math.floor(new Date(i.date).getTime() / 1000);
         if ((i.points * 604800000) + i.date > time) {
           curPoints += i.points;
-          curMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+          curMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (<t:${timestamp}:F>; <t:${timestamp}:R>) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
         } else {
           expPoints += i.points;
-          expMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (${moment.utc(i.date).format('DD MMM YYYY HH:mm')} UTC) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
+          expMsg += `\n• Case ${i.case} - ${moderator ? `Mod: ${moderator.tag}` : `Unknown Mod ID: ${i.moderator || 'No ID Stored'}`} - (<t:${timestamp}:F>; <t:${timestamp}:R>) ${i.points} bee sting${i.points === 1 ? '' : 's'}\n> Reason: ${i.reason}`;
         }
       });
 
@@ -33,9 +32,8 @@ module.exports = (client, channel) => {
         msg += `\n**Expired bee stings (${expPoints} total):**${expMsg}`;
       }
 
-
       if (curMsg || expMsg) {
-        channel.send(msg, { split: true });
+        client.sendLongMessage(channel, msg);
       } else {
         // No infractions
         channel.send(`${user.tag} doesn't have any bee stings!`);

@@ -2,7 +2,7 @@
 module.exports.run = async (client, message, args, level) => {
   let msg;
   if (parseInt(args[0], 10)) {
-    const newsChannels = message.guild.channels.cache.filter((ch) => ch.type === 'news');
+    const newsChannels = message.guild.channels.cache.filter((ch) => ch.type === 'GUILD_NEWS');
 
     for (let i = 0; i < newsChannels.size; i++) {
       try {
@@ -33,7 +33,7 @@ module.exports.conf = {
 
 module.exports.help = {
   name: 'publish',
-  categpry: 'misc',
+  category: 'misc',
   description: 'Publishes the provided message id to the servers following its respective news channel.',
   usage: 'publish <message id>',
   details: '<message id> => The message id of a message in a news channel to be crossposted.',

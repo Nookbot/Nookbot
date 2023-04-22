@@ -17,3 +17,9 @@ module.exports.help = {
   description: 'Pings the client',
   usage: 'ping',
 };
+
+module.exports.data = {
+  name: 'ping',
+  description: 'Pings the client',
+  type: 1,
+};

@@ -1,4 +1,4 @@
-module.exports.run = (client, message, [command], level) => {
+module.exports.run = (client, message, [command], level, Discord) => {
   if (!command) {
     let commands = client.commands.filter((cmd) => client.levelCache[cmd.conf.permLevel] <= level
       && client.enabledCmds.get(cmd.help.name) === true);
@@ -25,7 +25,10 @@ module.exports.run = (client, message, [command], level) => {
       }
       output += `${client.config.prefix}${c.help.name}${' '.repeat(longest - c.help.name.length)} :: ${c.help.description}\n`;
     });
-    message.channel.send(output, { code: 'asciidoc', split: { char: '\u200b' } });
+    const splitMsg = Discord.Util.splitMessage(`\`\`\`asciidoc\n${output}\`\`\``, { char: '\u200b', prepend: '```asciidoc\n', append: '```' });
+    client.asyncForEach(splitMsg, async (msgToSend) => {
+      await message.channel.send({ content: msgToSend });
+    });
   } else if (client.commands.has(command) || client.aliases.has(command)) {
     const cmd = client.commands.get(command) || client.commands.get(client.aliases.get(command));
 
@@ -41,7 +44,7 @@ module.exports.run = (client, message, [command], level) => {
 
     output += `\nPerm Level :: ${cmd.conf.permLevel}`;
 
-    message.channel.send(output, { code: 'asciidoc' });
+    message.channel.send(`\`\`\`asciidoc\n${output}\`\`\``);
   } else {
     client.error(message.channel, 'Invalid Command!', `All valid commands can be found by using \`${client.config.prefix}help\`!`);
   }

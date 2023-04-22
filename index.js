@@ -7,27 +7,34 @@ const fs = require('fs');
 const Twitter = require('twitter-lite');
 const { Searcher } = require('fast-fuzzy');
 
-const client = new Discord.Client({
-  messageCacheMaxSize: 500,
-  fetchAllMembers: false,
-  ws: {
-    intents: [
-      Discord.Intents.FLAGS.GUILDS,
-      Discord.Intents.FLAGS.GUILD_MEMBERS,
-      Discord.Intents.FLAGS.GUILD_BANS,
-      Discord.Intents.FLAGS.GUILD_EMOJIS,
-      Discord.Intents.FLAGS.GUILD_VOICE_STATES,
-      Discord.Intents.FLAGS.GUILD_PRESENCES,
-      Discord.Intents.FLAGS.GUILD_MESSAGES,
-      Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-      Discord.Intents.FLAGS.DIRECT_MESSAGES,
-      Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-    ],
-  },
-});
 const config = require('./config');
 const { version } = require('./package.json');
 const emoji = require('./src/emoji');
+
+const client = new Discord.Client({
+  makeCache: Discord.Options.cacheWithLimits({
+    MessageManager: 500,
+  }),
+  allowedMentions: {
+    parse: ['users', 'roles'],
+    repliedUser: true,
+  },
+  intents: [
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_MEMBERS,
+    Discord.Intents.FLAGS.GUILD_BANS,
+    Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+    Discord.Intents.FLAGS.GUILD_VOICE_STATES,
+    Discord.Intents.FLAGS.GUILD_PRESENCES,
+    Discord.Intents.FLAGS.GUILD_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Discord.Intents.FLAGS.DIRECT_MESSAGES,
+    Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+  ],
+  partials: [
+    'MESSAGE',
+  ],
+});
 
 client.config = config;
 client.version = `v${version}`;
@@ -47,10 +54,10 @@ fs.readdir('./events/', (err, files) => {
   if (err) {
     return console.error(err);
   }
+
   return files.forEach((file) => {
     const event = require(`./events/${file}`);
-    const eventName = file.split('.')[0];
-    client.on(eventName, event.bind(null, client));
+    client.on(file.split('.')[0], event.bind(null, client));
   });
 });
 
@@ -63,20 +70,21 @@ fs.readdir('./commands/', (err, folders) => {
   }
 
   // Looping over all folders to load all commands
-  for (let i = 0; i < folders.length; i++) {
-    fs.readdir(`./commands/${folders[i]}/`, (error, files) => {
+  folders.forEach((folder) => {
+    fs.readdir(`./commands/${folder}/`, (error, files) => {
       if (error) {
         return console.error(error);
       }
+
       files.forEach((file) => {
         if (!file.endsWith('.js')) {
           return;
         }
 
-        const props = require(`./commands/${folders[i]}/${file}`);
-        const commandName = props.help.name;
+        const props = require(`./commands/${folder}/${file}`);
+        const commandName = file.split('.')[0];
 
-        console.log(`Attempting to load command ${commandName}`);
+        console.log(`Attempting to load command: ${commandName}`);
         client.commands.set(commandName, props);
 
         if (props.conf.aliases) {
@@ -88,7 +96,7 @@ fs.readdir('./commands/', (err, folders) => {
         client.enabledCmds.ensure(commandName, true);
       });
     });
-  }
+  });
 });
 
 client.levelCache = {};
@@ -104,24 +112,10 @@ client.invites = {};
 // Raid Mode
 client.raidMode = false;
 client.raidBanning = false;
+client.raidBans = [];
 client.raidJoins = [];
 client.raidMessage = null;
 client.raidMembersPrinted = 0;
-
-// Music Feature
-client.songQueue = {
-  infoMessage: null,
-  voiceChannel: null,
-  connection: null,
-  songs: [],
-  playing: false,
-  shuffle: true,
-  stopping: false,
-  played: 0,
-  timePlayed: 0,
-  lastUpdateTitle: '',
-  lastUpdateDesc: '',
-};
 
 // Auto-Filter Message Reminder Counts
 client.imageOnlyFilterCount = 0;
@@ -129,6 +123,7 @@ client.imageAndTextOnlyFilterCount = 0;
 client.newlineLimitFilterCount = 0;
 client.imageAndLinkFilterCount = 0;
 client.noMentionFilterCount = 0;
+client.linkFilterCount = 0;
 
 // Twitter object for listening for tweets
 client.twitter = new Twitter({
@@ -139,10 +134,10 @@ client.twitter = new Twitter({
 });
 
 // Start up the twitter webhook listener
-client.twitterHook = new Discord.WebhookClient(client.config.twitterHookID, client.config.twitterHookToken);
+client.twitterHook = new Discord.WebhookClient({ id: client.config.twitterHookID, token: client.config.twitterHookToken });
 
-Object.assign(client, Enmap.multi(['enabledCmds', 'emojiDB', 'villagerDB', 'tags', 'playlist', 'sessionDB', 'muteDB', 'reactionRoleDB', 'bannedWordsDB', 'reactionSignUp'], { ensureProps: true }));
-Object.assign(client, Enmap.multi(['userDB', 'infractionDB', 'memberStats'], { fetchAll: false, ensureProps: true }));
+Object.assign(client, Enmap.multi(['enabledCmds', 'emojiDB', 'tags', 'sessionDB', 'muteDB', 'reactionRoleDB', 'bannedWordsDB', 'reactionSignUp', 'remindDB', 'timers', 'mmSignUp', 'attachmentDB', 'linkWhitelist'], { ensureProps: true }));
+Object.assign(client, Enmap.multi(['userDB', 'infractionDB', 'headStaffNotesDB'], { fetchAll: false, ensureProps: true }));
 
 // Banned words array and Searcher
 const bannedWordsArray = client.bannedWordsDB.array();

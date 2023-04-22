@@ -4,12 +4,6 @@ module.exports.run = (client, message, args) => {
     return;
   }
 
-  const member = message.guild.members.cache.get(message.author.id);
-  if (!member || !member.roles.cache.has(client.config.voiceRole)) {
-    client.error(message.channel, 'Not A Member Long Enough!', 'You must have the \`Voice\` role in order to use this command! Head to the <#722517717411823747> channel to acquire this role and use this command!');
-    return;
-  }
-
   // Number between 2 and 8
   const size = Math.max(Math.min(8, parseInt(args[0], 10) || 8), 2);
 
@@ -26,7 +20,7 @@ module.exports.run = (client, message, args) => {
     });
     lastNum += 1;
     message.guild.channels.create(`session-${lastNum}`, {
-      type: 'voice',
+      type: 'GUILD_VOICE',
       bitrate: 384000,
       userLimit: size,
       parent: client.config.sesCategory,
@@ -39,7 +33,7 @@ module.exports.run = (client, message, args) => {
       client.success(message.channel, 'Session Created!', `A voice channel called **session-${lastNum}** was created with **${size}** available slots! If no one is in the voice channel after 1 minute, it will be deleted.`);
       // Start a timer for 1 minute to delete the channel if no one is in it
       setTimeout(() => {
-        if (sessionChannel.members.size === 0 && !sessionChannel.deleted && sessionChannel.deletable) {
+        if (sessionChannel.members.size === 0 && sessionChannel.deletable) {
           sessionChannel.delete('[Auto] No one joined this session channel.');
           client.sessionDB.delete(sessionChannel.id);
         }

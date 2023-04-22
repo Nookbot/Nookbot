@@ -17,7 +17,7 @@ module.exports.run = async (client, message, args, level) => { // eslint-disable
       const membersToAdd = message.mentions.members.size ? message.mentions.members.map((m) => m.id) : args.slice(1);
       try {
         for (let i = 0; i < membersToAdd.length; i++) {
-          await message.channel.createOverwrite(membersToAdd[i].trim(), {
+          await message.channel.permissionOverwrites.create(membersToAdd[i].trim(), {
             VIEW_CHANNEL: true,
             SEND_MESSAGES: true,
             READ_MESSAGE_HISTORY: true,
@@ -35,7 +35,7 @@ module.exports.run = async (client, message, args, level) => { // eslint-disable
         return client.error(message.channel, 'Not a Middleman Channel!', 'Please use this command in a middleman channel!');
       }
 
-      const memberOverwrites = message.channel.permissionOverwrites.filter((perm) => perm.type === 'member').map((perm) => perm);
+      const memberOverwrites = message.channel.permissionOverwrites.cache.filter((perm) => perm.type === 'member').map((perm) => perm);
       for (let i = 0; i < memberOverwrites.length; i++) {
         await memberOverwrites[i].delete();
       }
@@ -45,7 +45,7 @@ module.exports.run = async (client, message, args, level) => { // eslint-disable
     case 'lock':
     case 'l': {
       const requestChannel = client.channels.cache.get('750150303692619817');
-      await requestChannel.updateOverwrite(client.config.tradeRole, { SEND_MESSAGES: false });
+      await requestChannel.permissionOverwrites.edit(client.config.mainGuild, { SEND_MESSAGES: false });
       client.success(message.channel, 'Success!', `Successfully locked ${requestChannel}!`);
       break;
     }
@@ -53,7 +53,7 @@ module.exports.run = async (client, message, args, level) => { // eslint-disable
     case 'ul':
     case 'unl': {
       const requestChannel = client.channels.cache.get('750150303692619817');
-      await requestChannel.updateOverwrite(client.config.tradeRole, { SEND_MESSAGES: true });
+      await requestChannel.permissionOverwrites.edit(client.config.mainGuild, { SEND_MESSAGES: true });
       client.success(message.channel, 'Success!', `Successfully unlocked ${requestChannel}!`);
       break;
     }

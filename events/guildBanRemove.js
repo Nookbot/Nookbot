@@ -1,18 +1,18 @@
 const Discord = require('discord.js');
 
-module.exports = async (client, guild, user) => {
-  if (guild.id !== client.config.mainGuild) {
+module.exports = async (client, ban) => {
+  if (ban.guild.id !== client.config.mainGuild) {
     return;
   }
 
   const embed = new Discord.MessageEmbed()
-    .setAuthor(user.tag, user.displayAvatarURL())
+    .setAuthor({ name: ban.user.tag, iconURL: ban.user.displayAvatarURL() })
     .setColor('#1de9b6')
     .setTimestamp()
-    .setFooter(`ID: ${user.id}`)
-    .setThumbnail(user.displayAvatarURL())
+    .setFooter({ text: `ID: ${ban.user.id}` })
+    .setThumbnail(ban.user.displayAvatarURL())
     .setTitle('**Member Unbanned**')
-    .setDescription(user.id);
+    .setDescription(ban.user.id);
 
-  guild.channels.cache.get(client.config.modLog).send(embed);
+  client.channels.cache.get(client.config.modLog).send({ embeds: [embed] });
 };

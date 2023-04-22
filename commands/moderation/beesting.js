@@ -23,7 +23,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
     return client.error(message.channel, 'Invalid Number!', 'Please provide a valid number for the stings to give!');
   }
 
-  const noDelete = !!(args[2] === 'nodelete' || args[2] === 'nd');
+  const noDelete = args[2] ? !!(args[2].toLowerCase() === 'nodelete' || args[2].toLowerCase() === 'nd') : false;
   const reason = args[noDelete ? 3 : 2] ? args.slice(noDelete ? 3 : 2).join(' ') : 'No reason provided.';
 
   let curPoints = 0;
@@ -56,8 +56,8 @@ ${client.config.banAppealLink}`;
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 12 hours in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
-For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).
+Please note that discussing any punishments you receive in a public channel may result in additional stings. If you have any questions please DM Orvbot (<@715355702444425296>) to contact a member of staff.`;
     action = '12 Hour Mute';
     mute = 720;
   } else if (curPoints < 15 && newPoints + curPoints >= 15) {
@@ -65,8 +65,8 @@ For more information about why you were muted, please read #rules-you-must-read 
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 1 hour in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
-For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).
+Please note that discussing any punishments you receive in a public channel may result in additional stings. If you have any questions please DM Orvbot (<@715355702444425296>) to contact a member of staff.`;
     action = '1 Hour Mute';
     mute = 60;
   } else if (curPoints < 10 && newPoints + curPoints >= 10) {
@@ -74,8 +74,8 @@ For more information about why you were muted, please read #rules-you-must-read 
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 30 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
-For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).
+Please note that discussing any punishments you receive in a public channel may result in additional stings. If you have any questions please DM Orvbot (<@715355702444425296>) to contact a member of staff.`;
     action = '30 Minute Mute';
     mute = 30;
   } else if (curPoints < 5 && newPoints + curPoints >= 5) {
@@ -83,8 +83,8 @@ For more information about why you were muted, please read #rules-you-must-read 
     dmMsg = `You have been temporarily muted and will be unable to see any trade channels for 10 minutes in the AC:NH server for the following reason:
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
-If you previously had the Trade or Voice roles, you will need to reread the rules and rereact to the verification prompt to obtain them again.
-For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).`;
+For more information about why you were muted, please read #rules-you-must-read (<#696239787467604008>).
+Please note that discussing any punishments you receive in a public channel may result in additional stings. If you have any questions please DM Orvbot (<@715355702444425296>) to contact a member of staff.`;
     action = '10 Minute Mute';
     mute = 10;
   } else {
@@ -93,7 +93,8 @@ For more information about why you were muted, please read #rules-you-must-read 
 **${reason}**
 You were given **${newPoints} bee sting${newPoints === 1 ? '' : 's'}** and your total is **${newPoints + curPoints}**.
 Don't worry, 1 sting is just a warning and will expire in **1 week**.
-For more information about why you were warned, please read #rules-you-must-read (<#696239787467604008>).`;
+For more information about why you were warned, please read #rules-you-must-read (<#696239787467604008>).
+Please note that discussing any punishments you receive in a public channel may result in additional stings. If you have any questions please DM Orvbot (<@715355702444425296>) to contact a member of staff.`;
     action = 'Warn';
   }
 
@@ -110,8 +111,8 @@ For more information about why you were warned, please read #rules-you-must-read
   }
 
   // Create infraction in the infractionDB to get case number
-  const caseNum = client.infractionDB.autonum;
-  client.infractionDB.set(caseNum, member.id);
+  const caseNum = parseInt(client.infractionDB.autonum, 10);
+  client.infractionDB.set(caseNum.toString(), member.id);
 
   // Create infraction in the userDB to store important information
   client.userDB.push(member.id, {
@@ -131,24 +132,41 @@ For more information about why you were warned, please read #rules-you-must-read
     });
   } else if (mute) {
     try {
-      // Update unmuteTime on userDB
+      // Update unmuteTime on muteDB
       client.muteDB.set(member.id, (mute * 60000) + time);
       const guildMember = await client.guilds.cache.get(client.config.mainGuild).members.fetch(member);
-      const mutedMember = await guildMember.roles.add(client.config.mutedRole, '[Auto] Beestings');
-      await mutedMember.roles.remove([client.config.tradeRole, client.config.voiceRole], '[Auto] Beestings');
+      guildMember.timeout(mute * 60000, '[Auto] Beestings');
+      await guildMember.roles.add(client.config.mutedRole, '[Auto] Beestings');
 
-      // Kick member from voice
-      if (guildMember.voice.channel) {
-        guildMember.voice.kick();
-      }
+      // Send mute embed
+      const muteEmbed = new Discord.MessageEmbed()
+        .setAuthor({ name: guildMember.user.tag, iconURL: guildMember.user.displayAvatarURL() })
+        .setTimestamp()
+        .setColor('#ff9292')
+        .setFooter({ text: `ID: ${guildMember.id}` })
+        .addField('**Member Muted**', `<@${guildMember.id}>`);
+      client.channels.cache.get(client.config.modLog).send({ embeds: [muteEmbed] });
 
-      // Schedule unmute
-      setTimeout(() => {
-        if ((client.muteDB.get(member.id) || 0) < Date.now()) {
-          client.muteDB.delete(member.id);
-          mutedMember.roles.remove(client.config.mutedRole, `Scheduled unmute after ${mute} minutes.`).catch((err) => {
-            client.error(client.channels.cache.get(client.config.modLog), 'Unmute Failed!', `I've failed to unmute this member! ${err}\nID: ${member.id}`);
-          });
+      const id = guildMember.id;
+      // Schedule unmute embed
+      setTimeout(async () => {
+        if (client.muteDB.has(id) && (client.muteDB.get(id) || 0) < Date.now()) {
+          try {
+            let unmuteMember = await client.guilds.cache.get(client.config.mainGuild).members.fetch(id);
+            if (unmuteMember && unmuteMember.roles) {
+              unmuteMember.roles.remove(client.config.mutedRole);
+            }
+          } catch (error) {
+            // Oh well, no user fetched, they left, no unmute for them.
+          }
+          client.muteDB.delete(id);
+          const unmuteEmbed = new Discord.MessageEmbed()
+            .setAuthor({ name: guildMember.user.tag, iconURL: guildMember.user.displayAvatarURL() })
+            .setTimestamp()
+            .setColor('#1de9b6')
+            .setFooter({ text: `ID: ${guildMember.id}` })
+            .addField('**Member Unmuted**', `<@${guildMember.id}>`);
+          client.channels.cache.get(client.config.modLog).send({ embeds: [unmuteEmbed] });
         }
       }, mute * 60000);
     } catch (err) {
@@ -157,21 +175,21 @@ For more information about why you were warned, please read #rules-you-must-read
   }
 
   // Notify in channel
-  client.success(message.channel, 'Bee Sting Given!', `**${member.guild ? member.user.tag : member.tag || member}** was given **${newPoints}** bee sting${newPoints === 1 ? '' : 's'}!`);
+  client.success(message.channel, 'Bee Sting Given!', `**${member.guild ? member.user.tag : member.tag || member}** was given **${newPoints}** bee sting${newPoints === 1 ? '' : 's'}! (Case #${caseNum})`);
 
   // Send mod-log embed
   const embed = new Discord.MessageEmbed()
-    .setAuthor(`Case ${caseNum} | ${action} | ${member.guild ? member.user.tag : member.tag || member}`, member.guild ? member.user.displayAvatarURL() : member.displayAvatarURL())
+    .setAuthor({ name: `Case ${caseNum} | ${action} | ${member.guild ? member.user.tag : member.tag || member}`, iconURL: member.guild ? member.user.displayAvatarURL() : member.displayAvatarURL() })
     .setColor((mute || ban) ? '#ff9292' : '#fada5e')
     .setDescription(`Reason: ${reason}`)
     .addField('User', `<@${member.id}>`, true)
     .addField('Moderator', `<@${message.author.id}>`, true)
-    .addField('Stings Given', newPoints, true)
+    .addField('Stings Given', `${newPoints}`, true)
     .addField('DM Sent?', dmSent ? `${client.emoji.checkMark} Yes` : `${client.emoji.redX} No`, true)
-    .addField('Total Stings', curPoints + newPoints, true)
-    .setFooter(`ID: ${member.id}`)
+    .addField('Total Stings', `${curPoints + newPoints}`, true)
+    .setFooter({ text: `ID: ${member.id}` })
     .setTimestamp();
-  return client.channels.cache.get(client.config.modLog).send(embed);
+  return client.channels.cache.get(client.config.modLog).send({ embeds: [embed] });
 };
 
 module.exports.conf = {

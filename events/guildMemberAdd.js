@@ -31,14 +31,19 @@ module.exports = async (client, member) => {
     storedMember.roles.forEach((r) => {
       const role = member.guild.roles.cache.get(r);
       if (role && !role.managed && role.id !== member.guild.id
+        && role.id !== client.config.copperBookerRole
+        && role.id !== client.config.modTraineeRole
         && role.id !== client.config.reddRole && role.id !== client.config.headReddRole
         && role.id !== client.config.modRole && role.id !== client.config.headModRole
         && role.id !== client.config.adminRole) {
         member.roles.add(role);
       }
     });
-    client.userDB.setProp(member.id, 'roles', []);
+    client.userDB.set(member.id, [], 'roles');
   }
+
+  // Set Member Joined UserDB value
+  client.userDB.set(member.id, Date.now(), 'joinedTimestamp');
 
   const time = Date.now();
   let accountAge = client.humanTimeBetween(time, member.user.createdTimestamp);
@@ -50,7 +55,7 @@ module.exports = async (client, member) => {
 
   let inviteField = 'Unknown';
   // Check which invite was used.
-  const guildInvites = await member.guild.fetchInvites();
+  const guildInvites = await member.guild.invites.fetch();
   // Existing invites
   const ei = client.invites;
   // Update cached invites
@@ -67,7 +72,7 @@ module.exports = async (client, member) => {
     // If invite isn't valid, that most likely means the vanity URL was used so default to it.
   if (invite) {
     // Inviter
-    const inviter = client.users.cache.get(invite.inviter.id);
+    const inviter = await client.users.fetch(invite.inviter.id);
     inviteField = `${invite.code} from ${inviter.tag} (${inviter.id}) with ${invite.uses}`;
   } else {
     // Vanity URL was used
@@ -75,15 +80,15 @@ module.exports = async (client, member) => {
   }
 
   const embed = new Discord.MessageEmbed()
-    .setAuthor(member.user.tag, member.user.displayAvatarURL())
+    .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
     .setColor('#1de9b6')
     .setTimestamp()
-    .setFooter(`ID: ${member.id}`)
+    .setFooter({ text: `ID: ${member.id}` })
     .setThumbnail(member.user.displayAvatarURL())
     .addField('**Member Joined**', `<@${member.id}>`, true)
-    .addField('**Join Position**', member.guild.memberCount, true)
+    .addField('**Join Position**', `${member.guild.memberCount}`, true)
     .addField('**Account Age**', accountAge, true)
     .addField('**Invite Used**', inviteField, true);
 
-  member.guild.channels.cache.get(client.config.joinLeaveLog).send(embed);
+  member.guild.channels.cache.get(client.config.joinLeaveLog).send({ embeds: [embed] });
 };

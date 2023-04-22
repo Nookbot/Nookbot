@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 module.exports = async (client, messageReaction, user) => {
-  if (user.bot || !messageReaction.message.guild) {
+  if (user.bot || !messageReaction.message.inGuild()) {
     return;
   }
 
@@ -15,7 +15,7 @@ module.exports = async (client, messageReaction, user) => {
       names.push(member.displayName);
       ids.push(user.id);
 
-      let newSignUp = '';
+      let newSignUp = '__**•• Sign Up Sheet ••**__\n\n';
       for (let i = 0; i < reactionData.signUpSheet.length; i++) {
         if (i === index) {
           newSignUp += `${reactionData.signUpSheet[i]}${names.join(', ')}\n`;
@@ -23,6 +23,7 @@ module.exports = async (client, messageReaction, user) => {
           newSignUp += `${reactionData.signUpSheet[i]}${reactionData.names[i].join(', ')}\n`;
         }
       }
+      newSignUp += "\n* *Please sign up with other channels.*\n** *If the reactions aren't showing correctly, refreshing your client (CTRL + R) may solve the issue!*";
 
       client.reactionSignUp.set('data', names, `names[${index}]`);
       client.reactionSignUp.set('data', ids, `ids[${index}]`);
@@ -45,22 +46,42 @@ module.exports = async (client, messageReaction, user) => {
     }
   }
 
-  if (messageReaction.message.id === '781387060807729192') {
+  if (messageReaction.message.id === '826305438277697567' && messageReaction.emoji.id === '756701911163600977') {
+    client.mmSignUp.ensure(user.id, { hours: 0, start: null });
+    client.mmSignUp.set(user.id, Date.now(), 'start');
+
+    await messageReaction.users.fetch();
+    const names = messageReaction.users.cache.filter((u) => !u.bot).map((u) => {
+      let mmMember = messageReaction.message.guild.members.cache.get(u.id);
+      if (!mmMember) {
+        messageReaction.message.guild.members.fetch(u.id)
+          .then((mm) => {
+            mmMember = mm;
+          });
+      }
+      return mmMember?.displayName || u.username;
+    });
+    const mmAvailableNum = names.length;
+    const signUpMsgContent = messageReaction.message.content;
+    const splitSignUpContent = signUpMsgContent.split(') ••__**');
+    await messageReaction.message.edit(`${splitSignUpContent[0].replace(/\(\d+/, `(${mmAvailableNum}`)}) ••__**\n${names.join('\n')}`);
+
+    // Request channel unlocking and editing
     const requestChannel = client.channels.cache.get('750150303692619817');
-    if (!requestChannel.permissionsFor(client.config.tradeRole).has('SEND_MESSAGES')) {
-      requestChannel.updateOverwrite(client.config.tradeRole, { SEND_MESSAGES: true }, 'Unlocking middleman channel.');
+    if (!requestChannel.permissionsFor(client.config.mainGuild).has('SEND_MESSAGES')) {
+      requestChannel.permissionOverwrites.edit(client.config.mainGuild, { SEND_MESSAGES: true });
       const msg = requestChannel.messages.cache.get('782464950798516244');
       const { content } = msg;
       const splitContent = content.split('🔐');
       const contentToEdit = splitContent[1].split('\n\n');
       const newContent = '🔓 This channel is currently **unlocked**.';
-      msg.edit(`${splitContent[0]}🔐 ${contentToEdit[0].trim()}\n\n${newContent}\n\`\`\` \n\`\`\``);
+      await msg.edit(`${splitContent[0].replace(/[\u200B-\u200D\uFEFF]/g, '')}🔐 ${contentToEdit[0].trim()}\n\n${newContent}\n\`\`\` \n\`\`\``);
     }
   }
 
   const reactionRoleMenu = client.reactionRoleDB.get(messageReaction.message.id);
 
-  // If not there isn't a type, then this is not a reaction role message.
+  // If there isn't a type, then this is not a reaction role message.
   if (!reactionRoleMenu) {
     return;
   }
@@ -72,7 +93,7 @@ module.exports = async (client, messageReaction, user) => {
 
       if (roleID) {
         // This reaction corresponds to a role
-        const member = await client.guilds.cache.get(messageReaction.message.guild.id === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
+        const member = await client.guilds.cache.get(messageReaction.message.guildId === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
         if (member && member.roles.cache.has(roleID)) {
           member.roles.remove(roleID, '[Auto] Remove Reaction Role');
         }
@@ -84,7 +105,7 @@ module.exports = async (client, messageReaction, user) => {
       const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
       if (roleID) {
-        const member = await client.guilds.cache.get(messageReaction.message.guild.id === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
+        const member = await client.guilds.cache.get(messageReaction.message.guildId === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
         if (member) {
           // Check if they have any of the other roles in this list and remove them.
           const rolesToRemove = [];
@@ -109,7 +130,7 @@ module.exports = async (client, messageReaction, user) => {
       const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
       if (roleID) {
-        const member = await client.guilds.cache.get(messageReaction.message.guild.id === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
+        const member = await client.guilds.cache.get(messageReaction.message.guildId === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
         if (member && !member.roles.cache.has(roleID)) {
           member.roles.add(roleID, '[Auto] Multiple Reaction Role Add');
         }
@@ -121,7 +142,7 @@ module.exports = async (client, messageReaction, user) => {
       const roleID = reactionRoleMenu.reactions[messageReaction.emoji.id || messageReaction.emoji.identifier];
 
       if (roleID) {
-        const member = await client.guilds.cache.get(messageReaction.message.guild.id === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
+        const member = await client.guilds.cache.get(messageReaction.message.guildId === client.config.mainGuild ? client.config.mainGuild : client.config.modMailGuild).members.fetch(user.id);
         if (member && (Date.now() - member.joinedTimestamp) > reactionRoleMenu.time) {
           member.roles.add(roleID, '[Auto] Restricted Reaction Role Add');
         }
@@ -139,7 +160,7 @@ module.exports = async (client, messageReaction, user) => {
     // Remove all reactions.
     messageReaction.message.reactions.removeAll()
       .then((message) => {
-        console.log(`Removed ${totalReactions} reactions from message ${message.id}(msgID) in ${message.channel.id}(chID) and reset them.`);
+        console.log(`Removed ${totalReactions} reactions from message ${message.id}(msgID) in ${message.channelId}(chID) and reset them.`);
         // Add back one of each reaction.
         client.asyncForEach(Object.keys(reactionRoleMenu.reactions), async (emoji) => {
           await message.react(emoji);

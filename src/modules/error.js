@@ -1,5 +1,5 @@
 module.exports = (client) => {
   client.error = (channel, err, msg) => {
-    channel.send(`${client.emoji.redX} **${err}**\n${msg}`, { split: true });
+    client.sendLongMessage(channel, `${client.emoji.redX} **${err}**\n${msg}`);
   };
 };

@@ -7,6 +7,7 @@ configtest.js
 
 # Data
 data
+memberStats.json
 
 # VSCode
 .vscode

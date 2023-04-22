@@ -165,6 +165,25 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
       return client.success(message.channel, 'Successfully set your Creator Code!', `Creator Code: **${code}**`);
     }
+    case 'hhpcode':
+    case 'hhp':
+    case 'showroom':
+    case 'home': {
+      if (args.length === 1) {
+        return client.error(message.channel, 'No HHP Showroom Code Given!', 'Please supply your HHP Showroom code!');
+      }
+
+      let code = args.slice(1).join().replace(/[\D]/g, '');
+
+      if (code.length !== 12) {
+        return client.error(message.channel, 'Invalid Code!', 'The code must have 12 digits!');
+      }
+
+      code = `RA-${code.slice(0, 4)}-${code.slice(4, 8)}-${code.slice(8, 12)}`;
+      client.userDB.set(message.author.id, code, 'island.hhpCode');
+
+      return client.success(message.channel, 'Successfully set your HHP Showroom Code!', `HHP Showroom Code: **${code}**`);
+    }
     case 'remove':
     case 'delete':
     case 'rm':
@@ -198,7 +217,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
       }
 
       if ((args[0].toLowerCase() === 'mod' && level >= 3) ? args.length === 2 : args.length === 1) {
-        return client.error(message.channel, 'No Value To Remove!', 'Please supply the value you would like to remove! (islandname/fruit/charactername/hemisphere/profilename/friendcode)');
+        return client.error(message.channel, 'No Value To Remove!', 'Please supply the value you would like to remove! (islandname/fruit/charactername/hemisphere/profilename/friendcode/dreamaddress/creatorcode/hhpcode)');
       }
       switch ((args[0].toLowerCase() === 'mod' && level >= 3) ? args[2].toLowerCase() : args[1].toLowerCase()) {
         case 'islandname':
@@ -255,6 +274,13 @@ module.exports.run = async (client, message, args, level, Discord) => {
         case 'cc':
           client.userDB.set(memberID, '', 'island.creatorCode');
           return client.success(message.channel, 'Successfully cleared your Creator Code!', 'To set your creator code again, use `.island creatorcode <code>`!');
+        case 'hhpcode':
+        case 'hhp':
+        case 'showroom':
+        case 'home': {
+          client.userDB.set(memberID, '', 'island.hhpCode');
+          return client.success(message.channel, 'Successfully cleared your HHP Showroom Code!', 'To set your HHP Showroom code again, use `.island hhp <code>`!');
+        }
         case 'all':
         case 'every':
           client.userDB.set(memberID, {
@@ -264,10 +290,12 @@ module.exports.run = async (client, message, args, level, Discord) => {
             hemisphere: '',
             profileName: '',
             dreamAddress: '',
+            creatorCode: '',
+            hhpCode: '',
           }, 'island');
-          return client.success(message.channel, 'Successfully cleared your Switch profile name!', 'To set your Switch profile name again, use `.island profilename <name>`!');
+          return client.success(message.channel, 'Successfully cleared your island information!', 'To set your island information again, use `.island`!');
         default:
-          return client.error(message.channel, 'Invalid Value To Remove!', 'Please supply the value you would like to remove! (islandname/fruit/charactername/hemisphere/profilename/friendcode)');
+          return client.error(message.channel, 'Invalid Value To Remove!', 'Please supply the value you would like to remove! (islandname/fruit/charactername/hemisphere/profilename/friendcode/dreamaddress/creatorcode/hhpcode)');
       }
     }
     default: {
@@ -309,22 +337,33 @@ module.exports.run = async (client, message, args, level, Discord) => {
       if (island.creatorCode) {
         msg.push(`Creator Code: **${island.creatorCode}**`);
       }
+      if (island.hhpCode) {
+        msg.push(`HHP Showroom Code: **${island.hhpCode}**`);
+      }
 
       if (msg.length === 0) {
         if (member.id === message.author.id) {
-          return client.error(message.channel, 'No Island Information Found!', 'You have not supplied any information about your island! You can do so by running \`.island <islandname|fruit|charactername|hemisphere|profilename|friendcode> <name|fruit|hemisphere|code>\` with any of the options. Ex. \`.island fruit pears\`.');
+          return client.error(message.channel, 'No Island Information Found!', 'You have not supplied any information about your island! You can do so by running \`.island <islandname|fruit|charactername|hemisphere|profilename|friendcode|dreamaddress|creatorcode|hhpcode>\` with any of the options. Ex. \`.island fruit pears\`.');
         }
         return client.error(message.channel, 'No Island Information Found!', `${member.displayName} has not supplied any information about their island!`);
       }
 
       const embed = new Discord.MessageEmbed()
-        .setAuthor(`${member.displayName}'s Island`, member.user.displayAvatarURL())
+        .setAuthor({ name: `${member.displayName}'s Island`, iconURL: member.user.displayAvatarURL() })
         .setColor('#0ba47d')
         .setDescription(`${msg.join('\n')}`);
 
-      return message.channel.send(embed);
+      return message.channel.send({ embeds: [embed] });
     }
   }
+};
+
+module.exports.data = {
+  name: 'island',
+  description: 'Display information about your island.',
+  options: [
+
+  ],
 };
 
 module.exports.conf = {
@@ -348,6 +387,6 @@ module.exports.help = {
   name: 'island',
   category: 'game',
   description: 'Island information display',
-  usage: 'island <islandname|fruit|charactername|hemisphere|profilename|friendcode|dreamaddress|creatorcode> <name|fruit|hemisphere|code|address>',
-  details: "<islandname> => Set the name of your island.\n<fruit> => Set the fruit that is native on your island.\n<charactername> => Set the name of your character on the island.\n<hemisphere> => Set the hemisphere your island is in.\n<profilename> => Set the name of your Switch profile.\n<friendcode> => Set your Switch friendcode.\n<dreamaddress> => Set your island's dream address.\n<creatorcode> => Set your creator code.",
+  usage: 'island <islandname|fruit|charactername|hemisphere|profilename|friendcode|dreamaddress|creatorcode|hhpcode> <name|fruit|hemisphere|code|address>',
+  details: "<islandname> => Set the name of your island.\n<fruit> => Set the fruit that is native on your island.\n<charactername> => Set the name of your character on the island.\n<hemisphere> => Set the hemisphere your island is in.\n<profilename> => Set the name of your Switch profile.\n<friendcode> => Set your Switch friendcode.\n<dreamaddress> => Set your island's dream address.\n<creatorcode> => Set your creator code.\n<hhpcode> => Set your HHP Showroom code.",
 };

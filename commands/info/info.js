@@ -1,4 +1,3 @@
-const moment = require('moment-timezone');
 const { version } = require('discord.js');
 
 module.exports.run = async (client, message, args, level, Discord) => {
@@ -6,10 +5,8 @@ module.exports.run = async (client, message, args, level, Discord) => {
 
   // embed
   const embed = new Discord.MessageEmbed()
-    .setAuthor(message.author.tag, message.author.displayAvatarURL())
     .setColor('#4199c2')
-    .setTimestamp()
-    .setFooter('Nookbot', client.user.displayAvatarURL());
+    .setTimestamp();
 
   switch (args[0]) {
     case 'bot': {
@@ -25,15 +22,15 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .addField('Bot ID', client.user.id, true)
         .addField('Bot Owner', owner.tag, true)
         .addField('Bot Version', client.version, true)
-        .addField('Online Users', client.users.cache.size, true)
-        .addField('Server Count', client.guilds.cache.size, true)
+        .addField('Online Users', `${client.users.cache.size}`, true)
+        .addField('Server Count', `${client.guilds.cache.size}`, true)
         .addField('Discord.js Version', `v${version}`, true)
         .addField('Mem Usage', `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
         .addField('Node.js Version', `${process.version}`, true)
-        .addField('Created On', moment(client.user.createdAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
+        .addField('Created On', `<t:${Math.floor(client.user.createdTimestamp / 1000)}>`, true)
         .addField('Uptime', uptime, true);
 
-      return message.channel.send(embed);
+      return message.channel.send({ embeds: [embed] });
     }
     case 'user': {
       // Setting the member to the mentioned user
@@ -51,10 +48,7 @@ module.exports.run = async (client, message, args, level, Discord) => {
         }
       }
 
-      const roles = member.roles.cache.filter((r) => r.id !== member.guild.id).map((r) => r.name).join(', ') || 'No Roles';
-      const roleSize = member.roles.cache.filter((r) => r.id !== member.guild.id).size;
-
-      let activity = member.presence.status;
+      let activity = member.presence?.status || 'offline';
 
       if (activity === 'online') {
         activity = `${client.emoji.online} Online`;
@@ -66,16 +60,17 @@ module.exports.run = async (client, message, args, level, Discord) => {
         activity = `${client.emoji.offline} Offline/Invisible`;
       }
 
-      embed.setAuthor(member.user.tag, member.user.displayAvatarURL())
+      embed.setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
+        .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+        .setFooter({ text: `ID: ${member.id}` })
         .setTitle(`${member.displayName}\'s Info`)
-        .addField('ID', member.user.id, true)
         .addField('Nickname', member.displayName, true)
-        .addField('Account Created', moment(member.user.createdAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
-        .addField(`Joined *${client.guilds.cache.get(client.config.mainGuild).name}*`, moment(member.joinedAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
-        .addField(`Roles (${roleSize})`, roles, true)
-        .addField('Status', activity, true);
+        .addField('Status', activity, true)
+        .addField('Account Created', `<t:${Math.floor(member.user.createdTimestamp / 1000)}:F>; <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`)
+        .addField(`Joined *${client.guilds.cache.get(client.config.mainGuild).name}*`, `<t:${Math.floor(member.joinedAt / 1000)}:F>; <t:${Math.floor(member.joinedAt / 1000)}:R>`)
+        .addField(`Roles (${member.roles.cache.size - 1})`, member.roles.cache.filter((r) => r.id !== member.guild.id).sort((a, b) => b.position - a.position).map((r) => r.toString()).join(', ') || 'No Roles');
 
-      return message.channel.send(embed);
+      return message.channel.send({ embeds: [embed] });
     }
     case 'server':
       embed.setTitle('Server Information')
@@ -83,11 +78,11 @@ module.exports.run = async (client, message, args, level, Discord) => {
         .setThumbnail(message.guild.iconURL({ format: 'gif', dynamic: true }))
         .addField('Server Name', message.guild.name, true)
         .addField('Server ID', message.guild.id, true)
-        .addField('Server Owner', `${message.guild.owner.user.tag} (${message.guild.owner.user.id})`, true)
-        .addField('Created On', moment(message.guild.createdAt).tz('America/New_York').format('MMMM Do YYYY, h:mm:ss a z'), true)
-        .addField('Member Count', message.guild.memberCount, true);
+        .addField('Server Owner', `${(await message.guild.fetchOwner()).user.tag} (${message.guild.ownerId})`, true)
+        .addField('Created On', `<t:${Math.floor(message.guild.createdTimestamp / 1000)}>`, true)
+        .addField('Member Count', `${message.guild.memberCount}`, true);
 
-      return message.channel.send(embed);
+      return message.channel.send({ embeds: [embed] });
     default:
       return client.error(message.channel, 'Invalid Subcommand!', `Remember to use subcommands when using this command! For example: \`bot\`, \`server\`, or \`user\`! For further details, use \`${client.config.prefix}help info\`!`);
   }

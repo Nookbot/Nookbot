@@ -19,12 +19,12 @@ module.exports.run = async (client, message, args, level, Discord) => {
       const name = client.userDB.get(message.author.id, 'island.profileName');
 
       const embed = new Discord.MessageEmbed()
-        .setAuthor(`${message.member.displayName}'s Friend Code`, message.author.displayAvatarURL())
+        .setAuthor({ name: `${message.member.displayName}'s Friend Code`, iconURL: message.author.displayAvatarURL() })
         .setTitle('Successfully set your friend code!')
         .setColor('#e4000f')
         .setDescription(`**${code}**${name ? `\nSwitch Profile Name: **${name}**` : ''}`);
 
-      return message.channel.send(embed);
+      return message.channel.send({ embeds: [embed] });
     }
     case 'del':
     case 'delete':
@@ -45,15 +45,23 @@ module.exports.run = async (client, message, args, level, Discord) => {
         const name = client.userDB.get(message.author.id, 'island.profileName');
 
         const embed = new Discord.MessageEmbed()
-          .setAuthor(`${message.member.displayName}'s Friend Code`, message.author.displayAvatarURL())
+          .setAuthor({ name: `${message.member.displayName}'s Friend Code`, iconURL: message.author.displayAvatarURL() })
           .setColor('#e4000f')
           .setDescription(`**${fc}**${name ? `\nSwitch Profile Name: **${name}**` : ''}`);
 
-        return message.channel.send(embed);
+        return message.channel.send({ embeds: [embed] });
       }
 
       // Attempt to find a member using the arguments provided
-      const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || await message.guild.members.fetch(args[0]);
+      let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
+
+      if (!member && parseInt(args[0], 10)) {
+        try {
+          member = await message.guild.members.fetch(args[0]);
+        } catch (err) {
+          // Don't need to send a message here
+        }
+      }
 
       if (member) {
         const fc = client.userDB.ensure(member.user.id, client.config.userDBDefaults).friendcode;
@@ -64,11 +72,11 @@ module.exports.run = async (client, message, args, level, Discord) => {
         const name = client.userDB.get(member.user.id, 'island.profileName');
 
         const embed = new Discord.MessageEmbed()
-          .setAuthor(`${member.displayName}'s Friend Code`, member.user.displayAvatarURL())
+          .setAuthor({ name: `${member.displayName}'s Friend Code`, iconURL: member.user.displayAvatarURL() })
           .setColor('#e4000f')
           .setDescription(`**${fc}**${name ? `\nSwitch Profile Name: **${name}**` : ''}`);
 
-        return message.channel.send(embed);
+        return message.channel.send({ embeds: [embed] });
       }
 
       return client.error(message.channel, 'Unknown Member!', 'Could not find a member by that name!');

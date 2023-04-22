@@ -1,5 +1,5 @@
 module.exports = (client) => {
   client.success = (channel, suc, msg) => {
-    channel.send(`${client.emoji.checkMark} **${suc}**\n${msg}`, { split: true });
+    client.sendLongMessage(channel, `${client.emoji.checkMark} **${suc}**\n${msg}`);
   };
 };
