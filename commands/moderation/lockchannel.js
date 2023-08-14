@@ -14,15 +14,16 @@ module.exports.run = (client, message, args, level, Discord) => {
         channel.send("**Channel Locked**!\nWe're sorry to inconvenience everyone, but we've restricted all message sending capabilities in this channel for now. Don't worry though, you'll be back to chatting about your favorite game in no time, yes yes!");
       })
      .catch((error) => client.error(message.channel, 'Channel Lock Failed!', `The channel failed to be locked because: \`${error}\``));
-  }
-  channel.permissionOverwrites.edit(message.guild.id, { SEND_MESSAGES: false })
-    .then(() => {
-      if (channel.id !== message.channel.id) {
-        client.success(message.channel, 'Channel Locked!', `No one can send messages in ${channel} until the channel is unlocked! To unlock the channel, use \`.unlockchannel\`.`);
-      }
-      channel.send("**Channel Locked**!\nWe're sorry to inconvenience everyone, but we've restricted all message sending capabilities in this channel for now. Don't worry though, you'll be back to chatting about your favorite game in no time, yes yes!");
-    })
-    .catch((error) => client.error(message.channel, 'Channel Lock Failed!', `The channel failed to be locked because: \`${error}\``));
+  } else {
+    channel.permissionOverwrites.edit(message.guild.id, { SEND_MESSAGES: false })
+      .then(() => {
+        if (channel.id !== message.channel.id) {
+          client.success(message.channel, 'Channel Locked!', `No one can send messages in ${channel} until the channel is unlocked! To unlock the channel, use \`.unlockchannel\`.`);
+        }
+        channel.send("**Channel Locked**!\nWe're sorry to inconvenience everyone, but we've restricted all message sending capabilities in this channel for now. Don't worry though, you'll be back to chatting about your favorite game in no time, yes yes!");
+      })
+      .catch((error) => client.error(message.channel, 'Channel Lock Failed!', `The channel failed to be locked because: \`${error}\``));
+  };
 };
 
 module.exports.conf = {
