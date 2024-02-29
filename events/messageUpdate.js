@@ -17,11 +17,11 @@ module.exports = async (client, oldMessage, newMessage) => {
 
   const embed = new Discord.MessageEmbed()
     .setColor('#00e5ff')
-    .setAuthor(newMessage.author.tag, newMessage.author.displayAvatarURL())
+    .setAuthor({ name: newMessage.author.tag, iconURL: newMessage.author.displayAvatarURL() })
     .setDescription(`[Jump to message in](${newMessage.url} 'Jump') <#${newMessage.channelId}>`)
     .setTimestamp()
-    .setFooter(`ID: ${newMessage.author.id}`)
-    .addField('**Message Edited**', `**Before:** ${oldMsg}\n**After:** ${newMsg}`)
+    .setFooter({ text: `ID: ${newMessage.author.id}` })
+    .addField('**Message Edited**', `**Before:** ${oldMsg}\n**+After:** ${newMsg}`)
     .addField('**Posted**', `<t:${Math.floor(oldMessage.createdTimestamp / 1000)}>`);
 
   newMessage.guild.channels.cache.get(client.config.actionLog).send({ embeds: [embed] });
