@@ -17,12 +17,75 @@ module.exports = async (client, oldMessage, newMessage) => {
 
   const embed = new Discord.MessageEmbed()
     .setColor('#00e5ff')
-    .setAuthor({ name: newMessage.author.tag, iconURL: newMessage.author.displayAvatarURL() })
+    .setAuthor(newMessage.author.tag, newMessage.author.displayAvatarURL())
     .setDescription(`[Jump to message in](${newMessage.url} 'Jump') <#${newMessage.channelId}>`)
     .setTimestamp()
-    .setFooter({ text: `ID: ${newMessage.author.id}` })
-    .addField('**Message Edited**', `**Before:** ${oldMsg}\n**+After:** ${newMsg}`)
+    .setFooter(`ID: ${newMessage.author.id}`)
+    .addField('**Message Edited**', `**Before:** ${oldMsg}\n**After:** ${newMsg}`)
     .addField('**Posted**', `<t:${Math.floor(oldMessage.createdTimestamp / 1000)}>`);
 
   newMessage.guild.channels.cache.get(client.config.actionLog).send({ embeds: [embed] });
+
+  // Banned Words
+  if (level[1] < 2) {
+    const tokens = newMessage.content.replace(/[\u200B-\u200D\uFEFF\uDB40-\uDB43\uDC00-\uDFFF]/ug, '').split(/ +/g);
+    let ban = false;
+    let del = false;
+    let sanrio = false;
+    let match;
+
+    for (let index = 0; index < tokens.length; index++) {
+      if (ban) {
+        break;
+      }
+      const matches = client.bannedWordsFilter.search(tokens[index]);
+
+      for (let mIndex = 0; mIndex < matches.length; mIndex++) {
+        const chkMatch = client.bannedWordsDB.find((w) => w.word === matches[mIndex].original && w.phrase.join(' ') === matches[mIndex].item.phrase.join(' '));
+
+        // Only check if we're not already deleting this message, or the matched word is an autoBan
+        if (!del || chkMatch.autoBan) {
+          let chkDel = false;
+          let matchedPhrase = true;
+          if (chkMatch.phrase.length !== 0) {
+            if (chkMatch.phrase.length < (tokens.length - index)) {
+              for (let i = 0; i < chkMatch.phrase.length; i++) {
+                if (tokens[index + (i + 1)].toLowerCase() !== chkMatch.phrase[i].toLowerCase()) {
+                  matchedPhrase = false;
+                  break;
+                }
+              }
+            } else {
+              matchedPhrase = false;
+            }
+          }
+
+          if (matchedPhrase) {
+            if (chkMatch.blockedChannels && chkMatch.blockedChannels.length !== 0) {
+              if (chkMatch.blockedChannels.includes(newMessage.channelId)) {
+                if (['sanrio', 'toby', 'chelsea', 'chai', 'étoile', 'etoile', 'marty', 'rilla'].includes(chkMatch.word)) {
+                  sanrio = true;
+                }
+                chkDel = true;
+              }
+            } else {
+              chkDel = true;
+            }
+          }
+
+          if (!del && chkDel) {
+            // This is to save the first match that caused the message to get deleted or banned
+            match = chkMatch;
+            del = chkDel;
+          }
+
+          if (chkDel && chkMatch.autoBan) {
+            match = chkMatch;
+            ban = true;
+            break; // Break on autoBan because we don't need to check for any other banned words.
+          }
+        }
+      }
+    }
+  }
 };
